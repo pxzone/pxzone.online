@@ -5,6 +5,7 @@
 !system/cache/*
 !*/cache/index.html
 !*/cache/.htaccess
+*/vendor/*
 
 */application/library/Telegram_api.php
 */application/library/routes.php
@@ -14,4 +15,3 @@
 application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
-/vendor
