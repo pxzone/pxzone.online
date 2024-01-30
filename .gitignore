@@ -6,11 +6,12 @@
 !*/cache/index.html
 !*/cache/.htaccess
 
-application/library/Telegram_api.php
-application/config/routes.php
-application/controller/Telegram_bot_test.php
-application/model/Telegram_bot_test_model.php
-!application/logs/*
+*/application/library/Telegram_api.php
+*/application/library/routes.php
+*/application/controller/Telegram_bot_test.php
+*/application/model/Telegram_bot_test_model.php
+
+application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
-/vendor/
+/vendor
