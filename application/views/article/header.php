@@ -39,7 +39,7 @@
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:site" content="<?=base_url()?>">
-        <meta name="twitter:creator" content="atpxdev">
+        <meta name="twitter:creator" content="bypxzone">
         <meta name="twitter:title" content="<?=$article_data['title']?>">
         <meta name="twitter:image" content="<?=$article_data['article_image']?>">
         <script async src="https://cdn.ampproject.org/v0.js"></script>

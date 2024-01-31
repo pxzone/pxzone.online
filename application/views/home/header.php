@@ -40,12 +40,11 @@
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:site" content="<?=base_url()?>">
-        <meta name="twitter:creator" content="atpxdev">
+        <meta name="twitter:creator" content="bypxzone">
         <meta name="twitter:title" content="<?=($title=='index')?$siteSetting['website_name']:$title.' - '.$siteSetting['website_name']?>">
         <meta name="twitter:description" content="<?=($title=='index')?$siteSetting['description'].'':$description?>">
         <meta name="twitter:image" content="<?=base_url('assets/images/other/cover.webp')?>">
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-BH2L4YCB4W"></script>
-        <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9264139322313019" crossorigin="anonymous"></script> -->
     </head>
 
     <body class="" >
@@ -53,11 +52,11 @@
         {
           "@context":"https:\/\/schema.org",
           "@type":"Organization",
-          "url":"https:\/\/pxdev.click\/",
-          "sameAs":["https:\/\/www.twitter.com\/atpxdev\/"],
+          "url":"https:\/\/pxzone.online\/",
+          "sameAs":["https:\/\/www.twitter.com\/bypxzone\/"],
           "@id":"https://pxdev.click/#Organization",
           "name":"PX Dev",
-          "logo":"https://pxdev.click/assets/images/logo/logo.png"
+          "logo":"https://pxzone.online/assets/images/logo/logo.png"
         }
     </script>    
     
