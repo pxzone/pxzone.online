@@ -373,7 +373,9 @@ class Telegram_bot_model extends CI_Model {
         $this->db->WHERE('msg_id', $msg_id)
             ->DELETE('altt_scraped_data_tbl');
     }
-
+    public function getAllUsersData(){
+        return $this->db->SELECT('chat_id, altt_username')->WHERE('status','active')->GET('telegram_bot_tbl')->result_array();
+    }
 
     # FOR TESTING
     public function mentionInTelegramTest()

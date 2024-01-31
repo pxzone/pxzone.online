@@ -187,7 +187,14 @@ class Telegram_bot extends CI_Controller {
                 }
                 $this->sendMessage($post_data);
                 $this->trackTopics($chat_id, $message_id, 'send');
-                }
+            }
+            else if ($update['message']['text'] == 'Thank you' || $update['message']['text'] == 'thanks' || stripos($update['message']['text'], 'thank') !== FALSE ) {
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => "You are welcome! 🙂",
+                );
+                $this->sendMessage($post_data);
+            }
             else {
                 $response_text = "Sorry! I can't understand you!";
                 $post_data = array(
@@ -248,12 +255,6 @@ class Telegram_bot extends CI_Controller {
                 $this->editMessageText($post_data);
             } 
             else if ($callback_data === 'track_topic' ) {
-                // $response_text = 'This feature is not available yet!';
-                // $post_data = array(
-                //     'chat_id' => $chat_id,
-                //     'text' => $response_text,
-                // );
-                // $this->sendMessage($post_data);
                 $this->trackTopics($chat_id, $message_id, 'edit');
              }
             else if ($callback_data === 'stop_notify_btn') {
@@ -719,6 +720,52 @@ class Telegram_bot extends CI_Controller {
     }
 
 
+    # MANUAL MESSAGING SUBSCRIBERS
+    public function sendMessageToAllSubsribers(){
+        $users_data = $this->Telegram_bot_model->getAllUsersData();
+        $altt_username = $users_data['altt_username'];
+        $user_count = count($users_data);
+$response_text = 
+"Hello <b>$altt_username</b>,
+
+Thank you for using the AltcoinsTalks Telegram Notifier bot. Here's a little summary of the bot as of January 31 since it was published.
+
+<b>Features</b>
+- Mention/quote notification
+- Stop notification/unsubscribe
+- Track phrase
+- Track user posts
+- Ignore users
+- Track replies in a topic thread
+
+<b>Current active users</b>
+$user_count
+
+These features can be accessed and used using the /menu command. If you encounter bugs and issues, feel free to post them on this <a href='https://www.altcoinstalks.com/index.php?topic=315728.0'>thread</a>.
+Have a nice day a head!
+
+Cheers!!! 🥂🥂🥂
+";
+        foreach($users_data as $users){
+            $post_data = array(
+                'chat_id' => $users_data['chat_id'],
+                'text' => $response_text,
+                'parse_mode'=> 'html',
+            );
+            $this->sendMessage($post_data);
+        }
+
+        // $post_data = array(
+        //     'chat_id' => '625982027',
+        //     'text' => $response_text,
+        //     'parse_mode'=> 'html',
+        // );
+        // $this->sendMessage($post_data);
+        $response = array(
+            'status'=>true,
+        );
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
     # FOR TESTING ONLY
     public function showTestData(){
         $chat_id = "625982027";
