@@ -34,16 +34,16 @@
         </script>
         <div id="_web_container" class="dark-theme">
             <div class=" other-section padding-bottom-30 c-dwhite"  >
-                <div class="first-section padding-bottom-70 c-dwhite">
+                <div class="first-section padding-bottom-30 c-dwhite">
                     <div class="container">
-                        <div class="text-left">
+                        <div class="text-center">
                             <h1 class="f-h1 mb-2 c-dwhite">Bitcoin Price to Image Conversion</h1>
                             <p class="p-text c-dwhite font-15">Bitcoin to fiat conversion, wallet address' balance to image, bitcoin price history to image.</p>
                         </div>
                     </div>
                 </div>
                 <div class="container">
-                    <div class="row mt-sm-2 mt-2 mb-3">
+                    <div class="row mb-3">
                         <div class="col-lg-12">
                             <div id="_btc_bal_checker_div" class="card card-anchor bg-dark c-dwhite pt-2 pb-2 padding-right-30 padding-left-30">
                                 <div class="mt-3">

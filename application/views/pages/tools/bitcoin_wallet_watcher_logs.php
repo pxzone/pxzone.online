@@ -34,16 +34,16 @@
         </script>
         <div id="_web_container" class="dark-theme">
             <div class=" other-section padding-bottom-30 c-dwhite"  >
-            <div class="first-section padding-bottom-70 c-dwhite">
+            <div class="first-section padding-bottom-30 c-dwhite">
                 <div class="container">
-                    <div class="text-left">
+                    <div class="text-center">
                         <h1 class="f-h1 mb-2 c-white">Bitcoin Wallet Notifier Logs</h1>
                         <p class="p-text c-white font-15">The list of incoming and outgoing notifications you have received. You can delete this information on our database if you don't want to receive any notification anymore by clicking the "Delete My Record" button.</p>
                     </div>
                 </div>
             </div>
                 <div class="container">
-                    <div class="row mt-sm-2 mt-2 mb-3">
+                    <div class="row mb-3">
                         <div class="col-lg-12">
                             <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-30 padding-left-30 table-responsive">
                                 <div class="mt-2 mb-2">
