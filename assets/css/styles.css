@@ -815,3 +815,17 @@ h1, h2, h3, h4, h5 {
 .author-details2{
     margin-left: -15px;
 }
+.wallet-balance-dropdown {
+    height: 70px; 
+    border-color: rgba(255, 255, 255, 0.07);  
+    background-color: rgba(255, 255, 255, 0.07); 
+    border-top-right-radius: 10px; 
+    border-bottom-right-radius: 10px; 
+    color: #cccfd8;
+}
+.inline-block{
+    display: inline-block;
+}
+.sub-text{
+    color:#cccfd8;
+}

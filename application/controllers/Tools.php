@@ -12,21 +12,30 @@ class Tools extends CI_Controller {
         $this->load->library('email');
         $this->load->library('form_validation');
         $this->load->library('pagination');
+        $this->load->library('Api_auth');
     }
     
     public function getwalletBalance(){
         $this->output->cache(.3);
+        $status = false;
         $wallet_address = $this->input->get('wallet_address');
-		$btc_balance = $this->Tools_model->getBtcBalance($wallet_address);
-        $usd_value = $this->Tools_model->getFiatValue($btc_balance,'usd');
-        $eur_value = $this->Tools_model->getFiatValue($btc_balance,'eur');
-        $response = array(
-            array(
-            'btc_balance'=>$btc_balance,
-            'usd_value'=>number_format($usd_value,2),
-            'eur_value'=>number_format($eur_value, 2)
-            )
-        );
+		$verify_wallet_address = $this->Tools_model->verifyWalletAddress($wallet_address);
+        if($verify_wallet_address == true){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($wallet_address);
+            $usd_value = $this->Tools_model->getFiatValue($balance,'usd');
+            $eur_value = $this->Tools_model->getFiatValue($balance,'eur');
+            $response = array(
+                array(
+                'balance'=>$balance,
+                'usd_value'=>number_format($usd_value,2),
+                'eur_value'=>number_format($eur_value, 2)
+                )
+            );
+        }
+        else{
+            $response['status'] = 'error';
+            $response['message'] = 'Invalid Address!';
+        }
         $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$response)));
     }
     public function walletAddressBalanceToImage($address){
@@ -283,7 +292,7 @@ class Tools extends CI_Controller {
                         // Get the latest transaction details
                         $latestTransaction = $transactions[0];
                         $txid = $latestTransaction['txid'];
-                        $value = $latestTransaction['value'];
+                        $value = "";
                         $confirmations = $latestTransaction['confirmations'];
                         $isIncoming = $this->isTransactionIncoming($latestTransaction, $address);
                         $tx_type =  ($isIncoming ? 'incoming' : 'outgoing') . "\n";
@@ -708,5 +717,87 @@ class Tools extends CI_Controller {
         //     $final_value = number_format($fiat_value, 2);
         // }
         return number_format($fiat_value, 2) .' '.strtoupper($currency);
+    }
+    public function getCryptoWalletBalance(){
+        $this->output->cache(.3);
+        $status = false;
+		$data_balance = $this->getCryptoBalance();
+        if($data_balance){
+            // $btc_balance = $this->Tools_model->getCryptoBalance($wallet_address);
+            $usd_value = $this->Tools_model->getFiatValue($data_balance['balance'], 'usd');
+            $eur_value = $this->Tools_model->getFiatValue($data_balance['balance'], 'eur');
+            $response = array(
+                'balance'=>$data_balance['balance'],
+                'ticker'=>$data_balance['ticker'],
+                'usd_value'=>number_format($usd_value,2),
+                'eur_value'=>number_format($eur_value, 2)
+            );
+        }
+        else{
+            $response['status'] = 'error';
+            $response['message'] = 'Invalid Address!';
+        }
+		
+        $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$response)));
+    }
+    function getCryptoBalance(){
+        $coin = $this->input->get('coin');
+        $address = $this->input->get('wallet_address');
+
+        if($coin == 'btc'){
+            $balance = $this->Tools_model->getBtcBalance($address);
+            // $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'btc');
+            $ticker = "BTC";
+        }
+        else if($coin == 'ethereum' && $token == 'usdt'){
+            $balance = $this->Tools_model->okLinkFetchTokenBalanceApi($address, 'eth', 'token_20');
+            $ticker = "TRX";
+        }
+        else if($coin == 'eth'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'eth');
+            $ticker = "ETH";
+        }
+        else if($coin == 'bsc'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'bsc');
+            $ticker = "BNB";
+        }
+        else if($coin == 'tron' && $token == 'usdt'){
+            $balance = $this->Tools_model->okLinkFetchTokenBalanceApi($address, $coin, 'token_20');
+            $ticker = "USDT";
+        }
+        else if($coin == 'tron'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'tron');
+            $ticker = "TRX";
+        }
+        else if($coin == 'ltc'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'ltc');
+            $ticker = "LTC";
+        }
+        else if($coin == 'doge'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'doge');
+            $ticker = "DOGE";
+        }
+        else if($coin == 'bitcoin-cash'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'bch');
+            $ticker = "BCH";
+        }
+        else if($coin == 'dash'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'dash');
+            $ticker = "DASH";
+        }
+        else if($coin == 'matic'){
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'polygon');
+            $ticker = "MATIC";
+        }
+        else {
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, $coin);
+            $ticker = strtoupper($coin);
+        }
+
+        $data = array(
+            'balance'=>$balance,
+            'ticker'=>$ticker
+        );
+        return $data;
     }
 }

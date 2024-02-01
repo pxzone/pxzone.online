@@ -32,7 +32,7 @@
 
 				</div>
 				<div class="text-center footer-text font-13 ">
-					&copy; <?=date('Y')?>. <?=$siteSetting['website_name']?> All rights reserved.
+					&copy; <?=date('Y', strtotime($siteSetting['created_at']))?>. <?=$siteSetting['website_name']?> All rights reserved.
 				</div>
 			</div>
 		</div>
@@ -49,19 +49,14 @@
 		<script src="<?=base_url()?>assets/js/_webapp.js?v=<?=filemtime('assets/js/_webapp.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/sweetalert2.all.min.js"></script>
 		<script src="<?=base_url()?>assets/js/auth/_csrf.js?v=<?=filemtime('assets/js/auth/_csrf.js')?>"></script>
-		
-		<?php if ($state == 'login') {?><script src="<?=base_url()?>assets/js/auth/_login.js"></script>
-		<script src="<?=base_url()?>assets/js/vendor/croppie.js"></script><?php } ?>
-
 		<script src="<?=base_url()?>assets/js/auth/app.js?v=<?=filemtime('assets/js/auth/app.js')?>"></script>
-		<?php if ($state == 'bitcoin_checker') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_balance.js"></script><?php } ?>
-
-		<?php if ($state == 'message_verifier') {?>
-		<?php } ?>
-
-		<?php if ($state == 'bitcoin_wallet_watcher' || $state == 'bitcoin_wallet_notifier_logs') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_watcher.js?v=<?=filemtime('assets/js/auth/_bitcoin_watcher.js')?>"></script>
-		<?php } ?>
-		<?php if ($state == 'bitcoin_fee_estimator') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_fee_estimator.js?v=<?=filemtime('assets/js/auth/_bitcoin_fee_estimator.js')?>"></script>
+		<?php if ($state == 'login') {?><script src="<?=base_url()?>assets/js/auth/_login.js"></script>
+		<script src="<?=base_url()?>assets/js/vendor/croppie.js"></script>
+		<?php } else if ($state == 'bitcoin_checker') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_balance.js"></script>
+		<?php } else if ($state == 'message_verifier') {?>
+		<?php } else if ($state == 'bitcoin_wallet_watcher' || $state == 'bitcoin_wallet_notifier_logs') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_watcher.js?v=<?=filemtime('assets/js/auth/_bitcoin_watcher.js')?>"></script>
+		<?php } else if ($state == 'bitcoin_fee_estimator') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_fee_estimator.js?v=<?=filemtime('assets/js/auth/_bitcoin_fee_estimator.js')?>"></script>
+		<?php } else if ($state == 'crypto_balance_checker' ) {?><script src="<?=base_url()?>assets/js/auth/_crypto.js?v=<?=filemtime('assets/js/auth/_crypto.js')?>"></script>
 		<?php } ?>
 
 	</body>

@@ -414,5 +414,17 @@ class Page extends CI_Controller {
         $this->load->view('pages/tools/altt_telegram_notifier');
         $this->load->view('home/footer');
     }
+    public function cryptoBalanceChecker(){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['title'] = 'Cryptocurrency Balance Checker';
+        $data['description'] = 'A tool for checking the balance of a Bitcoin, Ethereum, Tron, Binance coin, Dash, Litecoin, Dogecoin wallet address. The tool returns the current balance in $coin and USD value of the wallet address';
+        $data['canonical_url'] = base_url('tools/crypto/balance-checker');
+        $data['state'] = "crypto_balance_checker";
+        $data['csrf_data'] = $this->Csrf_model->getCsrfData();
+    	$this->load->view('home/header', $data);
+    	$this->load->view('home/nav');
+    	$this->load->view('pages/tools/crypto_balance_checker');
+    	$this->load->view('home/footer');
+    }
     
 }

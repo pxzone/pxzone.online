@@ -32,7 +32,7 @@ $("#_check_btc_bal_btn").on('click', () => {
 			$('#_btc_balance_tbl').html(tbl);
 		}
 		else{
-			$("#_btc_balance_tbl").html("<tr class='text-center'><td colspan='3'>No records found!</td></tr>");
+			$("#_btc_balance_tbl").html("<tr class='text-center'><td colspan='4'>Invalid wallet address!</td></tr>");
 		}
         $("#_check_btc_bal_btn").text('Submit').removeAttr('disabled','disabled');
 	})

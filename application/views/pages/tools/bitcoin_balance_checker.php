@@ -16,36 +16,21 @@
                 {
                     "@type":"ListItem",
                     "position":2,
-                    "item":{
-                    "@id":"<?=base_url('/tools')?>",
-                    "name":"Tools"
+                    "item":
+                    {
+                        "@id":"<?=base_url('/tools')?>",
+                        "name":"Tools"
                     }
                 },
                 {
                     "@type":"ListItem",
                     "position":3,
-                    "item":{
-                    "@id":"<?=$canonical_url?>",
-                    "name":"<?=$title?>"
-                 
-                    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    /
+                    "item":
+                    {
+                        "@id":"<?=$canonical_url?>",
+                        "name":"<?=$title?>"
+                    }
+                }
             ]
         }
         </script>

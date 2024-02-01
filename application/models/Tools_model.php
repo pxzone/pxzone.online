@@ -90,7 +90,7 @@ class Tools_model extends CI_Model {
     public function verifyWalletAddress($wallet_address){
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://mempool.space/api/address/" . $wallet_address,
+            CURLOPT_URL => "https://mempool.space/api/v1/validate-address/" . $wallet_address,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -105,8 +105,12 @@ class Tools_model extends CI_Model {
         $response = curl_exec($curl);
         curl_close($curl);
         $data_obj = json_decode($response);
-        $data = $data_obj;
-        return $data;
+        if($data_obj->isvalid == true){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     public function getBtcToolsMisc($url){
         $curl = curl_init();
@@ -292,7 +296,8 @@ class Tools_model extends CI_Model {
         }
     }
     public function okLinkFetchCoinBalanceApi($address, $coin){
-        $api_key = "0039e6ff-bf5b-4986-8421-090137d94233";
+        $auth = $this->api_auth->authKeys();
+        $api_key = $auth['okLink_key'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.oklink.com/api/v5/explorer/address/address-summary?chainShortName=$coin&address=$address");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -318,7 +323,8 @@ class Tools_model extends CI_Model {
         return $balance;
     }
     public function okLinkFetchTokenBalanceApi($address, $coin, $protocol_type){
-        $api_key = "0039e6ff-bf5b-4986-8421-090137d94233";
+        $auth = $this->api_auth->authKeys();
+        $api_key = $auth['okLink_key'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.oklink.com/api/v5/explorer/address/token-balance?chainShortName=$coin&address=$address&protocolType=$protocol_type");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
