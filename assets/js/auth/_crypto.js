@@ -1,7 +1,7 @@
 
 function selectCrypto(coin){
 	$("#wallet_balance_dd").attr('data-coin', coin);
-	$("#wallet_balance_dd").html('<img src="'+base_url+'assets/images/crypto/"'+coin+'".png" height="20" alt="'+coin+'" /> ' + coin.toUpperCase());
+	$("#wallet_balance_dd").html('<img src="'+base_url+'assets/images/crypto/'+coin+'.webp" class="me-1" height="20" alt="'+coin+'" /> ' + coin.toUpperCase() + "&nbsp;&nbsp;");
 }
 $("#check_balance").on('click', () => {
 	wallet_address = $("#wallet_address").val();
@@ -18,6 +18,7 @@ $("#check_balance").on('click', () => {
 	})
 	.then(response => response.json())
 	.then(res => {
+		$(".wallet-balance-wrapper").removeAttr('hidden','hidden');
 		$("#wallet_balance").html(res.data.balance+ " " +res.data.ticker);
 		$("#usd_balance").html("$" +res.data.usd_value);
 		$("#eur_balance").html("€" +res.data.eur_value);
@@ -25,6 +26,7 @@ $("#check_balance").on('click', () => {
 	})
 	.catch((error) => {
 		console.error('Error:', error);
+		$(".wallet-balance-wrapper").attr('hidden','hidden');
         $("#check_balance").text('Show balance').removeAttr('disabled','disabled');
 	});
 })

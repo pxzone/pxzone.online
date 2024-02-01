@@ -53,34 +53,35 @@
                                 <input type="text" class="form-control" id="wallet_address" aria-label="Text input with dropdown button">
                                 <div class="input-group-append">
                                     <button id="wallet_balance_dd" class="btn btn-outline-secondary dropdown-toggle wallet-balance-dropdown" data-coin="btc" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" height="20" alt="BTC">  BTC
+                                        <img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="BTC">  BTC &nbsp;&nbsp;
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" id="crypto_currency">
-                                        <li><a class="dropdown-item" href="#eth" onclick="selectCrypto('btc')">BTC</a></li>
-                                        <li><a class="dropdown-item" href="#eth" onclick="selectCrypto('eth')">ETH</a></li>
-                                        <li><a class="dropdown-item" href="#bsc" onclick="selectCrypto('bsc')">BNB</a></li>
-                                        <li><a class="dropdown-item" href="#ltc" onclick="selectCrypto('ltc')">LTC</a></li>
-                                        <li><a class="dropdown-item" href="#doge" onclick="selectCrypto('doge')" >DOGE</a></li>
-                                        <li><a class="dropdown-item" href="#ltc" onclick="selectCrypto('ltc')">LTC</a></li>
-                                        <li><a class="dropdown-item" href="#tron" onclick="selectCrypto('tron')">TRON</a></li>
-                                        <li><a class="dropdown-item" href="#bch" onclick="selectCrypto('bch')" >BCH</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('btc')">BTC</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('eth')">ETH</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bnb')">BNB</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')">LTC</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('doge')" >DOGE</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')">LTC</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('tron')">TRON</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bch')" >BCH</a></li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="mt-1 mb-1">
-                                <div>
-                                    <small class="text-muted">Data provided by <a rel="nofollow" target="_blank" href="https://mempool.space/docs/api/rest">Mempool.space</a>, <a rel="nofollow" target="_blank"  href="https://www.oklink.com/docs/en/#introduction">OkLink</a>, & <a rel="nofollow" target="_blank" href="https://www.coingecko.com/en/api/documentation">Coingecko API</a></small>
-                                </div>
+                                
                                 <div class="float-end">
                                     <button class="btn btn-lg btn-primary rounded text-white mt-1" id="check_balance">Show balance</button>
                                 </div>
                             </div>
-                            <div class="mt-3 mb-4">
-                                <div class="">
+                            <div class="mt-3 mb-2">
+                                <div class="wallet-balance-wrapper" hidden="hidden">
                                     <small>Wallet balance</small><br>
                                     <div class="inline-block">
                                         <span class="font-35 me-2" id="wallet_balance">0.00</span> <span class="sub-text me-1 font-17" id="usd_balance"></span> <span class="sub-text font-17" id="eur_balance"></span>
                                     </div>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">Data provided by <a rel="nofollow" target="_blank" href="https://mempool.space/docs/api/rest">Mempool.space</a>, <a rel="nofollow" target="_blank"  href="https://www.oklink.com/docs/en/#introduction">OkLink</a>, & <a rel="nofollow" target="_blank" href="https://www.coingecko.com/en/api/documentation">Coingecko API</a></small>
                                 </div>
                             </div>
 

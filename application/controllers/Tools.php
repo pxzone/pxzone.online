@@ -757,7 +757,7 @@ class Tools extends CI_Controller {
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'eth');
             $ticker = "ETH";
         }
-        else if($coin == 'bsc'){
+        else if($coin == 'bsc' || $coin == 'bnb'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'bsc');
             $ticker = "BNB";
         }
@@ -788,10 +788,6 @@ class Tools extends CI_Controller {
         else if($coin == 'matic'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'polygon');
             $ticker = "MATIC";
-        }
-        else {
-            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, $coin);
-            $ticker = strtoupper($coin);
         }
 
         $data = array(

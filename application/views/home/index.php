@@ -94,7 +94,7 @@
                         </div>
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/bitcoin-balance-checker')" class="text-white">
+                                <a href="#access" onclick="_accessPage('tools/crypto/balance-checker')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm ">
@@ -102,8 +102,8 @@
                                                     <i class="uil-credit-card-search padding-left-50"></i>
                                                 </span>
                                             </div>
-                                            <h2 class="font-18 fw-600 mt-1" >Bitcoin Balance Checker</h2>
-                                            <p class="my-2 font-14" id="">Check the balance of specific bitcoin wallet address.</p>
+                                            <h2 class="font-18 fw-600 mt-1" >Crypto Balance Checker</h2>
+                                            <p class="my-2 font-14" id="">Check the balance of crypto's wallet address.</p>
                                         </div> 
                                     </div>
                                 </a>
