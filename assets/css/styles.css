@@ -543,6 +543,7 @@ h1, h2, h3, h4, h5 {
 
 }
 @media only screen and (min-width: 377px) and  (max-width: 500px){
+    
     .custom-alert-box{
         top: 70px;
         left: 35%;
@@ -589,6 +590,15 @@ h1, h2, h3, h4, h5 {
     }
 }
 @media only screen and (max-width: 500px){
+    #usd_balance{
+        display: inline-block;
+    }
+    #wallet_balance{
+        display: block;
+    }
+    #wallet_balance {
+        line-height: 1em;
+    }
     .card_qr_div{
         margin-bottom: 5px !important;
     }

@@ -48,24 +48,8 @@
     }
 })();
 
-// {
-//     "manifest_version": 2,
-//     "name": " Crypto Wallet Address Balance Checker",
-//     "version": "1.0",
-//     "description": "Check the balance of crypto wallet address",
-//     "icons": {
-//       "48": "icon.png"
-//     },
-//     "permissions": ["<specific_permissions>"],
-//     "browser_action": {
-//       "default_icon": "icon.png",
-//       "default_popup": ""
-//     },
-//     "content_scripts": [
-//       {
-//         "matches": ["<all_urls>"],
-//         "js": ["content.js"]
-//       }
-//     ]
-//   }
-  
+//
+// ignore button
+$("ul.quickbuttons").append('<li class="remove_button"><a href="#ignore" onclick="ignoreUser()">Ignore</a></li>');
+
+

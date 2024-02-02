@@ -77,10 +77,10 @@
                                 <div class="wallet-balance-wrapper" hidden="hidden">
                                     <small>Wallet balance</small><br>
                                     <div class="inline-block">
-                                        <span class="font-35 me-2" id="wallet_balance">0.00</span> <span class="sub-text me-1 font-17" id="usd_balance"></span> <span class="sub-text font-17" id="eur_balance"></span>
+                                        <span class="font-38 fw-600 me-2" id="wallet_balance">0.00</span> <span class="sub-text me-1 font-17" id="usd_balance"></span> <span class="cc-val-separator me-1">•</span> <span class="sub-text font-17" id="eur_balance"></span>
                                     </div>
                                 </div>
-                                <div class="mt-3">
+                                <div class="mt-4">
                                     <small class="text-muted">Data provided by <a rel="nofollow" target="_blank" href="https://mempool.space/docs/api/rest">Mempool.space</a>, <a rel="nofollow" target="_blank"  href="https://www.oklink.com/docs/en/#introduction">OkLink</a>, & <a rel="nofollow" target="_blank" href="https://www.coingecko.com/en/api/documentation">Coingecko API</a></small>
                                 </div>
                             </div>

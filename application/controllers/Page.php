@@ -324,6 +324,7 @@ class Page extends CI_Controller {
         header('location:'.base_url('login'));
     }
     public function bitcoinBalanceChecker(){
+        // header('Location:'.base_url('tools/crypto/balance-checker'));
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Balance Checker';
         $data['description'] = 'A tool for checking the balance of a Bitcoin address. The tool returns the current balance in Bitcoin and USD of the address,  ';
