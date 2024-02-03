@@ -136,4 +136,41 @@ class Scrapper_model extends CI_Model {
 
         return $topic_title;
     }
+    public function getUserKarmaCount($uid, $chat_id){
+        $login_page_data = $this->scrapeLoginPage();
+        $login_forum = $this->loginForum($login_page_data);
+        if($login_forum){
+            $this->scrapeUserProfile($login_page_data, $uid, $chat_id);
+        }
+        else{
+            echo 'error';
+        }
+    }
+    public function scrapeUserProfile($login_page_data, $uid, $chat_id)
+    {
+                
+        $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=$uid";
+        $ch = curl_init($forum_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
+        $html = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $message = 'Curl error during request: ' . curl_error($ch);
+            $this->Scrapper_model->insertSystemActivityLog($message);
+            exit;
+        }
+        curl_close($ch);
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+
+        # GET KARMA
+        $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
+        if ($karma_element) {
+            $karma = (int)trim($karma_element->nodeValue);
+        }
+        else{$karma = 0;}
+        $data_arr = array('karma'=> $karma);
+        $this->db->WHERE('chat_id', $chat_id)->UPDATE('telegram_bot_tbl',$data_arr);
+    }
 }

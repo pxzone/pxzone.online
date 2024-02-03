@@ -43,7 +43,7 @@ class Scrapper extends CI_Controller {
         $dom = new DOMDocument();
         @$dom->loadHTML($html);
         $xpath = new DOMXPath($dom);
-        
+
         # GET TOPIC ID
         $long_url = explode(".msg", $forum_url);
         $topic = explode("=", $long_url[0]);
@@ -182,6 +182,84 @@ class Scrapper extends CI_Controller {
             }
             
         }
+        $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
+    }
+
+    # ACCESS USING CRON JOB EVERY 5 MINUTE
+    public function scrapeAlttForumUserData() {
+        $login_page_data = $this->Scrapper_model->scrapeLoginPage();
+        $login_forum = $this->Scrapper_model->loginForum($login_page_data);
+        if($login_forum){
+            $this->scrapeUserProfile($login_page_data);
+        }
+        else{
+            echo 'error';
+        }
+	}
+    # GET KARMA COUNTS
+    public function scrapeUserProfile($login_page_data)
+    {
+        $user_data = $this->Telegram_bot_model->getUserData();
+        foreach($user_data as $ud){
+            if(!empty($user['altt_uid'])){
+                $user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['altt_uid']);
+                $altt_uid = $user['altt_uid'];
+                // $altt_uid =  "97172";
+                $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=$altt_uid";
+                $ch = curl_init($forum_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
+                $html = curl_exec($ch);
+                if (curl_errno($ch)) {
+                    $message = 'Curl error during request: ' . curl_error($ch);
+                    $this->Scrapper_model->insertSystemActivityLog($message);
+                    exit;
+                }
+                curl_close($ch);
+                $dom = new DOMDocument();
+                @$dom->loadHTML($html);
+                $xpath = new DOMXPath($dom);
+        
+                # GET USERNAME
+                $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
+                if ($username_element) {
+                    $username = trim($username_element->nodeValue);
+                }
+
+                # GET KARMA
+                $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
+                if ($karma_element) {
+                    $karma = (int)trim($karma_element->nodeValue);
+                }
+                else{$karma = 0;}
+
+                if(!empty($username) && $username == $user['altt_username']){
+                    $data = array(
+                        'status'=>true,
+                        'chat_id'=>$user['chat_id'],
+                        'username'=>$username,
+                        'current_karma'=>$karma,
+                        'prev_karma'=>$user['karma'],
+                    );
+                    
+                    if((int)$karma !== (int)$user['karma']){
+                        $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
+                        if($send_status){
+                            $message = "Scrapper Status: Okay. Scraped username [$username]";
+                            $this->Scrapper_model->insertSystemActivityLog($message);
+                        }
+                    }
+                    $data_res = array(
+                        'status'=>true,
+                        'scrape'=>count($user_data),
+                    );
+                }
+            }
+            sleep(5);
+        }
+        $data_res = array(
+            'status'=>false,
+        );
         $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
     }
 

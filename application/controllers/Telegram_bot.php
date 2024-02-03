@@ -79,7 +79,28 @@ class Telegram_bot extends CI_Controller {
                 );
                 $this->sendMessage($post_data);
             }
-            
+            else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?action=profile') !== FALSE ) {
+                $profile_url = $update['message']['text'];
+                $profile_uid_url = explode("u=", $profile_url);
+                $uid = $profile_uid_url[1];
+
+                $response_text = "Is your AltcoinsTalks' user ID is $uid?";
+                $keyboard = array(
+                    'inline_keyboard' => array(
+                        array(
+                            array('text' => 'Yes', 'callback_data' => 'yes_userid_btn:'.$uid),
+                            array('text' => 'No', 'callback_data' => 'no_userid_btn')
+                        )
+                    )
+                );
+                $encoded_keyboard = json_encode($keyboard);
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'reply_markup' => $encoded_keyboard,
+                );
+                $this->sendMessage($post_data);
+            }
             elseif($telegram_data['status'] == 'inactive' && $message_text !== '/start'){
                 $response_text = 'Is your AltcoinsTalks\' username is ' . $message_text . '?';
                 $keyboard = array(
@@ -98,7 +119,7 @@ class Telegram_bot extends CI_Controller {
                 );
                 $this->sendMessage($post_data);
             }
-            else if ($update['message']['text'] == '/menu') {
+            else if ($update['message']['text'] == '/menu' &&  $telegram_data['status'] == 'active') {
                 $name = $update['message']['chat']['first_name'];
                 $message_text = $update['message']['text'];
                 $chat_id = $update['message']['chat']['id'];
@@ -169,6 +190,7 @@ class Telegram_bot extends CI_Controller {
 
                 $this->ignoredUsers($chat_id, $message_id, 'send');
             }
+            
             else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?topic=') !== FALSE ) {
                 $topic_url = $update['message']['text'];
                 $topic_title = $this->Scrapper_model->scrapeTopicData($topic_url);
@@ -234,9 +256,13 @@ class Telegram_bot extends CI_Controller {
                 $this->editMessageText($post_data);
             } 
             else if (strpos($callback_data, 'yes_username_btn') !== false) {
-                $altt_username = substr($callback_data, 17);
-                $this->Telegram_bot_model->updateTelegramDataStatus($chat_id, $altt_username);
-                $response_text = "Great! We will notify you of new mentions. \n\nFor more options, click the /menu button.";
+                $str = explode(":", $callback_data);
+                $altt_username = $str[1];
+                $response_text = "What is your AltcoinsTalks' Profile URL? This is to get your user ID.";
+                $this->Telegram_bot_model->updateAlttUsername($chat_id, $altt_username);
+
+                // $response_text = "Great! You will get notified when someone mentions you. \n\nFor more options, click the /menu button.";
+                // $this->Telegram_bot_model->updateTelegramDataStatus($chat_id, $altt_username);
                 $post_data = array(
                     'message_id' => $message_id,
                     'chat_id' => $chat_id,
@@ -483,6 +509,31 @@ class Telegram_bot extends CI_Controller {
             }
             else if ($callback_data === 'go_back_to_track_topic') {
                 $this->trackTopics($chat_id, $message_id, 'edit');
+            }
+            else if ($callback_data === 'no_userid_btn') {
+                $response_text = "So what is your AltcoinsTalks' Profile URL? This is to get your user ID.";
+                $post_data = array(
+                    'message_id' => $message_id,
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'reply_markup' => json_encode(['inline_keyboard' => []])
+                );
+                $this->editMessageText($post_data);
+            } 
+            else if (stripos($callback_data, 'yes_userid_btn:') !== FALSE ) {
+                $str = explode(":",$callback_data);
+                $altt_uid = $str[1];
+                
+                $this->Telegram_bot_model->updateAlttUIDStatus($chat_id, $altt_uid);
+                $this->Scrapper_model->getUserKarmaCount($altt_uid, $chat_id);
+
+                $response_text = "Great! You will get notified when someone mentions you and when you receive Karma. \n\nFor more options, click the /menu button.";
+                $post_data = array(
+                    'message_id' => $message_id,
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                );
+                $this->editMessageText($post_data);
             }
             else {
                 $response_text = 'Sorry, I can\'t understand you!';

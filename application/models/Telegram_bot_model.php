@@ -18,10 +18,26 @@ class Telegram_bot_model extends CI_Model {
         
     }
     public function getTelegramData($chat_id){
-        return $this->db->WHERE('chat_id', $chat_id)->GET('telegram_bot_tbl')->row_array(); 
+        return $this->db->SElECT('status')->WHERE('chat_id', $chat_id)->GET('telegram_bot_tbl')->row_array(); 
     }
     public function deleteTelegramData($chat_id){
         $this->db->WHERE('chat_id', $chat_id)->DELETE('telegram_bot_tbl');
+    }
+    public function updateAlttUsername($chat_id, $altt_username){
+        $tg_update_data = array(
+            // 'status'=>'active',
+            'altt_username'=>$altt_username,
+            'updated_at'=>date('Y-m-d H:i:s')
+        );
+        $this->db->WHERE('chat_id', $chat_id)->UPDATE('telegram_bot_tbl', $tg_update_data);  
+    }
+    public function updateAlttUIDStatus($chat_id, $altt_uid){
+        $tg_update_data = array(
+            'status'=>'active',
+            'altt_uid'=>$altt_uid,
+            'updated_at'=>date('Y-m-d H:i:s')
+        );
+        $this->db->WHERE('chat_id', $chat_id)->UPDATE('telegram_bot_tbl', $tg_update_data);  
     }
     public function updateTelegramDataStatus($chat_id, $altt_username){
         $tg_update_data = array(
@@ -154,7 +170,12 @@ class Telegram_bot_model extends CI_Model {
        ->WHERE('chat_id', $chat_id)
        ->WHERE('topic_id', $topic_id)
        ->GET('tracked_topics_tbl')->row_array();
-}
+    }
+    public function getUserData(){
+        return $this->db->SELECT('altt_uid')
+           ->WHERE('status', 'active')
+           ->GET('telegram_bot_tbl ')->result_array();
+    }
     public function notifyUser($data)
     {
         $telegram_api = $this->telegram_api->authKeys();
@@ -169,7 +190,65 @@ class Telegram_bot_model extends CI_Model {
         // $this->checkEditedPost($data, $api_endpoint, $poster_username);
     }
 
-   
+    # MENTION WHEN KARMA IS RECEIVED
+    public function notifyKarmaTransaction($data){
+        $telegram_api = $this->telegram_api->authKeys();
+        $bot_token = $telegram_api['api_key'];
+        $api_endpoint = "https://api.telegram.org/bot$bot_token/sendMessage";
+        $current_karma = $data['current_karma'];
+        $prev_karma = $data['prev_karma'];
+
+        if((int)$current_karma > (int)$prev_karma){ 
+            $recv_karma_count = $current_karma - $prev_karma;
+            $message_text = "✨ You received <b>$recv_karma_count</b> Positive Karma. Total received Karma <b>$current_karma</b>. \nKeep posting good and helpful topic to get more Positive Karma. ";
+            $post_data = array( 
+                'chat_id' => $data['chat_id'],
+                'text' => $message_text,
+                'parse_mode'=> 'html'
+            );
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_endpoint);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $data_arr1 = array(
+                'karma'=>$current_karma,
+                'updated_at'=>date('Y-m-d H:i:s'),
+            );
+            $this->db->WHERE('chat_id', $data['chat_id'])->UPDATE('telegram_bot_tbl', $data_arr1);
+            return true;
+        }
+        else if((int)$current_karma < (int)$prev_karma){
+            $recv_karma_count = $current_karma - $prev_karma;
+            $message_text = "✨ You received <b>$recv_karma_count</b> Negative Karma. Total received Karma <b>$current_karma</b>.\nFollow the rules, and keep posting good, helpful topic to avoid getting Negative Karma.";
+
+            $post_data = array( 
+                'chat_id' => $data['chat_id'],
+                'text' => $message_text,
+                'parse_mode'=> 'html'
+            );
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_endpoint);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $data_arr2 = array(
+                'karma'=>$current_karma,
+                'updated_at'=>date('Y-m-d H:i:s')
+            );
+            $this->db->WHERE('chat_id', $data['chat_id'])->UPDATE('telegram_bot_tbl', $data_arr2);
+            return true;
+        }
+        return false;
+        // $this->output->set_content_type('application/json')->set_output(json_encode($response));
+
+    }
     # MENTION USING ALTT USERNAMES (DEFAULT)
     public function notifySubscribedUser($data, $api_endpoint, $poster_username){
         $mention_usernames = $this->db->SELECT('chat_id, altt_username')->WHERE('status', 'active')->GET('telegram_bot_tbl')->result_array();
@@ -190,7 +269,6 @@ class Telegram_bot_model extends CI_Model {
                 # end - IF IGNORE USERS EXISTS
 
                 if($poster_username !== $altt_username && !in_array($poster_username, $ignore_user_arr)){ // altt username is not equal to the notification subscriber/user so the user wont notify h
-                    $update = json_decode(file_get_contents("php://input"), TRUE);
                     $scanned_data = $this->db->SELECT('chat_id')->WHERE('chat_id', $q['chat_id'])->WHERE('altt_username', $q['altt_username'])->WHERE('status', 'active')->GET('telegram_bot_tbl')->row_array();
                       
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
@@ -241,7 +319,6 @@ class Telegram_bot_model extends CI_Model {
 
                 # Don't notify when poster_username is equal to the subscriber/user. && If the poster_username is ignored 
                 if($poster_username !== $tp['altt_username'] && !in_array($poster_username, $ignore_user_arr)){ 
-                    $update = json_decode(file_get_contents("php://input"), TRUE);
                         
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
                     $username = $data['poster_username'];
@@ -280,8 +357,6 @@ class Telegram_bot_model extends CI_Model {
         {
             if ($tu['username'] == $data['poster_username']) {  // TRACK MENTIONS BY 'POSTER' USERNAME
                 
-                $update = json_decode(file_get_contents("php://input"), TRUE);
-                            
                 $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
                 $username = $data['poster_username'];
                 $subject_url = $data['subject_url'];
@@ -330,7 +405,6 @@ class Telegram_bot_model extends CI_Model {
                 # end - IF IGNORE USERS EXISTS
 
                 if($poster_username !== $altt_username && !in_array($poster_username, $ignore_user_arr)){ // altt username is not equal to the notification subscriber/user so the user wont notify h
-                    $update = json_decode(file_get_contents("php://input"), TRUE);
                     $scanned_data = $this->db->SELECT('chat_id')->WHERE('chat_id', $tt['chat_id'])->WHERE('altt_username', $tt['altt_username'])->WHERE('status', 'active')->GET('telegram_bot_tbl')->row_array();
                       
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
@@ -403,7 +477,6 @@ class Telegram_bot_model extends CI_Model {
             if (stripos($to_scan, $altt_username) !== FALSE) {  // TRACK MENTIONS BY ALTT USERNAME
                 $scanned_data = $this->db->SELECT('chat_id')->WHERE('chat_id', $q['chat_id'])->WHERE('altt_username', $q['altt_username'])->WHERE('status', 'active')->GET('telegram_bot_tbl')->row_array();
                 if($poster_username !== $altt_username){ // altt username is not equal to the notification subscriber/user so the user wont notify h
-                    $update = json_decode(file_get_contents("php://input"), TRUE);
                     $api_endpoint = "https://api.telegram.org/bot$bot_token/sendMessage";
                         
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
