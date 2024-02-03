@@ -56,14 +56,13 @@
                                         <img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="BTC">  BTC &nbsp;&nbsp;
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" id="crypto_currency">
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('btc')">BTC</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('eth')">ETH</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bnb')">BNB</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')">LTC</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('doge')" >DOGE</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')">LTC</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('tron')">TRON</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bch')" >BCH</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('btc')"><img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="BTC"> BTC</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('eth')"><img src="<?=base_url('assets/images/crypto/eth.webp')?>" height="20" class="me-1" alt="eth"> ETH</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bnb')"><img src="<?=base_url('assets/images/crypto/bnb.webp')?>" height="20" class="me-1" alt="bnb"> BNB</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')"><img src="<?=base_url('assets/images/crypto/ltc.webp')?>" height="20" class="me-1" alt="ltc"> LTC</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('doge')" ><img src="<?=base_url('assets/images/crypto/doge.webp')?>" height="20" class="me-1" alt="doge"> DOGE</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('tron')"><img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="tron"> TRON</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bch')" ><img src="<?=base_url('assets/images/crypto/bch.webp')?>" height="20" class="me-1" alt="bch"> BCH</a></li>
                                     </ul>
                                 </div>
                             </div>
