@@ -9,7 +9,7 @@
 
 		<div class="footer-div pb-4">
 			<div class="container">
-				<div class="row">
+				<div class="row  footer-text">
 					<div class="col-lg-6">
 						<div class="cursor-pointer"> <!-- logo -->
 		            	</div>
@@ -21,18 +21,23 @@
 					<div class="col-lg-6">
 					</div>
 					<div class="col-lg-3">
-						<ul class="no-list-style ml-n-3 footer-text">
+						<ul class="no-list-style ml-n-3">
 						</ul>
 					</div>	
 
 					<div class="col-lg-3">
-						<ul class="no-list-style ml-n-3 footer-text">
+						<ul class="no-list-style ml-n-3 ">
 						</ul>
 					</div>	
 
 				</div>
-				<div class="text-center footer-text font-13 ">
-					&copy; <?=date('Y', strtotime($siteSetting['created_at']))?>. <?=$siteSetting['website_name']?> All rights reserved.
+				<div class="footer-text pb-3">
+					<div class="float-start font-13 ">
+						&copy; <?=date('Y', strtotime($siteSetting['created_at']))?>. <?=$siteSetting['website_name']?> All rights reserved.
+					</div>
+					<div class="float-end  font-13 ">
+						<i class="uil-github"></i> <a href="https://github.com/pxzone/pxzone.online" rel="noopener" target="_blank">PX Zone</a>
+					</div>
 				</div>
 			</div>
 		</div>

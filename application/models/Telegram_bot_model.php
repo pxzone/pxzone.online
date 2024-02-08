@@ -164,17 +164,45 @@ class Telegram_bot_model extends CI_Model {
        return $this->db->WHERE('chat_id', $chat_id)
           ->WHERE('topic_id', $topic_id)
           ->DELETE('tracked_topics_tbl');
-   }
-   public function getTrackTopicDataByID($chat_id, $topic_id){
-    return $this->db->SELECT('chat_id, title, url')
-       ->WHERE('chat_id', $chat_id)
-       ->WHERE('topic_id', $topic_id)
-       ->GET('tracked_topics_tbl')->row_array();
+    }
+    public function getTrackTopicDataByID($chat_id, $topic_id){
+        return $this->db->SELECT('chat_id, title, url')
+            ->WHERE('chat_id', $chat_id)
+            ->WHERE('topic_id', $topic_id)
+            ->GET('tracked_topics_tbl')->row_array();
     }
     public function getUserData(){
-        return $this->db->SELECT('altt_uid')
+        return $this->db->SELECT('altt_uid, altt_username, chat_id, karma')
            ->WHERE('status', 'active')
            ->GET('telegram_bot_tbl ')->result_array();
+    }
+    public function getUserDatabyAlttID($altt_uid){
+        return $this->db->WHERE('altt_uid', $altt_uid)
+            ->WHERE('status', 'active')
+           ->GET('telegram_bot_tbl ')->row_array();
+    }
+    public function checkPostMsgID($msg_id){
+        $saved_pst = $this->db->WHERE('msg_id', $msg_id)
+           ->GET('altt_scraped_data_tbl ')->num_rows();
+        
+        $archive_pst = $this->db->WHERE('msg_id', $msg_id)
+           ->GET('altt_scraped_archive_data_tbl ')->num_rows();
+        if($saved_pst <= 0 && $archive_pst <= 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    public function notifyUserEditedPost($data)
+    {
+        $telegram_api = $this->telegram_api->authKeys();
+        $bot_token = $telegram_api['api_key_test'];
+        $api_endpoint = "https://api.telegram.org/bot$bot_token/sendMessage";
+        $poster_username = $data['poster_username'];
+
+        $this->notifyEditedPost($data, $api_endpoint, $poster_username);
+        $this->notifyTrackPhrases($data, $api_endpoint, $poster_username);
     }
     public function notifyUser($data)
     {
@@ -246,8 +274,52 @@ class Telegram_bot_model extends CI_Model {
             return true;
         }
         return false;
-        // $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+    # MENTION USING ALTT USERNAMES (EDITED POST)
+    public function notifyEditedPost($data, $api_endpoint, $poster_username){
+        $mention_usernames = $this->db->SELECT('chat_id, altt_username')->WHERE('status', 'active')->GET('telegram_bot_tbl')->result_array();
+        foreach ($mention_usernames as $q) 
+        {
+            $to_scan = $data['subject'].' '.$data['post'];
+            $altt_username = $q['altt_username'];
+            if (stripos($to_scan, $altt_username) !== FALSE) {  // TRACK MENTIONS BY ALTT USERNAME
 
+                # start - IF IGNORE USERS EXISTS
+                $ignored_users = $this->db->SELECT('username')
+                    ->WHERE('type', 'ignore')
+                    ->WHERE('chat_id', $q['chat_id'])
+                    ->GET('tracked_users_tbl')->result_array();
+                $ignore_user_arr = array();
+                foreach($ignored_users as $iu){
+                    array_push($ignore_user_arr, $iu['username']);
+                }
+                # end - IF IGNORE USERS EXISTS
+
+                if($poster_username !== $altt_username && !in_array($poster_username, $ignore_user_arr)){ // altt username is not equal to the notification subscriber/user so the user wont notify h
+                    $scanned_data = $this->db->SELECT('chat_id')->WHERE('chat_id', $q['chat_id'])->WHERE('altt_username', $q['altt_username'])->WHERE('status', 'active')->GET('telegram_bot_tbl')->row_array();
+                      
+                    $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
+                    $username = $data['poster_username'];
+                    $subject_url = $data['subject_url'];
+                    $subject = $data['subject'];
+                    $message_text = "💬 You have been mentioned in an edited post by <b>$username</b> in <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
+    
+                    $post_data = array( 
+                        'chat_id' => $scanned_data['chat_id'],
+                        'text' => $message_text,
+                        'parse_mode'=> 'html'
+                    );
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $api_endpoint);
+                    curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
+                    $this->output->set_content_type('application/json')->set_output(json_encode($response));
+                }
+            }
+        }
     }
     # MENTION USING ALTT USERNAMES (DEFAULT)
     public function notifySubscribedUser($data, $api_endpoint, $poster_username){
@@ -411,7 +483,7 @@ class Telegram_bot_model extends CI_Model {
                     $username = $data['poster_username'];
                     $subject_url = $data['subject_url'];
                     $subject = $data['subject'];
-                    $message_text = "💬 There is a new reply by <b>$username</b> in the tracked topic <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
+                    $message_text = "📙 There is a new reply by <b>$username</b> in the tracked topic <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
     
                     $post_data = array( 
                         'chat_id' => $scanned_data['chat_id'],
@@ -432,6 +504,8 @@ class Telegram_bot_model extends CI_Model {
     }
     public function saveScrapedData($data){
         $data_arr['msg_id'] = $data['msg_id'];
+        $data_arr['topic_id'] = $data['topic_id'];
+        $data_arr['board_id'] = $data['board_id'];
         $data_arr['username'] = $data['poster_username'];
         $data_arr['subject_url'] = $data['subject_url'];
         $data_arr['subject'] = $data['subject'];
@@ -440,12 +514,42 @@ class Telegram_bot_model extends CI_Model {
         $this->db->INSERT('altt_scraped_data_tbl', $data_arr);
     }
     public function checkScrapedPost(){
-        return $this->db->SELECT('msg_id, post_content')->GET('altt_scraped_data_tbl')->result_array();
+        return $this->db->GET('altt_scraped_data_tbl')->result_array();
+    }
+    public function insertArchiveScrapedPost($edited_data, $saved_data){
+        $check_data = $this->db->WHERE('msg_id', $saved_data['msg_id'])->GET('altt_scraped_archive_data_tbl')->num_rows();
+        if($edited_data['response'] == true){
+            $data_arr = array(
+                'msg_id'=>$edited_data['msg_id'],
+                'username'=>$edited_data['poster_username'],
+                'topic_id'=>$edited_data['topic_id'],
+                'board_id'=>$edited_data['board_id'],
+                'subject_url'=>$edited_data['subject_url'],
+                'subject'=>$edited_data['subject'],
+                'post_content'=>$edited_data['tg_post'],
+                'created_at'=>date('Y-m-d H:i:s'),
+            );
+        }
+        else{
+            $data_arr = array(
+                'msg_id'=>$saved_data['msg_id'],
+                'username'=>$saved_data['username'],
+                'topic_id'=>$saved_data['topic_id'],
+                'board_id'=>$saved_data['board_id'],
+                'subject_url'=>$saved_data['subject_url'],
+                'subject'=>$saved_data['subject'],
+                'post_content'=>$saved_data['post_content'],
+                'created_at'=>date('Y-m-d H:i:s'),
+            );
+        }
+
+        if($check_data <= 0){
+            $this->db->INSERT('altt_scraped_archive_data_tbl', $data_arr);
+        }
     }
     public function deleteScrapedPost($msg_id){
-        $date_range = array('created_at >'=>date('Y-m-d H:i:s'), 'created_at <'=> date('Y-m-d 11:59:59'));
         $this->db->WHERE('msg_id', $msg_id)
-            ->DELETE('altt_scraped_data_tbl');
+        ->DELETE('altt_scraped_data_tbl');
     }
     public function getAllUsersData(){
         return $this->db->SELECT('chat_id, altt_username')->WHERE('status','active')->GET('telegram_bot_tbl')->result_array();

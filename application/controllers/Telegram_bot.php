@@ -13,6 +13,7 @@ class Telegram_bot extends CI_Controller {
         $this->load->library('telegram_api');
         $this->load->model('Telegram_bot_model');
         $this->load->model('Scrapper_model');
+        $this->load->library('Api_auth');
     }
     public function currentSubscribersToImg() {
         $count = $this->Telegram_bot_model->getCurrentNumberOfUsers();

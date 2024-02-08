@@ -13,6 +13,15 @@ class Scrapper_model extends CI_Model {
             'created_at'=>date('Y-m-d H:i:s')
         );
         $this->db->INSERT('altt_msg_id_tbl', $data_arr);
+        
+        // $check = $this->db->WHERE('msg_id', $new_msg_id)->GET('altt_msg_id_tbl')->num_rows();
+        // if($check <= 0){
+            
+        // }
+        // else{
+            
+        // }
+        
     }
     public function updateMsgIdAttempt($msg_id, $attempt){
         $data_arr = array(
@@ -33,6 +42,7 @@ class Scrapper_model extends CI_Model {
         $forumUrl = 'https://www.altcoinstalks.com/index.php?action=login';
         $ch = curl_init($forumUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         $html = curl_exec($ch);
         if (curl_errno($ch)) {
             echo 'Curl error: ' . curl_error($ch);
@@ -54,14 +64,16 @@ class Scrapper_model extends CI_Model {
         return $response;
     }
     public function loginForum($login_page_data){
+        $auth = $this->api_auth->authKeys();
         $loginUrl = 'https://www.altcoinstalks.com/index.php?action=login2';
-        $username = 'pxzbot';
-        $password = '^QPQ3nPzMp"CBxk';
+        $username = $auth['username'];
+        $password = $auth['password'];
         $ch = curl_init($loginUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         curl_setopt($ch, CURLOPT_POSTFIELDS, [
             'user' => $username,
             'passwrd' => $password,
@@ -104,6 +116,7 @@ class Scrapper_model extends CI_Model {
         $ch = curl_init($topic_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         $html = curl_exec($ch);
         if (curl_errno($ch)) {
             echo 'Curl error during request: ' . curl_error($ch);
@@ -153,10 +166,11 @@ class Scrapper_model extends CI_Model {
         $ch = curl_init($forum_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         $html = curl_exec($ch);
         if (curl_errno($ch)) {
             $message = 'Curl error during request: ' . curl_error($ch);
-            $this->Scrapper_model->insertSystemActivityLog($message);
+            $this->insertSystemActivityLog($message);
             exit;
         }
         curl_close($ch);
