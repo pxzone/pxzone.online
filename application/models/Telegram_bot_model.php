@@ -177,7 +177,8 @@ class Telegram_bot_model extends CI_Model {
            ->GET('telegram_bot_tbl ')->result_array();
     }
     public function getUserDatabyAlttID($altt_uid){
-        return $this->db->WHERE('altt_uid', $altt_uid)
+        return $this->db->SELECT('altt_username, chat_id, karma, altt_uid')
+            ->WHERE('altt_uid', $altt_uid)
             ->WHERE('status', 'active')
            ->GET('telegram_bot_tbl ')->row_array();
     }

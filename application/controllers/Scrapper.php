@@ -313,7 +313,12 @@ class Scrapper extends CI_Controller {
                 array_push($result, $row_data);
 
                 # CHECK KARMA COUNT
-                // $this->scrapeKarmaCount($profile_url, $login_page_data, $user, '');
+                $altt_uid = explode("u=", $profile_url);
+                $user = $this->Telegram_bot_model->getUserDatabyAlttID($altt_uid[1]); // validate
+                if(!empty($user)){
+                    $this->scrapeKarmaCount($profile_url, $login_page_data, $user);
+                }
+                
             }
             return $result;
             // $this->output->set_content_type('application/json')->set_output(json_encode($result));
@@ -331,9 +336,8 @@ class Scrapper extends CI_Controller {
             foreach($user_data as $ud){
                 if(!empty($ud['altt_uid'])){
                     $user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['altt_uid']); // validate
-                    $altt_uid = $user['altt_uid'];
-                    $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=$altt_uid";
-                    $this->scrapeKarmaCount($forum_url, $login_page_data, $user, count($user_data));
+                    $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=".$ud['altt_uid'];
+                    $this->scrapeKarmaCount($forum_url, $login_page_data, $user);
                 }
                 // sleep(1);
             }
@@ -345,7 +349,7 @@ class Scrapper extends CI_Controller {
             $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
         }
     }
-    public function scrapeKarmaCount($forum_url, $login_page_data, $user, $count){
+    public function scrapeKarmaCount($forum_url, $login_page_data, $user){
         $ch = curl_init($forum_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
@@ -391,7 +395,6 @@ class Scrapper extends CI_Controller {
             }
             $data_res = array(
                 'status'=>true,
-                'scraped_data'=>count($count),
             );
         }
     }
