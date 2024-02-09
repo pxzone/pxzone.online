@@ -6,12 +6,11 @@
 !*/cache/index.html
 !*/cache/.htaccess
 
-/application/libraries/Telegram_api.php
-/application/config/routes.php
-/application/controllers/Telegram_bot_test.php
-/application/model/Telegram_bot_test_model.php
-
 application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 /vendor/*
+application/controllers/Scrapper_test.php
+application/libraries/Telegram_api.php
+application/libraries/Api_auth.php
+application/models/Telegram_bot_test_model.php
