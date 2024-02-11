@@ -45,23 +45,32 @@ class Scrapper_model extends CI_Model {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         $html = curl_exec($ch);
         if (curl_errno($ch)) {
-            echo 'Curl error: ' . curl_error($ch);
+            $message = 'Curl error: ' . curl_error($ch);
+            $this->insertSystemActivityLog($message);
             exit;
         }
         curl_close($ch);
         $dom = new DOMDocument();
         @$dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
-        $hiddenInputs = $xpath->query('//input[@type="hidden"]');
-        $loginFormAction = $xpath->query('//form[@id="frmLogin"]')->item(0)->getAttribute('action');
-        $secondHiddenInput = $hiddenInputs->item(1);
-        $response = array(
-            'name'=>$secondHiddenInput->getAttribute('name'),
-            'value'=>$secondHiddenInput->getAttribute('value'),
-            'login_url'=>$loginFormAction,
-            'session_id'=>substr($loginFormAction,50, -14),
-        );
-        return $response;
+        if( !@$dom->loadHTML($html)){
+            $message = libxml_get_last_error();
+            $this->insertSystemActivityLog($message);
+            libxml_clear_errors();
+        }
+        else{
+            $xpath = new DOMXPath($dom);
+            $hiddenInputs = $xpath->query('//input[@type="hidden"]');
+            $loginFormAction = $xpath->query('//form[@id="frmLogin"]')->item(0)->getAttribute('action');
+            $secondHiddenInput = $hiddenInputs->item(1);
+            $response = array(
+                'name'=>$secondHiddenInput->getAttribute('name'),
+                'value'=>$secondHiddenInput->getAttribute('value'),
+                'login_url'=>$loginFormAction,
+                'session_id'=>substr($loginFormAction,50, -14),
+            );
+            return $response;
+
+        }
     }
     public function loginForum($login_page_data){
         $auth = $this->api_auth->authKeys();
