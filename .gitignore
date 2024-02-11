@@ -9,7 +9,7 @@
 application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
-/vendor/*
+/vendor/*   
 application/controllers/Scrapper_test.php
 application/libraries/Telegram_api.php
 application/libraries/Api_auth.php
