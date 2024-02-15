@@ -224,10 +224,11 @@ class Telegram_bot_model extends CI_Model {
         $date_posted = $topic_data['date_posted'];
         $poster_username = $topic_data['username'];
 
-        $user_data = $this->db->SELECT('tbt.chat_id, tbt.board_id, tbt.board_name, tb.altt_username')
+        $user_data = $this->db->SELECT('tbt.chat_id, tbt.board_id, abt.board_name, tb.altt_username')
             ->WHERE('board_id', $board_id)
             ->FROM('tracked_board_tbl as tbt')
             ->JOIN('telegram_bot_tbl as tb','tb.chat_id=tbt.chat_id')
+            ->JOIN('altt_boards_tbl as abt', 'abt.board_id=tbt.board_id', 'left')
             ->GET()->result_array();
 
         date_default_timezone_set('Europe/Rome');
@@ -637,7 +638,7 @@ class Telegram_bot_model extends CI_Model {
             'username'=>$edited_data['poster_username'],
             'topic_id'=>$edited_data['topic_id'],
             'board_id'=>$edited_data['board_id'],
-            'board_name'=>$edited_data['board_name'],
+            // 'board_name'=>$edited_data['board_name'],
             'subject_url'=>$edited_data['subject_url'],
             'subject'=>$edited_data['subject'],
             'post_content'=>$edited_data['tg_post'],
