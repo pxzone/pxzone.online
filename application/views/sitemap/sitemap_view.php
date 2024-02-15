@@ -18,6 +18,10 @@
         <priority>1.0</priority>
     </url>
     <url>
+        <loc><?= base_url('altt');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
         <loc><?= base_url('tools/bitcoin-to-image');?></loc>
         <priority>1.0</priority>
     </url>
