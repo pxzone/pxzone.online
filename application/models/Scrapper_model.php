@@ -136,27 +136,9 @@ class Scrapper_model extends CI_Model {
         @$dom->loadHTML($html);
         $xpath = new DOMXPath($dom);
 
-        # GET TOPIC SUBJECT
-        $elements = $xpath->query('//h3[@class="catbg"]')->item(0);
-        // $target_div = $xpath->query('//*[@id="msg_'.$msg_id.'"]')->item(0);
-        $text_content = '';
-        if($elements){
-            $img_to_remove = $xpath->query('.//img', $elements);
-            foreach ($img_to_remove as $img) {
-                $img->nodeValue = '';
-            }
-            $span_to_remove = $xpath->query('.//span', $elements);
-            foreach ($span_to_remove as $span) {
-                $span->nodeValue = '';
-            }
-            $title = $elements->textContent;
-        }
-        $title = trim($title);
-        $scrape_title = substr($title , 6);
-        $str_count = strripos($scrape_title, "(Read");
-        $topic_title = substr($scrape_title, 0, $str_count);
-
-        return $topic_title;
+        $titleTag = $xpath->query('//title')->item(0);
+        $title = $titleTag->nodeValue;
+        return $title;
     }
     public function getUserKarmaCount($uid, $chat_id){
         $login_page_data = $this->scrapeLoginPage();
@@ -195,5 +177,24 @@ class Scrapper_model extends CI_Model {
         else{$karma = 0;}
         $data_arr = array('karma'=> $karma);
         $this->db->WHERE('chat_id', $chat_id)->UPDATE('telegram_bot_tbl',$data_arr);
+    }
+    public function scrapeBoardData($board_id) {
+        $forum_url = "https://www.altcoinstalks.com/index.php?board=".$board_id;
+        $ch = curl_init($forum_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $html = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $message = 'Curl error during request: ' . curl_error($ch);
+             $this->insertSystemActivityLog($message);
+            exit;
+        }
+        curl_close($ch);
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+            
+        $titleTag = $xpath->query('//title')->item(0);
+        $title = $titleTag->nodeValue;
+        return $title;
     }
 }

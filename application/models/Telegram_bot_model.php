@@ -225,7 +225,7 @@ class Telegram_bot_model extends CI_Model {
         $poster_username = $topic_data['username'];
 
         $user_data = $this->db->SELECT('tbt.chat_id, tbt.board_id, abt.board_name, tb.altt_username')
-            ->WHERE('board_id', $board_id)
+            ->WHERE('tbt.board_id', $board_id)
             ->FROM('tracked_board_tbl as tbt')
             ->JOIN('telegram_bot_tbl as tb','tb.chat_id=tbt.chat_id')
             ->JOIN('altt_boards_tbl as abt', 'abt.board_id=tbt.board_id', 'left')
@@ -257,7 +257,7 @@ class Telegram_bot_model extends CI_Model {
                     $text = (strlen($msg_data['tg_post']) >= 150) ? substr($msg_data['tg_post'], 0, 120).'...' : $msg_data['tg_post'];
                     $subject_url = $msg_data['subject_url'];
                     $subject = $msg_data['subject'];
-                    $message_text = "💬 There is a new topic by <b>$poster_username</b> in the tracked board <b>$board_name</b>: <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
+                    $message_text = "📦 There is a new topic by <b>$poster_username</b> in the tracked board <b>$board_name</b>: <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
     
                     $post_data = array( 
                         'chat_id' => $user['chat_id'],
@@ -665,5 +665,42 @@ class Telegram_bot_model extends CI_Model {
     }
     public function updateAuthorDate($topic_id, $data_arr){
         $this->db->WHERE('topic_id', $topic_id)->UPDATE('altt_topics_tbl', $data_arr);
+    }
+    public function getBoardNameById($board_id){
+        $query = $this->db->SELECT('board_name')->WHERE('board_id', $board_id)->GET('altt_boards_tbl')->row_array();
+        return $query['board_name'];
+    }
+    public function getTrackBoardsData($chat_id){
+        return $this->db->SELECT('chat_id, board_id, board_name')
+        ->WHERE('chat_id', $chat_id)
+        ->ORDER_BY('id','desc')
+        ->GET('tracked_board_tbl')->result_array();
+    }
+    public function insertNewBoard($chat_id, $board_id, $board_name){
+        
+        $check = $this->db->WHERE('chat_id', $chat_id)->WHERE('board_id', $board_id)->GET('tracked_board_tbl')->num_rows();
+        if($check > 0){
+            return $check;
+        }
+        else{
+            $data_arr = array(
+                'board_id'=>$board_id,
+                'chat_id'=>$chat_id,
+                'board_name'=>$board_name,
+                'created_at'=>date('Y-m-d H:i:s')
+            );
+            $this->db->INSERT('tracked_board_tbl', $data_arr);
+        }
+    }
+    public function getTrackBoardDataByID($chat_id, $board_id){
+        return $this->db->SELECT('chat_id, board_id, board_name')
+        ->WHERE('chat_id', $chat_id)
+        ->WHERE('board_id', $board_id)
+        ->GET('tracked_board_tbl')->row_array();
+    }
+    public function deleteTrackedBoard($chat_id, $board_id){
+        return $this->db->WHERE('chat_id', $chat_id)
+           ->WHERE('board_id', $board_id)
+           ->DELETE('tracked_board_tbl');
     }
 }

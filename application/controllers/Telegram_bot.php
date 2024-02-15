@@ -134,12 +134,13 @@ class Telegram_bot extends CI_Controller {
                             array('text' => '📙 Track Topics', 'callback_data' => 'track_topic'),
                         ),
                         array(
+                            array('text' => '📦 Track Boards', 'callback_data' => 'track_board'),
                             array('text' => '👤 Track Users', 'callback_data' => 'track_users'),
-                            array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
                         ),
                         array(
+                            array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
                             array('text' => '🚫 Stop Notifying Me', 'callback_data' => 'stop_notify_btn'),
-                            array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
+                            // array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
                         )
                     )
                 );
@@ -195,10 +196,11 @@ class Telegram_bot extends CI_Controller {
             else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?topic=') !== FALSE ) {
                 $topic_url = $update['message']['text'];
                 $topic_title = $this->Scrapper_model->scrapeTopicData($topic_url);
-                $response_text = "You are now tracking the topic: \n\n$topic_title";
+                $response_text = "You are now tracking the topic: \n\n<a href='$topic_url'>$topic_title</a>";
                 $post_data = array(
                     'chat_id' => $chat_id,
                     'text' => $response_text,
+                    'parse_mode'=> 'html',
                 );
                
     	        $topic = $this->Telegram_bot_model->insertNewTrackURL($chat_id, $topic_url, trim($topic_title));
@@ -210,6 +212,30 @@ class Telegram_bot extends CI_Controller {
                 }
                 $this->sendMessage($post_data);
                 $this->trackTopics($chat_id, $message_id, 'send');
+            }
+            else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?board=') !== FALSE ) {
+                $board_url = $update['message']['text'];
+                $board_data = explode("board=", $board_url);
+                $board_id = $board_data[1];
+                $board_url = "https://www.altcoinstalks.com/index.php?board=$board_id";
+                $board_name = $this->Scrapper_model->scrapeBoardData($board_id);
+                $response_text = "You are now tracking the board: \n\n<a href='$board_url'>$board_name</a>";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'parse_mode'=> 'html',
+
+                );
+               
+    	        $topic = $this->Telegram_bot_model->insertNewBoard($chat_id, $board_id, $board_name);
+                if($topic > 0){
+                    $post_data = array(
+                        'chat_id' => $chat_id,
+                        'text' => "You already tracking this board!",
+                    );
+                }
+                $this->sendMessage($post_data);
+                $this->trackBoards($chat_id, $message_id, 'send');
             }
             else if ($update['message']['text'] == 'Thank you' || $update['message']['text'] == 'thanks' || stripos($update['message']['text'], 'thank') !== FALSE ) {
                 $post_data = array(
@@ -284,6 +310,9 @@ class Telegram_bot extends CI_Controller {
             else if ($callback_data === 'track_topic' ) {
                 $this->trackTopics($chat_id, $message_id, 'edit');
              }
+             else if ($callback_data === 'track_board' ) {
+                $this->trackBoards($chat_id, $message_id, 'edit');
+            }
             else if ($callback_data === 'stop_notify_btn') {
                 $this->Telegram_bot_model->deleteTelegramData($chat_id);
                 $response_text = "Thanks! You will not receive any more notification! \n\nBut if you feel like coming back, feel free to start again using /start command!";
@@ -338,6 +367,15 @@ class Telegram_bot extends CI_Controller {
                 );
                 $this->sendMessage($post_data);
             }
+            else if ($callback_data === 'add_new_board') {
+                $response_text = "What is the URL of the board you want to track?";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'parse_mode'=> 'html',
+                );
+                $this->sendMessage($post_data);
+            }
             else if ($callback_data === 'track_users') {
                 $this->trackUsers($chat_id, $message_id, 'edit');
             } 
@@ -353,12 +391,13 @@ class Telegram_bot extends CI_Controller {
                             array('text' => '📙 Track Topics', 'callback_data' => 'track_topic'),
                         ),
                         array(
+                            array('text' => '📦 Track Boards', 'callback_data' => 'track_board'),
                             array('text' => '👤 Track Users', 'callback_data' => 'track_users'),
-                            array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
                         ),
                         array(
+                            array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
                             array('text' => '🚫 Stop Notifying Me', 'callback_data' => 'stop_notify_btn'),
-                            array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
+                            // array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
                         )
                     )
                 );
@@ -471,6 +510,34 @@ class Telegram_bot extends CI_Controller {
                 );
                 $this->editMessageText($post_data);
             }
+            else if (stripos($callback_data, 'board_command:') !== FALSE ) {
+                $str_parts = explode(':', $callback_data);
+                $chat_id = $str_parts[1];
+                $board_id = $str_parts[2];
+
+                $board_data = $this->Telegram_bot_model->getTrackBoardDataByID($chat_id, $board_id);
+                $board_name = $board_data['board_name'];
+                $board_url = "https://www.altcoinstalks.com/index.php?board=$board_id";
+
+                $keyboard = array(
+                    'inline_keyboard' => array(
+                        array(
+                            array('text' => '🗑 Remove Board', 'callback_data' => "yes_delete_board:$chat_id:$board_id"),
+                            array('text' => '↩️ Go Back', 'callback_data' => 'go_back_to_track_board')
+                        )
+                    )  
+                );
+                $encoded_keyboard = json_encode($keyboard);
+                $response_text = "<b>Selected Board</b>\n\n<a href='$board_url'>$board_name</a>";
+                $post_data = array(
+                    'message_id' => $message_id,
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'parse_mode'=> 'html',
+                    'reply_markup' => $encoded_keyboard,
+                );
+                $this->editMessageText($post_data);
+            }
             else if (stripos($callback_data, 'yes_delete_phrase:') !== FALSE ) {
                 $str_parts = explode(':', $callback_data);
                 $chat_id = $str_parts[1];
@@ -499,6 +566,13 @@ class Telegram_bot extends CI_Controller {
                 $this->Telegram_bot_model->deleteTrackedTopic($chat_id, $topic_id);
                 $this->trackTopics($chat_id, $message_id, 'edit');
             }
+            else if (stripos($callback_data, 'yes_delete_board:') !== FALSE ) {
+                $str_parts = explode(':', $callback_data);
+                $chat_id = $str_parts[1];
+                $board_id = $str_parts[2];
+                $this->Telegram_bot_model->deleteTrackedBoard($chat_id, $board_id);
+                $this->trackBoards($chat_id, $message_id, 'edit');
+            }
             else if ($callback_data === 'go_back_to_phrases') {
                 $this->trackPhrase($chat_id, $message_id, 'edit');
             }
@@ -510,6 +584,9 @@ class Telegram_bot extends CI_Controller {
             }
             else if ($callback_data === 'go_back_to_track_topic') {
                 $this->trackTopics($chat_id, $message_id, 'edit');
+            }
+            else if ($callback_data === 'go_back_to_track_board') {
+                $this->trackBoards($chat_id, $message_id, 'edit');
             }
             else if ($callback_data === 'no_userid_btn') {
                 $response_text = "So what is your AltcoinsTalks' Profile URL? This is to get your user ID.";
@@ -750,6 +827,50 @@ class Telegram_bot extends CI_Controller {
         $encoded_keyboard = json_encode($keyboard);
 
         $response_text = "<b>Tracked Topics</b> \n\nAdd or remove topic threads so you get notified of new replies.";
+        if($type == 'edit'){
+            $post_data = array(
+                'message_id' => $message_id,
+                'chat_id' => $chat_id,
+                'text' => $response_text,
+                'reply_markup' => $encoded_keyboard,
+                'parse_mode'=> 'html',
+            );
+            $this->editMessageText($post_data);
+        }
+        else{
+            $post_data = array(
+                'chat_id' => $chat_id,
+                'text' => $response_text,
+                'reply_markup' => $encoded_keyboard,
+                'parse_mode'=> 'html',
+            );
+            $this->sendMessage($post_data);
+        }
+    }
+    public function trackBoards($chat_id, $message_id, $type){
+        $board_data = $this->Telegram_bot_model->getTrackBoardsData($chat_id);
+        $boards = array();
+        foreach ($board_data as $bd) {      
+            $row_array = array(
+                'text' => $bd['board_name'], 'callback_data' => 'board_command:'.$bd['chat_id'].':'.$bd['board_id']
+            );
+            array_push($boards, $row_array);
+        }
+
+        $keyboard = array(
+            'inline_keyboard' => array()
+        );
+        foreach ($boards as $board) {
+            $keyboard['inline_keyboard'][] = array($board);
+        }
+        $additionalCommands = array(
+            array('text' => '➕ Add new', 'callback_data' => 'add_new_board'),
+            array('text' => '↩️ Go Back', 'callback_data' => 'go_back')
+        );
+        $keyboard['inline_keyboard'][] = $additionalCommands;
+        $encoded_keyboard = json_encode($keyboard);
+
+        $response_text = "<b>Tracked Boards</b> \n\nAdd or remove Boards and get notified for every new topics.";
         if($type == 'edit'){
             $post_data = array(
                 'message_id' => $message_id,
