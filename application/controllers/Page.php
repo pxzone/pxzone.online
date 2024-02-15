@@ -427,5 +427,14 @@ class Page extends CI_Controller {
     	$this->load->view('pages/tools/crypto_balance_checker');
     	$this->load->view('home/footer');
     }
+    public function alttArchives(){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['canonical_url'] = base_url('altt');
+        $data['state'] = "altt_archives";
+    	$this->load->view('altt/header', $data);
+    	$this->load->view('altt/nav');
+    	$this->load->view('altt/archive');
+    	$this->load->view('altt/footer');
+    }
     
 }

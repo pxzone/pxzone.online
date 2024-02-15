@@ -54,7 +54,7 @@
           "@type":"Organization",
           "url":"https:\/\/pxzone.online\/",
           "sameAs":["https:\/\/www.twitter.com\/bypxzone\/"],
-          "@id":"https://pxdev.click/#Organization",
+          "@id":"https://pxzone.online/#Organization",
           "name":"PX Dev",
           "logo":"https://pxzone.online/assets/images/logo/logo.png"
         }
