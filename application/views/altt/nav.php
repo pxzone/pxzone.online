@@ -6,14 +6,14 @@
                 <!-- logo -->
                 <div class="web-view">
                     <div class="navbar-brand me-lg-5 cursor-pointer" >
-                        <a onclick="_accessPage('')" class="cursor-pointer"><img src="<?=base_url('assets/images/logo/hh-logo.webp')?>" alt="<?=$siteSetting['website_name']?> Logo" class="hh-logo"></a>
+                        <a onclick="_accessPage('altt')" class="cursor-pointer"><img src="<?=base_url('assets/images/logo/hh-logo.webp')?>" alt="<?=$siteSetting['website_name']?> Logo" class="hh-logo"></a>
                     </div>
                 </div>
 
                 <div class="mobile-view d-flex justify-content-between w-100">
                     <div class="p-2 mt-1 ">
                         <div class="navbar-brand me-lg-5 cursor-pointer">
-                            <a class="cursor-pointer" onclick="_accessPage('')"><img class="mm-logo" src="<?=base_url('assets/images/logo/hh-logo.webp')?>" alt="<?=$siteSetting['website_name']?>"></a>
+                            <a class="cursor-pointer" onclick="_accessPage('altt')"><img class="mm-logo" src="<?=base_url('assets/images/logo/hh-logo.webp')?>" alt="<?=$siteSetting['website_name']?>"></a>
                         </div>
                     </div>
                     <div class="div-nav-logo p-2">

@@ -74,7 +74,7 @@
                         </div> 
                     </div>
 
-                    <div class="back-to-top"><i class="uil uil-angle-up"></i></div>
+                    <div class="back-to-top cursor-pointer"><i class="uil uil-angle-up"></i></div>
                 </div>
 
 

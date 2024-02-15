@@ -880,11 +880,14 @@ h1, h2, h3, h4, h5 {
     position: relative;
 }
 .back-to-top{
+    font-size: 2.2em;
+    padding: 7px;
     position: fixed;
-    bottom: 20px;
-    right: 10px;
+    bottom: 30px;
+    right: 30px;
     border-radius: 100%;
     height: 50px;
     width: 50px;
-    
+    z-index: 9999;
+    background-color: rgb(49, 58, 70);
 }
