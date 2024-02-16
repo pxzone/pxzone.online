@@ -178,14 +178,26 @@ class Scrapper_model extends CI_Model {
         $data_arr = array('karma'=> $karma);
         $this->db->WHERE('chat_id', $chat_id)->UPDATE('telegram_bot_tbl',$data_arr);
     }
+    public function insertNewBoardData($board_id, $board_name) {
+        $check = $this->db->WHERE('board_id', $board_id)->WHERE('board_name', $board_name)->GET('altt_boards_tbl')->num_rows();
+        if($check  <= 0){
+            $data_arr = array(
+                'board_id'=>$board_id,
+                'board_name'=>$board_name,
+                'created_at'=>date('Y-m-d H:i:s'),
+            );
+            $this->db->INSERT('altt_boards_tbl', $data_arr);
+        }
+    }
     public function scrapeBoardData($board_id) {
         $forum_url = "https://www.altcoinstalks.com/index.php?board=".$board_id;
         $ch = curl_init($forum_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         $html = curl_exec($ch);
         if (curl_errno($ch)) {
             $message = 'Curl error during request: ' . curl_error($ch);
-             $this->insertSystemActivityLog($message);
+            $this->insertSystemActivityLog($message);
             exit;
         }
         curl_close($ch);
@@ -193,8 +205,8 @@ class Scrapper_model extends CI_Model {
         @$dom->loadHTML($html);
         $xpath = new DOMXPath($dom);
             
-        $titleTag = $xpath->query('//title')->item(0);
-        $title = $titleTag->nodeValue;
+        $title_tag = $xpath->query('//title')->item(0);
+        $title = $title_tag->nodeValue;
         return $title;
     }
 }

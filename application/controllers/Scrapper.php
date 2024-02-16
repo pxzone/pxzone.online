@@ -22,6 +22,7 @@ class Scrapper extends CI_Controller {
                 $this->Telegram_bot_model->notifyUser($scrape2);
                 date_default_timezone_set('Asia/Manila');
                 $topic_data = $this->scrapeTopicData($scrape2['topic_id']);
+                $this->Scrapper_model->insertNewBoardData($scrape2['board_id'], $scrape2['board_name']);
                 $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape2, $topic_data); // SAVED SCRAPED DATA
                 
                 if($topic_inserted == true){
@@ -41,6 +42,7 @@ class Scrapper extends CI_Controller {
                 $this->Telegram_bot_model->notifyUser($scrape);
                 date_default_timezone_set('Asia/Manila');
                 $topic_data = $this->scrapeTopicData($scrape['topic_id']);
+                $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
                 $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
                 if($topic_inserted == true){
                     $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
@@ -136,7 +138,7 @@ class Scrapper extends CI_Controller {
                     'subject_url'=>$subject_url,
                     'subject'=>$subject,
                     // 'board_url'=>$board_url,
-                    // 'board_name'=>$board_name,
+                    'board_name'=>$board_name,
                     'poster_username'=>$username,
                     'html_post'=>$html_post,
                     'profile_url'=>$profile_url,

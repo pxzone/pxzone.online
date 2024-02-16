@@ -616,16 +616,6 @@ class Telegram_bot_model extends CI_Model {
         }
 
     }
-    public function changeTimezone($save_time){
-
-        $original_timezone = new DateTimeZone('Asia/Manila');
-        $date_time = new DateTime($save_time, $original_timezone);
-        
-        $new_timezone = new DateTimeZone('Europe/Rome'); 
-        $date_time->setTimezone($new_timezone);
-        $date_posted = $date_time->format('Y-m-d H:i:s');
-        return $date_posted;
-    }
     public function checkScrapedPost(){
         return $this->db->SELECT('msg_id, post_content, created_at')->LIMIT(15)->GET('altt_scraped_data_tbl')->result_array();
     }
@@ -676,8 +666,7 @@ class Telegram_bot_model extends CI_Model {
         ->ORDER_BY('id','desc')
         ->GET('tracked_board_tbl')->result_array();
     }
-    public function insertNewBoard($chat_id, $board_id, $board_name){
-        
+    public function insertNewTrackedBoard($chat_id, $board_id, $board_name){
         $check = $this->db->WHERE('chat_id', $chat_id)->WHERE('board_id', $board_id)->GET('tracked_board_tbl')->num_rows();
         if($check > 0){
             return $check;

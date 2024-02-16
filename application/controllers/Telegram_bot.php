@@ -1,8 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
-// require FCPATH.'vendor/autoload.php';
-
 date_default_timezone_set('Asia/Manila');
 
 class Telegram_bot extends CI_Controller {
@@ -217,17 +214,15 @@ class Telegram_bot extends CI_Controller {
                 $board_url = $update['message']['text'];
                 $board_data = explode("board=", $board_url);
                 $board_id = $board_data[1];
-                $board_url = "https://www.altcoinstalks.com/index.php?board=$board_id";
-                $board_name = $this->Scrapper_model->scrapeBoardData($board_id);
+                $board_name = $this->Telegram_bot_model->getBoardNameById($board_id);
                 $response_text = "You are now tracking the board: \n\n<a href='$board_url'>$board_name</a>";
                 $post_data = array(
                     'chat_id' => $chat_id,
                     'text' => $response_text,
                     'parse_mode'=> 'html',
-
                 );
                
-    	        $topic = $this->Telegram_bot_model->insertNewBoard($chat_id, $board_id, $board_name);
+    	        $topic = $this->Telegram_bot_model->insertNewTrackedBoard($chat_id, $board_id, $board_name);
                 if($topic > 0){
                     $post_data = array(
                         'chat_id' => $chat_id,
