@@ -622,7 +622,6 @@ class Telegram_bot_model extends CI_Model {
   
     public function insertArchiveScrapedPost($edited_data, $saved_data, $status){
         $check_data = $this->db->WHERE('msg_id', $saved_data['msg_id'])->GET('altt_scraped_archive_data_tbl')->num_rows();
-        $date_posted = $this->changeTimezone($edited_data['date_posted']);
         $data_arr = array(
             'msg_id'=>$edited_data['msg_id'],
             'username'=>$edited_data['poster_username'],
