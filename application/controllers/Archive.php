@@ -72,7 +72,7 @@ class Archive extends CI_Controller {
         $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$data)));
     }
     public function getPosts($msg_id){
-        // $this->output->cache(5);
+        $this->output->cache(60);
         $row_data = $this->Archive_model->getPostContent($msg_id);
         
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
@@ -88,7 +88,7 @@ class Archive extends CI_Controller {
     	$this->load->view('altt/footer');
     }
     public function getTopics($topic_id){
-        // $this->output->cache(5);
+        $this->output->cache(60);
         $row_data = $this->Archive_model->getTopicContent($topic_id);
 
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
