@@ -14,49 +14,74 @@ class Scrapper extends CI_Controller {
 
     public function alttScrapeForumRecentPosts(){
         // recent post page 2, start=10
-        $forum_url_page_2 = "https://www.altcoinstalks.com/index.php?action=recent;start=10"; 
-        $scrape_data_page_2 = $this->scrapeForumRecentPosts($forum_url_page_2);
-        foreach($scrape_data_page_2 as $scrape2){
-            $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape2['msg_id']);
-            if($check_msg_id <= 0){
-                $this->Telegram_bot_model->notifyUser($scrape2);
-                date_default_timezone_set('Asia/Manila');
-                $topic_data = $this->scrapeTopicData($scrape2['topic_id']);
-                $this->Scrapper_model->insertNewBoardData($scrape2['board_id'], $scrape2['board_name']);
-                $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape2, $topic_data); // SAVED SCRAPED DATA
-                
-                if($topic_inserted == true){
-                    $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
-                }
-                $msg_id = $scrape2['msg_id'];
-                $message = "Status: okay. [$msg_id]";
-                $this->Scrapper_model->insertSystemActivityLog($message);
-            }
-        }
-
-        $forum_url = "https://www.altcoinstalks.com/index.php?action=recent"; 
-        $scrape_data = $this->scrapeForumRecentPosts($forum_url);
-        foreach($scrape_data as $scrape){
-            $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape['msg_id']);
-            if($check_msg_id <= 0){
-                $this->Telegram_bot_model->notifyUser($scrape);
-                date_default_timezone_set('Asia/Manila');
-                $topic_data = $this->scrapeTopicData($scrape['topic_id']);
-                $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
-                $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
-                if($topic_inserted == true){
-                    $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
-                }
-
-                $msg_id = $scrape['msg_id'];
-                $message = "Status: okay. [$msg_id]";
-                $this->Scrapper_model->insertSystemActivityLog($message);
-            }
-        }
-        // $this->insertTopicAuthor();
-        $data_res = array(
-            'status'=>true,
+        $ip_address = $this->input->ip_address();
+        $ip_whitelisted = array(
+            '23.88.105.37',
+            '143.44.165.160',
+            '66.29.137.113',
+            '116.203.134.67'
         );
+        if (in_array($ip_address, $ip_whitelisted)) {
+            $allowed = true;
+        } 
+        else {
+            $allowed = false;
+        }
+
+        if($allowed == true){
+            $forum_url_page_2 = "https://www.altcoinstalks.com/index.php?action=recent;start=10"; 
+                $scrape_data_page_2 = $this->scrapeForumRecentPosts($forum_url_page_2);
+                foreach($scrape_data_page_2 as $scrape2){
+                    $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape2['msg_id']);
+                    if($check_msg_id <= 0){ // msg id if not yet exist
+                        $this->Telegram_bot_model->notifyUser($scrape2);
+                        date_default_timezone_set('Asia/Manila');
+                        $topic_data = $this->scrapeTopicData($scrape2['topic_id']);
+                        $this->Scrapper_model->insertNewBoardData($scrape2['board_id'], $scrape2['board_name']);
+                        $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape2, $topic_data); // SAVED SCRAPED DATA
+                        
+                        if($topic_inserted == true){
+                            $this->Telegram_bot_model->notifyTrackedBoard($scrape2, $topic_data); // NOTIFY TRACKED BOARDS
+                        }
+                        $msg_id = $scrape2['msg_id'];
+                        $message = "Status: okay. [$msg_id]";
+                        $this->Scrapper_model->insertSystemActivityLog($message);
+                    }
+                }
+        
+                $forum_url = "https://www.altcoinstalks.com/index.php?action=recent"; 
+                $scrape_data = $this->scrapeForumRecentPosts($forum_url);
+                foreach($scrape_data as $scrape){
+                    $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape['msg_id']);
+                    if($check_msg_id <= 0){
+                        $this->Telegram_bot_model->notifyUser($scrape);
+                        date_default_timezone_set('Asia/Manila');
+                        $topic_data = $this->scrapeTopicData($scrape['topic_id']);
+                        $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
+                        $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
+                        if($topic_inserted == true){
+                            $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
+                        }
+        
+                        $msg_id = $scrape['msg_id'];
+                        $message = "Status: okay. [$msg_id]";
+                        $this->Scrapper_model->insertSystemActivityLog($message);
+                    }
+                }
+                // $this->insertTopicAuthor();
+                $data_res = array(
+                    'status'=>true,
+                );
+        }
+        else{
+            $message = "Access not allowed";
+            $data_res = array(
+                'status'=>false,
+                'response' => $message
+            );
+            $this->Scrapper_model->insertSystemActivityLog($message);
+        }
+        
         $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
     }
     
@@ -137,7 +162,6 @@ class Scrapper extends CI_Controller {
                     'topic_id'=>$topic_id,
                     'subject_url'=>$subject_url,
                     'subject'=>$subject,
-                    // 'board_url'=>$board_url,
                     'board_name'=>$board_name,
                     'poster_username'=>$username,
                     'html_post'=>$html_post,
@@ -147,135 +171,73 @@ class Scrapper extends CI_Controller {
                 );
                 array_push($result, $row_data);
 
-                // # CHECK KARMA COUNT
-                // $altt_uid = explode("u=", $profile_url);
-                // $user = $this->Telegram_bot_model->getUserDatabyAlttID($altt_uid[1]); // validate
-                // if(!empty($user)){
-                //     $this->scrapeKarmaCount($profile_url, $login_page_data, $user);
-                // }
+                # SAVE USER DATA
+                $profile_data = explode("u=", $profile_url);
+                $altt_uid = $profile_data[1];
+                $this->scrapeUserProfile($altt_uid);
                 
             }
             return $result;
             // $this->output->set_content_type('application/json')->set_output(json_encode($result));
         }
 	}
+    public function scrapeAlttForumForEditedPosts() {
+        $ip_address = $this->input->ip_address();
+        $ip_whitelisted = array(
+            '23.88.105.37',
+            '143.44.165.160',
+            '66.29.137.113',
+            '116.203.134.67'
+        );
+        if (in_array($ip_address, $ip_whitelisted)) {
+            $allowed = true;
+        } 
+        else {
+            $allowed = false;
+        }
 
-    # ACCESS USING CRON JOB EVERY 5 MINUTE
-    # GET KARMA COUNTS
-    public function scrapeAlttForumUserData()
-    {
-        $login_page_data = $this->Scrapper_model->scrapeLoginPage();
-        $login_forum = $this->Scrapper_model->loginForum($login_page_data);
-        if($login_forum){
-            $user_data = $this->Telegram_bot_model->getUserData();
-            foreach($user_data as $ud){
-                if(!empty($ud['altt_uid'])){
-                    $user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['altt_uid']); // validate
-                    $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=".$ud['altt_uid'];
-                    $this->scrapeKarmaCount($forum_url, $login_page_data, $user);
+        if($allowed == true){
+            $scraped_post = $this->Telegram_bot_model->checkScrapedPost();
+            $result = array();
+            if(!empty($scraped_post)){
+                foreach($scraped_post as $sp){
+                    $current_time = time();
+                    $scrape_time = strtotime($sp['created_at']);
+                    $time_difference = $current_time - $scrape_time;
+                    $data_res = "";
+                    if ($time_difference > 300) { // 5 mins past after date posted
+                        $login_page_data = $this->Scrapper_model->scrapeLoginPage();
+                        $login_forum = $this->Scrapper_model->loginForum($login_page_data);
+                        if($login_forum){
+                            $data_res = $this->scrapeEditedPosts($login_page_data, $sp['msg_id'], $sp['post_content']);
+                        }
+                        
+                        if($data_res['response'] == true){
+                            date_default_timezone_set('Asia/Manila');
+                            $this->Telegram_bot_model->updateArchiveScrapedPost($data_res, $sp, 'active');
+                            array_push($result, $data_res);
+                        }
+                        else if($data_res['response'] == false && $data_res['error_message'] == "Moved to trash" ){
+                            array_push($result, $data_res);
+                        }
+                        else{
+                            array_push($result, $data_res);
+                        }
+                    }
                 }
-                // sleep(1);
             }
+            $count = count($result);
+            $message = "System: Scraped edited posts. post count: $count [6 mins]";
+            $this->Scrapper_model->insertSystemActivityLog($message);
+        }
+        else{
+            $message = "Access not allowed";
             $data_res = array(
                 'status'=>false,
+                'response' => $message
             );
-            $message = "System: Scraped user profiles [5 mins]";
             $this->Scrapper_model->insertSystemActivityLog($message);
-            $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
         }
-    }
-    public function scrapeKarmaCount($forum_url, $login_page_data, $user){
-        $ch = curl_init($forum_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
-        $html = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $message = 'Curl error during request: ' . curl_error($ch);
-            $this->Scrapper_model->insertSystemActivityLog($message);
-            exit;
-        }
-        curl_close($ch);
-        $dom = new DOMDocument();
-        @$dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
-        
-        # GET USERNAME
-        $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
-        if ($username_element) {
-             $username = trim($username_element->nodeValue);
-        }
-
-        # GET KARMA
-        $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
-        if ($karma_element) {
-            $karma = (int)trim($karma_element->nodeValue);
-        }
-        else{$karma = 0;}
-
-        
-        if(!empty($username) && $username == $user['altt_username']){
-            $data = array(
-                'status'=>true,
-                'chat_id'=>$user['chat_id'],
-                'username'=>$username,
-                'current_karma'=>$karma,
-                'prev_karma'=>$user['karma'],
-            );
-            if((int)$karma !== (int)$user['karma']){
-                $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
-                if($send_status){
-                    date_default_timezone_set('Asia/Manila');
-                    $message = "Status: okay. Scraped user [$username]";
-                    $this->Scrapper_model->insertSystemActivityLog($message);
-                    date_default_timezone_set('Europe/Rome');
-                    $this->Telegram_bot_model->saveKarmaPoint($data);
-                }
-            }
-            $data_res = array(
-                'status'=>true,
-            );
-        }
-    }
-
-    public function scrapeAlttForumForEditedPosts() {
-        $scraped_post = $this->Telegram_bot_model->checkScrapedPost();
-        $result = array(
-           
-        );
-        if(!empty($scraped_post)){
-            foreach($scraped_post as $sp){
-                $current_time = time();
-                $scrape_time = strtotime($sp['created_at']);
-                $time_difference = $current_time - $scrape_time;
-                $data_res = "";
-                if ($time_difference > 300) {
-                    $login_page_data = $this->Scrapper_model->scrapeLoginPage();
-                    $login_forum = $this->Scrapper_model->loginForum($login_page_data);
-                    if($login_forum){
-                        $data_res = $this->scrapeEditedPosts($login_page_data, $sp['msg_id'], $sp['post_content']);
-                    }
-                    
-                    if($data_res['response'] == true){
-                        date_default_timezone_set('Asia/Manila');
-                        $this->Telegram_bot_model->insertArchiveScrapedPost($data_res, $sp, 'active');
-                        $this->Telegram_bot_model->deleteScrapedPost($sp['msg_id']);
-                        array_push($result, $data_res);
-                    }
-                    else if($data_res['response'] == false && $data_res['error_message'] == "Moved to trash" ){
-                        date_default_timezone_set('Asia/Manila');
-                        // $this->Telegram_bot_model->insertArchiveScrapedPost($data_res, $sp, 'deleted');
-                        $this->Telegram_bot_model->deleteScrapedPost($sp['msg_id']);
-                        array_push($result, $data_res);
-                    }
-                    else{
-                        array_push($result, $data_res);
-                    }
-                }
-            }
-        }
-        $count = count($result);
-        $message = "System: Scraped edited posts. post count: $count [6 mins]";
-        $this->Scrapper_model->insertSystemActivityLog($message);
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
 	}
 
@@ -501,140 +463,6 @@ class Scrapper extends CI_Controller {
         return $topic_url;
     }
     
-    // public function scrapeBoardTopicData() {
-    //     $board_data = $this->db->SELECT('chat_id, board_id')->GET('tracked_board_tbl')->result_array();
-    //     $data_arr = array();
-    //     foreach($board_data as $board){
-    //             $forum_url = "https://www.altcoinstalks.com/index.php?board=".$board['board_id'];
-    //             $ch = curl_init($forum_url);
-    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //             $html = curl_exec($ch);
-    //             if (curl_errno($ch)) {
-    //                 $message = 'Curl error during request: ' . curl_error($ch);
-    //                 $this->Scrapper_model->insertSystemActivityLog($message);
-    //                 exit;
-    //             }
-    //             curl_close($ch);
-    //             $dom = new DOMDocument();
-    //             @$dom->loadHTML($html);
-    //             $xpath = new DOMXPath($dom);
-
-    //             $tbody = $xpath->query('//table[@class="table_grid"]/tbody')->item(0);
-    //             if ($tbody) {
-    //                 // Find all td elements with class "subject" inside the tbody
-    //                 $tdElements = $xpath->query('.//td[contains(@class, "subject")]', $tbody);
-                
-    //                 foreach ($tdElements as $tdElement) {
-    //                     // Find the span element inside the current td element with an ID containing "msg_"
-    //                     $span = $xpath->query('.//span[contains(@id, "msg_")]/a', $tdElement)->item(0);
-                
-    //                     if ($span) {
-    //                         $anchorText = $span->nodeValue;
-    //                         $anchorLink = $span->getAttribute('href');
-                
-    //                         $status = true;
-    //                         $topic_name = $anchorText;
-    //                         $topic_url = $anchorLink;
-    //                     }
-
-    //                     $pTag = $xpath->query('.//p', $tdElement)->item(0);
-    //                     $anchorInPTag = $xpath->query('.//a', $pTag)->item(0);
-    //                     $username = $anchorInPTag->nodeValue;
-    //                     $profile_url = $anchorInPTag->getAttribute('href');
-
-    //                     $topic_arr = explode("topic=", $topic_url);
-    //                     $topic_id = $topic_arr[1];
-
-    //                     $row_array = array(
-    //                         // 'status' => $status,
-    //                         'board_id'=>$board['board_id'],
-    //                         'topic_name'=>$topic_name,
-    //                         'topic_id'=>$topic_id,
-    //                         'username'=>$username,
-    //                         'created_at'=>date('Y-m-d H:i:s'),
-    //                     );
-    //                     array_push($data_arr, $row_array);
-    //                     // print_r($result);
-    //                 }
-    //             }
-    //         }
-    //         // $this->getBoardTopicDatePosted($data_arr);
-    //         $this->output->set_content_type('application/json')->set_output(json_encode($data_arr));
-    // }
-    //  public function getBoardTopicDatePosted($data_arr) {
-    //         // $topic_data = $this->db->SELECT('topic_id')->WHERE('date_posted', '0000-00-00 00:00:00')->GET('altt_topics_tbl')->result_array();
-    //         $result = array();
-    //         foreach($data_arr as $topic){
-    //             $forum_url = "https://www.altcoinstalks.com/index.php?topic=".$topic['topic_id'];
-    //             // $forum_url = "https://www.altcoinstalks.com/index.php?topic=".$topic_id;
-    //             $ch = curl_init($forum_url);
-    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //             // curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
-    //             $html = curl_exec($ch);
-    //             if (curl_errno($ch)) {
-    //                 $message = 'Curl error during request: ' . curl_error($ch);
-    //                 $this->Scrapper_model->insertSystemActivityLog($message);
-    //                 exit;
-    //             }
-    //             curl_close($ch);
-    //             $dom = new DOMDocument();
-    //             @$dom->loadHTML($html);
-    //             $xpath = new DOMXPath($dom);
-                
-    //             $status = true;
-
-    //             # GET DATE POSTED
-    //             $date_posted = date('Y-m-d H:i:s');
-    //             date_default_timezone_set('Europe/Rome');
-    //             $keyinfoDiv = $xpath->query('//div[@class="keyinfo"][1]')->item(0);
-    //             $smalltextDiv = $xpath->query('.//div[@class="smalltext"]', $keyinfoDiv)->item(0);
-    //             if ($smalltextDiv) {
-    //                 $datetime = trim(str_replace(array('at',' »'), '', $smalltextDiv->nodeValue));
-    //             }
-                
-    //             if(stripos($datetime, "Today") !== false ){
-    //                 $datetime = explode("on: ", $datetime);
-    //                 $date_today = str_replace("Today at", date('Y-m-d'), $datetime[1]);
-    //                 $date_posted = date('Y-m-d H:i:s', strtotime($date_today));
-    //             } 
-    //             else{
-    //                 $datetime = explode("on: ", $datetime);
-    //                 $date_posted = date('Y-m-d H:i:s', strtotime($datetime[1]));
-    //             }
-
-               
-    //             $data_arr = array(
-    //                 'board_id'=>$topic['board_id'],
-    //                 'topic_name'=>$topic['topic_name'],
-    //                 'topic_id'=>$topic['topic_id'],
-    //                 'username'=>$topic['username'],
-    //                 'date_posted'=>$date_posted,
-    //             );
-    //             array_push($result, $data_arr);
-
-
-    //             date_default_timezone_set('Europe/Rome');
-    //             $current_time = time();
-    //             $scrape_time = strtotime($date_posted);
-    //             $time_difference = $current_time - $scrape_time;
-    //             $data_res = "";
-    //             if ($time_difference <= 300) { // if the time difference is equal or below 5 mins
-    //                 #notify new topic in a board
-    //                 $row_arr = array(
-    //                     'status'=>true,
-    //                     'board_id'=>$topic['board_id'],
-    //                     'topic_name'=>$topic['topic_name'],
-    //                     'topic_id'=>$topic['topic_id'],
-    //                     'username'=>$topic['username'],
-    //                     'date_posted'=>$date_posted,
-    //                 );
-    //                 array_push($result, $row_arr);
-    //             }
-    //             // $this->db->WHERE('topic_id', $topic['topic_id'])->UPDATE('altt_topics_tbl', $data_arr);
-    //         }
-    //         $this->output->set_content_type('application/json')->set_output(json_encode($result));
-
-    // }
     public function scrapeTopicData($topic_id) {
         $check_topic = $this->db->WHERE('topic_id', $topic_id)->GET('altt_topics_tbl')->num_rows();
         if($check_topic <= 0){
@@ -655,6 +483,7 @@ class Scrapper extends CI_Controller {
             
             $status = true;
             # GET USERNAME
+            $username = "";
             $poster_div = $xpath->query('//div[@class="poster"][1]')->item(0);
             if ($poster_div) {
                 $h4 = $xpath->query('.//h4', $poster_div)->item(0);
@@ -697,5 +526,147 @@ class Scrapper extends CI_Controller {
         }
             
         // $this->output->set_content_type('application/json')->set_output(json_encode($data_arr));
+    }
+    public function scrapeUserProfile($uid){
+        $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=$uid";
+        $ch = curl_init($forum_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $html = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $message = 'Curl error during request: ' . curl_error($ch);
+            $this->Scrapper_model->insertSystemActivityLog($message);
+            exit;
+        }
+        curl_close($ch);
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+        
+        # GET USERNAME
+        $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
+        if ($username_element) {
+             $username = trim($username_element->nodeValue);
+        }
+
+        # GET POSITION
+        $position = "";
+        $position_element = $xpath->query('//span[@class="position"]')->item(0);
+        if ($position_element) {
+            $position = trim($position_element->nodeValue);
+        }
+
+        # GET KARMA
+        $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
+        if ($karma_element) {
+            $karma = (int)trim($karma_element->nodeValue);
+        }
+        else{$karma = 0;}
+
+        # GET POINTS
+        $points_element = $xpath->query('//dt[text()="points:"]/following-sibling::dd')->item(0);
+        if ($points_element) {
+            $points = (int)trim($points_element->nodeValue);
+        }
+        else{$points = 0;}
+
+        # GET ACTIVITY
+        $activity_element = $xpath->query('//dt[text()="Activity: "]/following-sibling::dd')->item(0);
+        if ($activity_element) {
+            $activity = trim($activity_element->nodeValue);
+        }
+        else{$activity = 0;}
+
+        date_default_timezone_set('Asia/Manila');
+        $get_data = $this->Scrapper_model->getUserDatabyUID($uid); // validate
+        if(empty($get_data)){
+            $user_data = array(
+                'uid'=>$uid,
+                'username'=>$username,
+                'position'=>$position,
+                'activity'=>$activity,
+                'karma'=>$karma,
+                'points'=>$points,
+                'status'=>'active',
+                'created_at'=>date('Y-m-d H:i:s')
+            );
+            $this->Scrapper_model->insertNewProfile($user_data);
+        }
+        else if(!empty($get_data)) {
+            $user_data = array(
+                'username'=>$username,
+                'position'=>$position,
+                'karma'=>$karma,
+                'points'=>$points,
+                'activity'=>$activity,
+                'updated_at'=>date('Y-m-d H:i:s')
+            );
+            $this->Scrapper_model->updateUserProfile($user_data, $uid);
+        }
+    }
+    # ACCESS USING CRON JOB EVERY 5 MINUTE
+    # GET KARMA COUNTS
+    public function scrapeForumActiveUsersKarmaCount(){
+        $user_data = $this->Scrapper_model->getMultipleUserData();
+        foreach($user_data as $ud){
+            $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=".$ud['uid'];
+            $ch = curl_init($forum_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $html = curl_exec($ch);
+            if (curl_errno($ch)) {
+                $message = 'Curl error during request: ' . curl_error($ch);
+                $this->Scrapper_model->insertSystemActivityLog($message);
+                exit;
+            }
+            curl_close($ch);
+            $dom = new DOMDocument();
+            @$dom->loadHTML($html);
+            $xpath = new DOMXPath($dom);
+            
+            # GET USERNAME
+            $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
+            if ($username_element) {
+                $username = trim($username_element->nodeValue);
+            }
+
+            # GET KARMA
+            $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
+            if ($karma_element) {
+                $karma = (int)trim($karma_element->nodeValue);
+            }
+            else{$karma = 0;}
+           
+            $tg_user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['uid']); 
+            if(!empty($username) && $username == $tg_user['altt_username']) { // notify for tg bot users
+                $data = array(
+                    'status'=>true,
+                    'chat_id'=>$tg_user['chat_id'],
+                    'username'=>$username,
+                    'current_karma'=>$karma,
+                    'prev_karma'=>$tg_user['karma'],
+                );
+                
+                if((int)$karma !== (int)$tg_user['karma']){ 
+                    $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
+                    if($send_status){
+                        $message = "Status: okay. Scraped tg user karma, [$username]";
+                        $this->Scrapper_model->insertSystemActivityLog($message);
+                        $this->Telegram_bot_model->saveKarmaPoint($data);
+                    }
+                }
+            }
+            else if(!empty($username) && $username == $ud['username']) { 
+                $data = array(
+                    'username'=>$username,
+                    'current_karma'=>$karma,
+                    'prev_karma'=>$ud['karma'],
+                );
+                date_default_timezone_set('Asia/Manila');
+                if((int)$karma !== (int)$ud['karma']){ 
+                    $message = "System: okay. Scraped forum user karma, [$username]";
+                    $this->Scrapper_model->insertSystemActivityLog($message);
+                    $this->Telegram_bot_model->saveKarmaPoint($data);
+                }
+            }
+        }
     }
 }

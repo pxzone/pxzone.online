@@ -182,12 +182,9 @@ class Telegram_bot_model extends CI_Model {
            ->GET('telegram_bot_tbl ')->row_array();
     }
     public function checkPostMsgID($msg_id){
-        $saved_pst = $this->db->WHERE('msg_id', $msg_id)
-           ->GET('altt_scraped_data_tbl ')->num_rows();
-        
         $archive_pst = $this->db->WHERE('msg_id', $msg_id)
            ->GET('altt_scraped_archive_data_tbl ')->num_rows();
-        if($saved_pst <= 0 && $archive_pst <= 0){
+        if($archive_pst <= 0){
             return false;
         }
         else{
@@ -278,14 +275,22 @@ class Telegram_bot_model extends CI_Model {
 
     }
     public function saveKarmaPoint($data){
+        # INSERT KARMA LOG
         $karma_point = (int)$data['current_karma'] - (int)$data['prev_karma'];
         $data_arr = array(
-            'altt_username'=> $data['username'],
+            'username'=> $data['username'],
             'karma_point'=> $karma_point,
             'total_karma'=> $data['current_karma'],
             'created_at'=> date('Y-m-d H:i:s'),
         );
-        $this->db->INSERT(' altt_karma_log_tbl', $data_arr);
+        $this->db->INSERT('altt_karma_log_tbl', $data_arr);
+        
+        # UPDATE USER KARMA POINTS
+        $user_data = array(
+            'karma'=>$data['current_karma'],
+            'updated_at'=>date('Y-m-d H:i:s')
+        );
+        $this->db->WHERE('username', $data['username'])->UPDATE('altt_users_tbl', $user_data);
     }
     # MENTION WHEN KARMA IS RECEIVED
     public function notifyKarmaTransaction($data){
@@ -578,10 +583,11 @@ class Telegram_bot_model extends CI_Model {
         $data_arr['subject_url'] = $data['subject_url'];
         $data_arr['subject'] = $data['subject'];
         $data_arr['post_content'] = $data['post'];
-        // $data_arr['html_post'] = $data['html_post'];
+        $data_arr['html_post'] = $data['html_post'];
         $data_arr['date_posted'] = $data['date_posted'];
+        $data_arr['is_archive'] = "no";
         $data_arr['created_at'] = date('Y-m-d H:i:s');
-        $this->db->INSERT('altt_scraped_data_tbl', $data_arr);
+        $this->db->INSERT('altt_scraped_archive_data_tbl ', $data_arr);
 
         $new_topic =  $this->insertNewTopics($data, $topic_data);
         if($new_topic == true){
@@ -597,7 +603,7 @@ class Telegram_bot_model extends CI_Model {
                 ->WHERE('topic_id', $data['topic_id'])
                 ->GET('altt_topics_tbl')->num_rows();
 
-        if($check <= 0){
+        if($check <= 0 && !empty($topic_data['username'])){
             $topic_title = $data['subject'];
             if(stripos($data['subject'], "Re:") !== false){
                 $topic_title = substr($topic_title, 3);
@@ -617,13 +623,12 @@ class Telegram_bot_model extends CI_Model {
 
     }
     public function checkScrapedPost(){
-        return $this->db->SELECT('msg_id, post_content, created_at')->LIMIT(15)->GET('altt_scraped_data_tbl')->result_array();
+        return $this->db->SELECT('msg_id, post_content, created_at')->WHERE('is_archive','no')->LIMIT(15)->GET('altt_scraped_archive_data_tbl ')->result_array();
     }
   
-    public function insertArchiveScrapedPost($edited_data, $saved_data, $status){
-        $check_data = $this->db->WHERE('msg_id', $saved_data['msg_id'])->GET('altt_scraped_archive_data_tbl')->num_rows();
+    public function updateArchiveScrapedPost($edited_data, $saved_data, $status){
+        $check_data = $this->db->WHERE('msg_id', $edited_data['msg_id'])->GET('altt_scraped_archive_data_tbl')->row_array();
         $data_arr = array(
-            'msg_id'=>$edited_data['msg_id'],
             'username'=>$edited_data['poster_username'],
             'topic_id'=>$edited_data['topic_id'],
             'board_id'=>$edited_data['board_id'],
@@ -634,17 +639,13 @@ class Telegram_bot_model extends CI_Model {
             'html_post'=>$edited_data['html_post'],
             'date_posted' => $edited_data['date_posted'],
             'status'=>$status,
+            'is_archive'=>'yes',
             'created_at'=>date('Y-m-d H:i:s'),
         );
 
-        if($check_data <= 0){
-            $this->db->INSERT('altt_scraped_archive_data_tbl', $data_arr);
+        if($check_data['is_archive'] == 'no'){
+            $this->db->WHERE('msg_id', $edited_data['msg_id'])->UPDATE('altt_scraped_archive_data_tbl', $data_arr);
         }
-    }
-   
-    public function deleteScrapedPost($msg_id){
-        $this->db->WHERE('msg_id', $msg_id)
-        ->DELETE('altt_scraped_data_tbl');
     }
     public function getAllUsersData(){
         return $this->db->SELECT('chat_id, altt_username')->WHERE('status','active')->GET('telegram_bot_tbl')->result_array();
