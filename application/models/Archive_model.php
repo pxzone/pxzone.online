@@ -66,4 +66,39 @@ class Archive_model extends CI_Model {
         $data['count'] = $query_count;
         return $data;
     }
+    public function getKarmaLogData($row_per_page, $row_no){
+        $search = $this->input->get('keyword');
+        if(empty($search)){
+        }
+        $logs = $this->db->SELECT('uid, aklt.username, karma_point as karma, total_karma, aklt.created_at')
+            ->WHERE("(aklt.username LIKE '%".$search."%')", NULL, FALSE)
+            ->LIMIT($row_per_page, $row_no)
+            ->ORDER_BY('aklt.created_at',' desc')
+            ->FROM('altt_karma_log_tbl as aklt')
+            ->JOIN('altt_users_tbl as aut', 'aut.username=aklt.username', 'left')
+            ->GET()->result_array();
+
+        $query_count = $this->db->WHERE("(aklt.username LIKE '%".$search."%')", NULL, FALSE)
+            ->FROM('altt_karma_log_tbl as aklt')
+            ->JOIN('altt_users_tbl as aut', 'aut.username=aklt.username', 'left')
+            ->GET()->num_rows();
+        
+        
+        date_default_timezone_set("Europe/Rome");
+        $result = array();
+        foreach($logs as $log){
+            $created_at = strtotime($log['created_at']) - (7*3600);
+            $row_array = array(
+                'uid'=>$log['uid'],
+                'username'=>$log['username'],
+                'karma'=>$log['karma'],
+                'total_karma'=>$log['total_karma'],
+                'created_at'=>date('F d, Y H:i:s', $created_at),
+            );
+            array_push($result, $row_array);
+        }
+        $data['karma_log'] = $result;
+        $data['count'] = $query_count;
+        return $data;
+    }
 }

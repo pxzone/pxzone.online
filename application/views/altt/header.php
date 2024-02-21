@@ -3,17 +3,16 @@
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>AltcoinsTalks Archives</title>
+        <title><?=$title?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Archives for ALtcoinsTalks.com"/>
+        <meta name="description" content="<?= $description; ?>"/>
         <meta name="keywords" content=""/>
         <meta name="theme-color" content="#111c25" />
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="<?=$siteSetting['website_name']?>">
+        <meta name="apple-mobile-web-app-title" content="AltcoinsTalks Archives">
 
-        <link rel="apple-touch-icon" href="" crossorigin="anonymous">
         <link rel="shortcut icon" href="<?=base_url('assets/images/logo/favicon.webp');?>">
         <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
         <link rel="canonical" href="<?=$canonical_url;?>">

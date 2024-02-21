@@ -860,11 +860,21 @@ h1, h2, h3, h4, h5 {
     font-size: 1em;
 }
 .quoteheader{
-    margin-top: 20px;
-    border-top: 1px solid rgba(213, 213, 213, 0.15);
+    margin-top: 10px;
+    border: 1px solid rgba(213, 213, 213, 0.15);
+    /* border-top: 1px solid rgba(213, 213, 213, 0.15);
     border-right: 1px solid rgba(213, 213, 213, 0.15);
-    border-left: 1px solid rgba(213, 213, 213, 0.15);
-    border-bottom: none;
+    border-left: 1px solid rgba(213, 213, 213, 0.15); */
+    /* border-bottom: none; */
+    padding: 8px;
+    border-radius: 3px;
+    background-color: #212934;
+}
+.bbc_alternate_quote{
+    border-bottom: 1px solid rgba(213, 213, 213, 0.15);
+    border-right: 1px solid rgba(213, 213, 213, 0.15);
+    border-left: 1px solid rgba(213, 213, 213, 0.15); 
+    border-top: none; 
     padding: 8px;
     border-radius: 3px;
     background-color: #212934;
@@ -874,6 +884,7 @@ h1, h2, h3, h4, h5 {
     padding: 8px;
     border-radius: 3px;
     background-color: #212934;
+    font-size: 1em;
 }
 .altt-search-content{
     height: 70px; 

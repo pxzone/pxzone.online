@@ -30,7 +30,7 @@
                             <div>
                                 <div>
                                     <h3 class="font-17 fw-700"><a href="https://www.altcoinstalks.com/index.php?topic=<?=$post['topic_id']?>" target="_blank" rel="noopener nofollow"><?=$post['title']?></a></h3>
-                                    <small>Posted by: <a href=""><?=$post['username']?></a> | <a href="https://www.altcoinstalks.com/index.php?board=<?=$post['board_id']?>" target="_blank" rel="noopener nofollow"><?=$post['board_name']?></a> • <?=date('F d, Y H:i:s', strtotime($post['date_posted']))?></small>
+                                    <small>Posted by: <a href=""><?=$post['username']?></a> at <a href="https://www.altcoinstalks.com/index.php?board=<?=$post['board_id']?>" target="_blank" rel="noopener nofollow"><?=$post['board_name']?></a> • <?=date('F d, Y H:i:s', strtotime($post['date_posted']))?></small>
                                 </div>
                                 <div class="hr mt-2"></div>
                                 <div class="font-14 mt-2">
@@ -48,7 +48,7 @@
                             <div>
                                 <div>
                                     <h3 class="font-17 fw-700"><a href="https://www.altcoinstalks.com/index.php?msg=<?=$post['msg_id']?>" target="_blank" rel="noopener nofollow"><?=$post['title']?></a></h3>
-                                    <small>Posted by:  <a href=""><?=$post['username']?></a> | <a href="https://www.altcoinstalks.com/index.php?board=<?=$post['board_id']?>" target="_blank" rel="noopener nofollow"><?=$post['board_name']?></a> • <?=date('F d, Y H:i:s', strtotime($post['date_posted']))?></small>
+                                    <small>Posted by:  <a href=""><?=$post['username']?></a> at <a href="https://www.altcoinstalks.com/index.php?board=<?=$post['board_id']?>" target="_blank" rel="noopener nofollow"><?=$post['board_name']?></a> • <?=date('F d, Y H:i:s', strtotime($post['date_posted']))?></small>
                                 </div>
 
                                 <div class="hr mt-2"></div>
