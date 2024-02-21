@@ -1,11 +1,15 @@
+get_search = $("#search").val();
 if(current_url.indexOf("topic/") > 0 || current_url.indexOf("post/") >  0){
     $('html, body').animate({
         scrollTop: $(".scroll-here").offset().top
     }, 500);
 }
-else if(current_url.indexOf("karma-log") > 0){
-    fetchKarmaLogs(1, '')
-}
+// else if(keyword !== ''){
+//     fetchKarmaLogs(1, keyword)
+// }
+// else if(current_url.indexOf("karma-log") > 0){
+//     fetchKarmaLogs(1, '')
+// }
 $(".back-to-top").on('click', function(){
     $("html, body").animate({scrollTop: 0}, 400);
 })
@@ -71,6 +75,13 @@ function showArchives(page_no, result, pagination){
     }
     $("#search_archive_btn").html('<i class="uil uil-search search-archive-icon"></i> Search').removeAttr('disabled','disabled');
 }
+function refreshKarmaLogs(){
+    if (history.pushState) {
+        history.pushState({path:'/altt/karma-log'},"", '/altt/karma-log');
+    }
+    $("#search").val('');
+    fetchKarmaLogs(1, '')
+}
 $('#karma_log_pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
@@ -82,6 +93,9 @@ $("#search_form").on('submit', function(e){
     page_no = 1;
     let keyword = $("#search").val();
     fetchKarmaLogs(page_no, keyword);
+    if (history.pushState) {
+        history.pushState({path:'/altt/karma-log?search='+keyword},"", '/altt/karma-log?search='+keyword);
+    }
 });
 function fetchKarmaLogs(page_no, keyword){
 	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='4'>Getting data...</td></tr>");

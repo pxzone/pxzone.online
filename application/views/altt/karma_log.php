@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="col-xl-6">
                                     <div class="text-xl-end mt-xl-0 mt-2">
-                                        <button type="button" class="btn rounded btn-secondary mb-2" onclick="fetchKarmaLogs(1,'')"><i class="uil-redo"></i> Refresh</button>
+                                        <button type="button" class="btn rounded btn-secondary mb-2" onclick="refreshKarmaLogs()"><i class="uil-redo"></i> Refresh</button>
                                     </div>
                                 </div> 
                             </div>

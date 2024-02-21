@@ -45,13 +45,21 @@
 		<script>
 			var base_url = "<?=base_url();?>";
 			var current_url = "<?=current_url();?>";
-
+			var keyword = "<?=(isset($_GET['search'])) ? $_GET['search'] : ""?>";
 		</script>
 	    <script src="<?=base_url('assets/js/jquery-3.6.3.min.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_web_package.min.js"></script>
 		<script src="<?=base_url()?>assets/js/_access.js?v=<?=filemtime('assets/js/_access.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_webapp.js?v=<?=filemtime('assets/js/_webapp.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/auth/_altt_archive.js?v=<?=filemtime('assets/js/auth/_altt_archive.js')?>"></script>
-
+		<script>
+			<?php if (isset($_GET['search']) && stripos(current_url(), "karma-log") !== false ) { ?>
+			$("#search").val(keyword);
+			fetchKarmaLogs(1, keyword);
+			<?php } else if (stripos(current_url(), "karma-log") !== false) { ?>
+				
+			fetchKarmaLogs(1, keyword);
+			<?php }?>
+		</script>
 	</body>
 </html>

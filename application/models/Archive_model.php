@@ -70,8 +70,10 @@ class Archive_model extends CI_Model {
         $search = $this->input->get('keyword');
         if(empty($search)){
         }
+        $date_range = array('aklt.created_at >'=>'2024-02-19 00:00:00', 'aklt.created_at <'=> date('Y-m-d H:i:s'));
         $logs = $this->db->SELECT('uid, aklt.username, karma_point as karma, total_karma, aklt.created_at')
             ->WHERE("(aklt.username LIKE '%".$search."%')", NULL, FALSE)
+            ->WHERE($date_range)
             ->LIMIT($row_per_page, $row_no)
             ->ORDER_BY('aklt.created_at',' desc')
             ->FROM('altt_karma_log_tbl as aklt')
@@ -79,6 +81,7 @@ class Archive_model extends CI_Model {
             ->GET()->result_array();
 
         $query_count = $this->db->WHERE("(aklt.username LIKE '%".$search."%')", NULL, FALSE)
+            ->WHERE($date_range)
             ->FROM('altt_karma_log_tbl as aklt')
             ->JOIN('altt_users_tbl as aut', 'aut.username=aklt.username', 'left')
             ->GET()->num_rows();
