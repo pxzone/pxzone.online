@@ -96,7 +96,7 @@ class Archive_model extends CI_Model {
                 'username'=>$log['username'],
                 'karma'=>$log['karma'],
                 'total_karma'=>$log['total_karma'],
-                'created_at'=>date('F d, Y H:i:s', $created_at),
+                'created_at'=>date('F d, Y H:i:s T', $created_at),
             );
             array_push($result, $row_array);
         }
