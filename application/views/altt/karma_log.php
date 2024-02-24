@@ -3,7 +3,7 @@
                 <div class="first-section padding-bottom-30 c-dwhite">
                     <div class="container">
                         <div class="text-center">
-                            <h1 class="f-h1 mb-2 c-white">AltcoinsTalks Karma Logs</h1>
+                            <h1 class="f-h1 mb-2 c-white">Altcoins Talks Karma Logs</h1>
                             <p class="p-text c-white font-15"></p>
                         </div>
                     </div>
@@ -29,6 +29,7 @@
                             </div>
 
                             <div class="mt-2 table-responsive">
+                            <h2 class="font-20" id="title_sort">Default Sort</h2>
                             <table class="table table-centered mb-0 font-14">
                                 <thead>
                                     <tr>

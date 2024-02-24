@@ -127,6 +127,7 @@ function showLogs(page_no, result, pagination, select_sort){
         for(var i = 0; i < result.length; i++){
 
             if(select_sort == 'default'){
+                $("#title_sort").text('Default Sort');
                 $("#karma_point").removeAttr('hidden','hidden');
                 $("#datetime").removeAttr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -138,6 +139,7 @@ function showLogs(page_no, result, pagination, select_sort){
                 +'</tr>'
             }
             else if(select_sort == 'most_karma_all_time'){
+                $("#title_sort").text('All-time received Karma');
                 $("#karma_point").attr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -147,6 +149,7 @@ function showLogs(page_no, result, pagination, select_sort){
                 +'</tr>'
             }
             else if(select_sort == 'most_karma_today'){
+                $("#title_sort").text('Most received Karma today');
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -157,6 +160,8 @@ function showLogs(page_no, result, pagination, select_sort){
                 +'</tr>'
             }
             else if(select_sort == 'most_karma_this_month'){
+                month = getMonth();
+                $("#title_sort").text('Most received Karma this month ('+month+')');
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -203,3 +208,8 @@ $("#sort_btn").on('click', function(){
       $("#sort_btn").html('Sort').removeAttr('disabled','disabled');
     });
 });
+function getMonth(){
+    const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const d = new Date();
+    return month[d.getMonth()];
+}
