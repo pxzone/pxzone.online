@@ -91,7 +91,7 @@ $route['altt/post/(:num)'] = 'Archive/getPosts/$1';
 $route['altt/topic/(:num)'] = 'Archive/getTopics/$1';
 $route['altt/user/(:num)'] = 'Archive/getTopics/$1';
 $route['altt/karma-log'] = 'Archive/karmaLog';
-$route['api/altt/karma/_get'] = 'Archive/getKarmaLog';
+$route['api/altt/karma/_get'] = 'Archive/getKarmaLogSort';
 
 #ACCOUNT 
 $route['account/dashboard'] = 'Page/dashboard';

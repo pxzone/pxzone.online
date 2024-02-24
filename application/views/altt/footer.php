@@ -54,12 +54,14 @@
 		<script src="<?=base_url()?>assets/js/auth/_altt_archive.js?v=<?=filemtime('assets/js/auth/_altt_archive.js')?>"></script>
 		<script>
 			<?php if (isset($_GET['search']) && stripos(current_url(), "karma-log") !== false ) { ?>
+
 			$("#search").val(keyword);
-			fetchKarmaLogs(1, keyword);
+			fetchKarmaLogs(1, keyword, 'default');
 			<?php } else if (stripos(current_url(), "karma-log") !== false) { ?>
-				
-			fetchKarmaLogs(1, keyword);
+
+			fetchKarmaLogs(1, keyword, 'default');
 			<?php }?>
+
 		</script>
 	</body>
 </html>

@@ -76,30 +76,34 @@ function showArchives(page_no, result, pagination){
     $("#search_archive_btn").html('<i class="uil uil-search search-archive-icon"></i> Search').removeAttr('disabled','disabled');
 }
 function refreshKarmaLogs(){
+    $("#karma_log_pagination").html();
     if (history.pushState) {
         history.pushState({path:'/altt/karma-log'},"", '/altt/karma-log');
     }
     $("#search").val('');
-    fetchKarmaLogs(1, '')
+    $("#select_sort").val('default');
+    fetchKarmaLogs(1, '', 'default')
 }
 $('#karma_log_pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
     let keyword = $("#search").val();
-    fetchKarmaLogs(page_no, keyword);
+    let select_sort = $("#select_sort").val();
+    fetchKarmaLogs(page_no, keyword, select_sort);
 });
 $("#search_form").on('submit', function(e){
     e.preventDefault(); 
     page_no = 1;
+    let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
-    fetchKarmaLogs(page_no, keyword);
+    fetchKarmaLogs(page_no, keyword, select_sort);
     if (history.pushState) {
         history.pushState({path:'/altt/karma-log?search='+keyword},"", '/altt/karma-log?search='+keyword);
     }
 });
-function fetchKarmaLogs(page_no, keyword){
-	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='4'>Getting data...</td></tr>");
-    let params = new URLSearchParams({'keyword':keyword, 'page_no':page_no});
+function fetchKarmaLogs(page_no, keyword, select_sort){
+	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>Getting data...</td></tr>");
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no});
     fetch(base_url+'api/altt/karma/_get?' + params, {
         cache: 'no-cache',
         method: "GET",
@@ -110,30 +114,92 @@ function fetchKarmaLogs(page_no, keyword){
     })
     .then(response => response.json())
     .then(res => {
-        showLogs(page_no, res.data.result, res.data.pagination);
+        showLogs(page_no, res.data.result, res.data.pagination, select_sort);
     })
     .catch((error) => {
-		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='4'>No records found!</td></tr>");
+		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>No records found!</td></tr>");
     });
 }
-function showLogs(page_no, result, pagination){
+function showLogs(page_no, result, pagination, select_sort){
     $('#karma_log_pagination').html(pagination);
     karma_logs = "";
     if(result.length > 0){
         for(var i = 0; i < result.length; i++){
-            karma_logs += '<tr>'
-				+'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
-				+'<td>'+result[i].karma+'</td>'
-				+'<td>'+result[i].total_karma+'</td>'
-				+'<td>'+result[i].created_at+'</td>'
-			+'</tr>'
+
+            if(select_sort == 'default'){
+                $("#karma_point").removeAttr('hidden','hidden');
+                $("#datetime").removeAttr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].karma+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                    +'<td>'+result[i].created_at+'</td>'
+                +'</tr>'
+            }
+            else if(select_sort == 'most_karma_all_time'){
+                $("#karma_point").attr('hidden', 'hidden');
+                $("#datetime").attr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                +'</tr>'
+            }
+            else if(select_sort == 'most_karma_today'){
+                $("#karma_point").removeAttr('hidden', 'hidden');
+                $("#datetime").attr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].karma+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                +'</tr>'
+            }
+            else if(select_sort == 'most_karma_this_month'){
+                $("#karma_point").removeAttr('hidden', 'hidden');
+                $("#datetime").attr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].karma+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                +'</tr>'
+            }
         }
         $('#karma_log_tbl').html(karma_logs);
     }
     else{
-		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='4'>No records found!</td></tr>");
+		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>No records found!</td></tr>");
 
     }
-	
-
 }
+$("#sort_modal_btn").on('click', function(){
+    $("#sort_modal").modal('show');
+});
+$("#sort_btn").on('click', function(){
+    page_no = 1;
+    let select_sort = $("#select_sort").val();
+    let keyword = $("#search").val();
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no});
+    $("#sort_btn").html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
+
+    fetch(base_url+'api/altt/karma/_get?' + params, {
+        cache: 'no-cache',
+        method: "GET",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+    })
+    .then(response => response.json())
+    .then(res => {
+        showLogs(page_no, res.data.result, res.data.pagination, select_sort);
+        $("#sort_modal").modal('hide');
+        $("#sort_btn").html('Sort').removeAttr('disabled','disabled');
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      $("#sort_btn").html('Sort').removeAttr('disabled','disabled');
+    });
+});
