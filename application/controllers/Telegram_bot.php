@@ -229,6 +229,12 @@ class Telegram_bot extends CI_Controller {
                         'text' => "You already tracking this board!",
                     );
                 }
+                else{
+                    $post_data = array(
+                        'chat_id' => $chat_id,
+                        'text' => "Cannot get Board data!",
+                    );
+                }
                 $this->sendMessage($post_data);
                 $this->trackBoards($chat_id, $message_id, 'send');
             }

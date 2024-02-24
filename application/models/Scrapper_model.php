@@ -189,24 +189,45 @@ class Scrapper_model extends CI_Model {
             $this->db->INSERT('altt_boards_tbl', $data_arr);
         }
     }
-    public function scrapeBoardData($board_id) {
-        $forum_url = "https://www.altcoinstalks.com/index.php?board=".$board_id;
-        $ch = curl_init($forum_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
-        $html = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $message = 'Curl error during request: ' . curl_error($ch);
-            $this->insertSystemActivityLog($message);
-            exit;
-        }
-        curl_close($ch);
-        $dom = new DOMDocument();
-        @$dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
+    // public function scrapeBoardData($board_id) {
+    //     $forum_url = "https://www.altcoinstalks.com/index.php?board=".$board_id;
+    //     $ch = curl_init($forum_url);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
+    //     $html = curl_exec($ch);
+    //     if (curl_errno($ch)) {
+    //         $message = 'Curl error during request: ' . curl_error($ch);
+    //         $this->insertSystemActivityLog($message);
+    //         exit;
+    //     }
+    //     curl_close($ch);
+    //     $dom = new DOMDocument();
+    //     @$dom->loadHTML($html);
+    //     $xpath = new DOMXPath($dom);
             
-        $title_tag = $xpath->query('//title')->item(0);
-        $title = $title_tag->nodeValue;
-        return $title;
+    //     $title_tag = $xpath->query('//title')->item(0);
+    //     $title = $title_tag->nodeValue;
+    //     return $title;
+    // }
+    public function getUserDatabyUID($uid){
+        return $this->db->SELECT('username, updated_at')
+            ->WHERE('uid', $uid)
+            ->GET('altt_users_tbl')->row_array();
+    }
+    public function insertNewProfile($data){
+        $this->db->INSERT('altt_users_tbl', $data);
+    }
+    public function updateUserProfile($data, $uid){
+        $this->db->WHERE('uid', $uid)->UPDATE('altt_users_tbl', $data);
+    }
+    public function getAlttUsersDatabyUsername($username){
+        return $this->db->SELECT('karma, username')
+        ->WHERE('username', $username)->GET('altt_users_tbl')->row_array();
+    }
+    public function getMultipleUserData(){
+        return $this->db->SELECT('uid, username, karma')
+           ->WHERE('status', 'active')
+           ->ORDER_BY('updated_at', 'desc')
+           ->GET('altt_users_tbl ')->result_array();
     }
 }

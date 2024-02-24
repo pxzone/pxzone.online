@@ -650,6 +650,7 @@ class Scrapper extends CI_Controller {
                     if($send_status){
                         $message = "Status: okay. Scraped tg user karma, [$username]";
                         $this->Scrapper_model->insertSystemActivityLog($message);
+                        date_default_timezone_set("Europe/Rome");
                         $this->Telegram_bot_model->saveKarmaPoint($data);
                     }
                 }
@@ -664,6 +665,7 @@ class Scrapper extends CI_Controller {
                 if((int)$karma !== (int)$ud['karma']){ 
                     $message = "System: okay. Scraped forum user karma, [$username]";
                     $this->Scrapper_model->insertSystemActivityLog($message);
+                    date_default_timezone_set("Europe/Rome");
                     $this->Telegram_bot_model->saveKarmaPoint($data);
                 }
             }

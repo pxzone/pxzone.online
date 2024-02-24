@@ -671,7 +671,7 @@ class Telegram_bot_model extends CI_Model {
         if($check > 0){
             return $check;
         }
-        else{
+        else if(!empty($board_id) && !empty($board_id) && !empty($board_name)){
             $data_arr = array(
                 'board_id'=>$board_id,
                 'chat_id'=>$chat_id,
