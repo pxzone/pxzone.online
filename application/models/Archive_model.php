@@ -107,7 +107,7 @@ class Archive_model extends CI_Model {
     public function getKarmaLogDataSort($row_per_page, $row_no){
         $sort = $this->input->get('select_sort');
         $result = array();
-        if($sort == 'most_karma_today'){
+        if($sort == 'highest_karma_today'){
             $data_res = $this->highestKarmaToday($row_per_page, $row_no);
             date_default_timezone_set("Europe/Rome");
             foreach($data_res['logs'] as $log){
@@ -121,7 +121,7 @@ class Archive_model extends CI_Model {
                 array_push($result, $row_array);
             }
         }
-        else if($sort == 'most_karma_all_time'){
+        else if($sort == 'highest_karma_all_time'){
             $data_res = $this->AllTimeHighKarma($row_per_page, $row_no);
             date_default_timezone_set("Europe/Rome");
             foreach($data_res['logs'] as $log){
@@ -134,7 +134,7 @@ class Archive_model extends CI_Model {
                 array_push($result, $row_array);
             }
         }
-        else if($sort == 'most_karma_this_month'){
+        else if($sort == 'highest_karma_this_month'){
             $data_res = $this->highestKarmaThisMonth($row_per_page, $row_no);
             date_default_timezone_set("Europe/Rome");
             foreach($data_res['logs'] as $log){

@@ -45,7 +45,11 @@
 		<script>
 			var base_url = "<?=base_url();?>";
 			var current_url = "<?=current_url();?>";
+			<?php if (stripos(current_url(), "karma-log") !== false ) { ?>
+
 			var keyword = "<?=(isset($_GET['search'])) ? $_GET['search'] : ""?>";
+			var sort = "<?=(isset($_GET['sort'])) ? $_GET['sort'] : "default"?>";<?php }?>
+
 		</script>
 	    <script src="<?=base_url('assets/js/jquery-3.6.3.min.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_web_package.min.js"></script>
@@ -59,9 +63,8 @@
 			fetchKarmaLogs(1, keyword, 'default');
 			<?php } else if (stripos(current_url(), "karma-log") !== false) { ?>
 
-			fetchKarmaLogs(1, keyword, 'default');
-			<?php }?>
-
+			fetchKarmaLogs(1, keyword, sort);<?php }?>
+			
 		</script>
 	</body>
 </html>

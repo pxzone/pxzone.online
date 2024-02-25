@@ -3,7 +3,7 @@
                 <div class="first-section padding-bottom-30 c-dwhite">
                     <div class="container">
                         <div class="text-center">
-                            <h1 class="f-h1 mb-2 c-white">Altcoins Talks Karma Logs</h1>
+                            <h1 class="f-h1 mb-2 c-white">AltcoinsTalks Karma Logs</h1>
                             <p class="p-text c-white font-15"></p>
                         </div>
                     </div>
@@ -59,9 +59,9 @@
                                     <div class="mt-2">
                                         <select name="select_sort" id="select_sort" class="form-select">
                                             <option value="default">Default</option>
-                                            <option value="most_karma_today">Most received Karma Today</option>
-                                            <option value="most_karma_this_month">Most received Karma this Month</option>
-                                            <option value="most_karma_all_time">All time received Karma</option>
+                                            <option value="highest_karma_today">Highest Karma Earner (Today)</option>
+                                            <option value="highest_karma_this_month">Highest Karma Earner (<?=date('F')?>)</option>
+                                            <option value="highest_karma_all_time">All-time High Karma Earner</option>
                                         </select>
                                     </div>
                                     <div class="text-end mb-2 mt-2">

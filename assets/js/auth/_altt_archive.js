@@ -138,8 +138,8 @@ function showLogs(page_no, result, pagination, select_sort){
                     +'<td>'+result[i].created_at+'</td>'
                 +'</tr>'
             }
-            else if(select_sort == 'most_karma_all_time'){
-                $("#title_sort").text('All-time received Karma');
+            else if(select_sort == 'highest_karma_all_time'){
+                $("#title_sort").text('All-time High Karma Earner');
                 $("#karma_point").attr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -148,8 +148,8 @@ function showLogs(page_no, result, pagination, select_sort){
                     +'<td>'+result[i].total_karma+'</td>'
                 +'</tr>'
             }
-            else if(select_sort == 'most_karma_today'){
-                $("#title_sort").text('Most received Karma today');
+            else if(select_sort == 'highest_karma_today'){
+                $("#title_sort").text('Highest Karma Earner (Today)');
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -159,9 +159,9 @@ function showLogs(page_no, result, pagination, select_sort){
                     +'<td>'+result[i].total_karma+'</td>'
                 +'</tr>'
             }
-            else if(select_sort == 'most_karma_this_month'){
+            else if(select_sort == 'highest_karma_this_month'){
                 month = getMonth();
-                $("#title_sort").text('Most received Karma this month ('+month+')');
+                $("#title_sort").text('Highest Karma Earner ('+month+')');
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
@@ -183,9 +183,13 @@ $("#sort_modal_btn").on('click', function(){
     $("#sort_modal").modal('show');
 });
 $("#sort_btn").on('click', function(){
-    page_no = 1;
     let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
+    if (history.pushState) {
+        history.pushState({path:'/altt/karma-log?sort='+select_sort},"", '/altt/karma-log?sort='+select_sort);
+    }
+
+    page_no = 1;
 	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no});
     $("#sort_btn").html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
 
