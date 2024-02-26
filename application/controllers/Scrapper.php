@@ -602,72 +602,136 @@ class Scrapper extends CI_Controller {
             );
             $this->Scrapper_model->updateUserProfile($user_data, $uid);
         }
+        // $this->saveKarmaPoints($uid, $prev_karma, $username, $curr_karma);
     }
     # ACCESS USING CRON JOB EVERY 5 MINUTE
     # GET KARMA COUNTS
     public function scrapeForumActiveUsersKarmaCount(){
-        $user_data = $this->Scrapper_model->getMultipleUserData();
-        foreach($user_data as $ud){
-            $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=".$ud['uid'];
-            $ch = curl_init($forum_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $html = curl_exec($ch);
-            if (curl_errno($ch)) {
-                $message = 'Curl error during request: ' . curl_error($ch);
-                $this->Scrapper_model->insertSystemActivityLog($message);
-                exit;
-            }
-            curl_close($ch);
-            $dom = new DOMDocument();
-            @$dom->loadHTML($html);
-            $xpath = new DOMXPath($dom);
-            
-            # GET USERNAME
-            $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
-            if ($username_element) {
-                $username = trim($username_element->nodeValue);
-            }
+        $ip_address = $this->input->ip_address();
+        $ip_whitelisted = array(
+            '23.88.105.37',
+            '143.44.165.160',
+            '66.29.137.113',
+            '116.203.134.67'
+        );
+        if (in_array($ip_address, $ip_whitelisted)) {
+            $allowed = true;
+        } 
+        else {
+            $allowed = false;
+        }
 
-            # GET KARMA
-            $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
-            if ($karma_element) {
-                $karma = (int)trim($karma_element->nodeValue);
-            }
-            else{$karma = 0;}
-           
-            $tg_user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['uid']); 
-            if(!empty($username) && $username == $tg_user['altt_username']) { // notify for tg bot users
-                $data = array(
-                    'status'=>true,
-                    'chat_id'=>$tg_user['chat_id'],
-                    'username'=>$username,
-                    'current_karma'=>$karma,
-                    'prev_karma'=>$tg_user['karma'],
-                );
-                
-                if((int)$karma !== (int)$tg_user['karma']){ 
-                    $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
-                    if($send_status){
-                        $message = "Status: okay. Scraped tg user karma, [$username]";
-                        $this->Scrapper_model->insertSystemActivityLog($message);
-                        date_default_timezone_set("Europe/Rome");
-                        $this->Telegram_bot_model->saveKarmaPoint($data);
-                    }
+        if($allowed == true){
+            $user_data = $this->Scrapper_model->getMultipleUserData();
+            foreach($user_data as $ud){
+                $forum_url = "https://www.altcoinstalks.com/index.php?action=profile;u=".$ud['uid'];
+                $ch = curl_init($forum_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $html = curl_exec($ch);
+                if (curl_errno($ch)) {
+                    $message = 'Curl error during request: ' . curl_error($ch);
+                    $this->Scrapper_model->insertSystemActivityLog($message);
+                    exit;
                 }
+                curl_close($ch);
+                $dom = new DOMDocument();
+                @$dom->loadHTML($html);
+                $xpath = new DOMXPath($dom);
+                
+                # GET USERNAME
+                $username_element = $xpath->query('//div[@class="username"]/h4/text()')->item(0);
+                if ($username_element) {
+                    $username = trim($username_element->nodeValue);
+                }
+
+                # GET KARMA
+                $karma_element = $xpath->query('//dt[text()="Karma: "]/following-sibling::dd')->item(0);
+                if ($karma_element) {
+                    $karma = (int)trim($karma_element->nodeValue);
+                }
+                else{$karma = 0;}
+                
+                $this->saveKarmaPoints($ud['uid'], $ud['karma'], $ud['username'], $karma);
+                sleep(2);
+                // $tg_user = $this->Telegram_bot_model->getUserDatabyAlttID($ud['uid']); 
+                // if(!empty($username) && $username == $tg_user['altt_username']) { // notify for tg bot users
+                //     $data = array(
+                //         'status'=>true,
+                //         'chat_id'=>$tg_user['chat_id'],
+                //         'username'=>$username,
+                //         'current_karma'=>$karma,
+                //         'prev_karma'=>$tg_user['karma'],
+                //     );
+                    
+                //     if((int)$karma !== (int)$tg_user['karma']){ 
+                //         $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
+                //         if($send_status){
+                //             $message = "Status: okay. Scraped tg user karma, [$username]";
+                //             $this->Scrapper_model->insertSystemActivityLog($message);
+                //             date_default_timezone_set("Europe/Rome");
+                //             $this->Telegram_bot_model->saveKarmaPoint($data);
+                //         }
+                //     }
+                // }
+                // else if(!empty($username) && $username == $ud['username']) { 
+                //     $data = array(
+                //         'username'=>$username,
+                //         'current_karma'=>$karma,
+                //         'prev_karma'=>$ud['karma'],
+                //     );
+                //     date_default_timezone_set('Asia/Manila');
+                //     if((int)$karma !== (int)$ud['karma']){ 
+                //         $message = "System: okay. Scraped forum user karma, [$username]";
+                //         $this->Scrapper_model->insertSystemActivityLog($message);
+                //         date_default_timezone_set("Europe/Rome");
+                //         $this->Telegram_bot_model->saveKarmaPoint($data);
+                //     }
+                // }
             }
-            else if(!empty($username) && $username == $ud['username']) { 
-                $data = array(
-                    'username'=>$username,
-                    'current_karma'=>$karma,
-                    'prev_karma'=>$ud['karma'],
-                );
-                date_default_timezone_set('Asia/Manila');
-                if((int)$karma !== (int)$ud['karma']){ 
-                    $message = "System: okay. Scraped forum user karma, [$username]";
+        }
+        else{
+            $message = "Access not allowed";
+            $data_res = array(
+                'status'=>false,
+                'response' => $message
+            );
+            $this->Scrapper_model->insertSystemActivityLog($message);
+        }
+        
+    }
+    public function saveKarmaPoints($uid, $prev_karma, $username, $curr_karma){
+        $tg_user = $this->Telegram_bot_model->getUserDatabyAlttID($uid); 
+        if(!empty($username) && $username == $tg_user['altt_username']) { // notify for tg bot users
+            $data = array(
+                'status'=>true,
+                'chat_id'=>$tg_user['chat_id'],
+                'username'=>$username,
+                'current_karma'=>$curr_karma,
+                'prev_karma'=>$tg_user['karma'],
+            );
+            
+            if((int)$curr_karma !== (int)$tg_user['karma']){ 
+                $send_status = $this->Telegram_bot_model->notifyKarmaTransaction($data);
+                if($send_status){
+                    $message = "Status: okay. Scraped tg user karma, [$username]";
                     $this->Scrapper_model->insertSystemActivityLog($message);
                     date_default_timezone_set("Europe/Rome");
                     $this->Telegram_bot_model->saveKarmaPoint($data);
                 }
+            }
+        }
+        else if(!empty($username) && $username == $username) { 
+            $data = array(
+                'username'=>$username,
+                'current_karma'=>$curr_karma,
+                'prev_karma'=>$prev_karma,
+            );
+            date_default_timezone_set('Asia/Manila');
+            if((int)$curr_karma !== (int)$prev_karma){ 
+                $message = "System: okay. Scraped forum user karma, [$username]";
+                $this->Scrapper_model->insertSystemActivityLog($message);
+                date_default_timezone_set("Europe/Rome");
+                $this->Telegram_bot_model->saveKarmaPoint($data);
             }
         }
     }
