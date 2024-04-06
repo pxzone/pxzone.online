@@ -11,7 +11,7 @@ class Page extends CI_Controller {
         $this->load->model('Csrf_model');
         $this->load->model('User_model');
         $this->load->model('Blog_model');
-
+        $this->load->model('Tools_model');
     }
     public function about(){
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
@@ -299,6 +299,8 @@ class Page extends CI_Controller {
             $data['nonce'] = $this->Site_settings_model->generateNonce();
             $data['csrf_data'] = $this->Csrf_model->getCsrfData();
             $data['article_data'] = $this->Blog_model->getArticleDataID($article_pub_id);
+            $content = $data['article_data']['content'];
+            $data['article_data']['content'] = $this->unAmpify($content);
             $data['blog_category'] = $this->Blog_model->getCategorySelect();
             $data['description'] = '';
             $data['title'] = 'Edit Blog';
@@ -313,6 +315,18 @@ class Page extends CI_Controller {
             header('location:'.base_url('login?return=').uri_string());
         }
     }
+    public function unAmpify($html) {
+	    # Replace amp custom elements with default img, audio, and video elements/tags
+	    $html = str_ireplace(
+	        ['<amp-youtube','<amp-img','<amp-video','/amp-video>','</amp-audio','/audio>'],
+	        ['<video','<img','<video','/video>','<amp-audio','/audio>'],
+	        $html
+	    );
+
+	    # Whitelist of HTML tags allowed by AMP
+	    $html = strip_tags($html,'<h1><h2><h3><h4><h5><h6><a><p><ul><ol><li><blockquote><q><cite><ins><del><strong><em><code><pre><svg><table><thead><tbody><tfoot><th><tr><td><dl><dt><dd><article><section><header><footer><aside><figure><time><abbr><div><span><hr><small><img><br><amp-img><amp-youtube><amp-audio><amp-video><amp-ad><amp-anim><amp-carousel><amp-fit-rext><amp-image-lightbox><amp-instagram><amp-lightbox><amp-twitter>');
+	    return $html;
+	}
     public function newWebsiteVisits(){
 		$data = $this->User_model->newWebsiteVisits();
         $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$data)));
@@ -328,10 +342,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Balance Checker';
         $data['description'] = 'A tool for checking the balance of a Bitcoin address. The tool returns the current balance in Bitcoin and USD of the address,  ';
-        $data['canonical_url'] = base_url('tools/bitcoin-balance-checker');
+        $data['canonical_url'] = base_url('bitcoin-balance-checker');
         $data['state'] = "bitcoin_checker";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-    	$this->load->view('home/header', $data);
+    	$this->load->view('pages/tools/header', $data);
     	$this->load->view('home/nav');
     	$this->load->view('pages/tools/bitcoin_balance_checker');
     	$this->load->view('home/footer');
@@ -340,10 +354,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Message Verifier';
         $data['description'] = 'Verify bitcoin signed message using this tool.';
-        $data['canonical_url'] = base_url('tools/bitcoin-balance-checker');
+        $data['canonical_url'] = base_url('bitcoin-balance-checker');
         $data['state'] = "message_verifier";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-    	$this->load->view('home/header', $data);
+    	$this->load->view('pages/tools/header', $data);
     	$this->load->view('home/nav');
     	$this->load->view('pages/tools/bitcoin_message_verifier');
     	$this->load->view('home/footer');
@@ -352,10 +366,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Price to Image Converter';
         $data['description'] = "Bitcoin price to fiat converter, wallet address' balance to image converter, bitcoin price history to image converter, fiat to bitcoin image converter.";
-        $data['canonical_url'] = base_url('tools/bitcoin-price-to-image');
+        $data['canonical_url'] = base_url('bitcoin-price-to-image');
         $data['state'] = "bitcoin_to_image";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-    	$this->load->view('home/header', $data);
+    	$this->load->view('pages/tools/header', $data);
     	$this->load->view('home/nav');
     	$this->load->view('pages/tools/bitcoin_to_image');
     	$this->load->view('home/footer');
@@ -364,10 +378,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Price to Image Converter';
         $data['description'] = "Bitcoin wallet address lookup, receive email notification when you send and receive bitcoin transaction.";
-        $data['canonical_url'] = base_url('tools/bitcoin-wallet-watcher');
+        $data['canonical_url'] = base_url('bitcoin-wallet-watcher');
         $data['state'] = "bitcoin_wallet_watcher";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-    	$this->load->view('home/header', $data);
+    	$this->load->view('pages/tools/header', $data);
     	$this->load->view('home/nav');
     	$this->load->view('pages/tools/bitcoin_wallet_watcher');
     	$this->load->view('home/footer');
@@ -378,11 +392,11 @@ class Page extends CI_Controller {
             $data['siteSetting'] = $this->Site_settings_model->siteSettings();
             $data['title'] = 'Bitcoin Price to Image Converter';
             $data['description'] = "Bitcoin wallet address lookup, receive email notification when you send and receive bitcoin transaction.";
-            $data['canonical_url'] = base_url('tools/bitcoin-wallet-watcher');
+            $data['canonical_url'] = base_url('bitcoin-wallet-watcher');
             $data['state'] = "bitcoin_wallet_notifier_logs";
             $data['csrf_data'] = $this->Csrf_model->getCsrfData();
             $data['id'] = $id;
-            $this->load->view('home/header', $data);
+            $this->load->view('pages/tools/header', $data);
             $this->load->view('home/nav');
             $this->load->view('pages/tools/bitcoin_wallet_watcher_logs');
             $this->load->view('home/footer');
@@ -395,10 +409,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Bitcoin Fee Estimator';
         $data['description'] = "A Bitcoin transaction fee estimator is a tool that calculates the fee required to have your transaction confirmed in a timely manner. The fee estimator takes into account the current network conditions and calculates the fee required to have your tra";
-        $data['canonical_url'] = base_url('tools/bitcoin-fee-estimator');
+        $data['canonical_url'] = base_url('bitcoin-fee-estimator');
         $data['state'] = "bitcoin_fee_estimator";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-        $this->load->view('home/header', $data);
+        $this->load->view('pages/tools/header', $data);
         $this->load->view('home/nav');
         $this->load->view('pages/tools/bitcoin_fee_estimator');
         $this->load->view('home/footer');
@@ -407,10 +421,10 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'AltcoinsTalks Telegram Notifier';
         $data['description'] = "Notify when someone mention and quote user's post, track other user's post, track phrases, ignore users, etc.";
-        $data['canonical_url'] = base_url('tools/altcoinstalks-telegram-notifier');
+        $data['canonical_url'] = base_url('altcoinstalks-telegram-notifier');
         $data['state'] = "altt_tg_notifier";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-        $this->load->view('home/header', $data);
+        $this->load->view('pages/tools/header', $data);
         $this->load->view('home/nav');
         $this->load->view('pages/tools/altt_telegram_notifier');
         $this->load->view('home/footer');
@@ -419,22 +433,90 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'Cryptocurrency Balance Checker';
         $data['description'] = 'A tool for checking the balance of a Bitcoin, Ethereum, Tron, Binance coin, Dash, Litecoin, Dogecoin wallet address. The tool returns the current balance in $coin and USD value of the wallet address';
-        $data['canonical_url'] = base_url('tools/crypto/balance-checker');
+        $data['canonical_url'] = base_url('crypto/balance-checker');
         $data['state'] = "crypto_balance_checker";
         $data['csrf_data'] = $this->Csrf_model->getCsrfData();
-    	$this->load->view('home/header', $data);
+    	$this->load->view('pages/tools/header', $data);
     	$this->load->view('home/nav');
     	$this->load->view('pages/tools/crypto_balance_checker');
     	$this->load->view('home/footer');
     }
-    public function alttArchives(){
+    public function websiteStatusChecker(){
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
-        $data['canonical_url'] = base_url('altt');
+        $data['title'] = 'Website is Down';
+        $data['description'] = 'Check if a website or service is down or having problems. Is it down or just me!';
+        $data['canonical_url'] = base_url('website-status');
+        $data['state'] = "website_status";
+    	$this->load->view('pages/tools/header', $data);
+    	$this->load->view('home/nav');
+    	$this->load->view('pages/tools/website_status');
+    	$this->load->view('home/footer');
+    }
+    public function websiteMonitor($site){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['site_data'] = $this->Tools_model->getMonitoredSiteStatus($site);
+        $type = $this->input->get('type');
+        if($data['site_data'] && $type == 'html'){
+            $data['title'] = ucwords($data['site_data']['name']).' uptime status';
+            $data['description'] = $data['site_data']['name']." website uptime and downtime status";
+            $data['canonical_url'] = base_url('uptime/').$data['site_data']['name'];
+            $data['state'] = "website_monitor";
+            $this->load->view('pages/tools/header', $data);
+            // $this->load->view('home/nav');
+            $this->load->view('pages/tools/uptime');
+            $this->load->view('pages/tools/footer');
+        }
+        else if($data['site_data'] && $type == 'img'){
+            $htmlFile = base_url('uptime/').$data['site_data']['name'].'?type=html';
+            $imageFile = 'output/'.$data['site_data']['name'].'.png';
+            
+            // Use wkhtmltoimage to convert HTML to image
+            exec("wkhtmltoimage --format png $htmlFile $imageFile");
+            
+            // Check if the image file was created successfully
+            if (file_exists($imageFile)) {
+                echo "Image created successfully: $imageFile";
+            } else {
+                echo "Failed to create image.";
+            }
+        }
+        else if($data['site_data']){
+            $data['title'] = ucwords($data['site_data']['name']).' uptime status';
+            $data['description'] = $data['site_data']['name']." website uptime and downtime status";
+            $data['canonical_url'] = base_url('uptime/').$data['site_data']['name'];
+            $data['state'] = "website_monitor";
+            $this->load->view('pages/tools/header', $data);
+            $this->load->view('home/nav');
+            $this->load->view('pages/tools/uptime');
+            $this->load->view('pages/tools/footer');
+        }
+        else{
+            $this->Site_settings_model->error404();
+        }
+        
+    }
+    public function archive(){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['title'] = 'AltcoinsTalks\'s Archives';
+        $data['description'] = 'AltcoinsTalks.com public posts, topic, user archives.';
+        $data['canonical_url'] = base_url('altt/archive');
         $data['state'] = "altt_archives";
     	$this->load->view('altt/header', $data);
     	$this->load->view('altt/nav');
     	$this->load->view('altt/archive');
     	$this->load->view('altt/footer');
     }
+    public function alttTools(){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['title'] = 'AltcoinsTalks\' Statistics Overview';
+        $data['description'] = 'AltcoinsTalks.com public statistic information';
+        $data['canonical_url'] = base_url('altt');
+        $data['state'] = "altt_stat";
+    	$this->load->view('altt/header', $data);
+    	$this->load->view('altt/nav');
+    	$this->load->view('altt/public_info');
+    	$this->load->view('altt/footer');
+    }
+    
     
 }
