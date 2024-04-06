@@ -582,6 +582,7 @@ class Blog_model extends CI_Model {
             ->JOIN('article_tags_tbl as att','att.article_id=at.article_id')
             ->WHERE('att.tags', $tag)
             ->WHERE('at.status','published')
+            ->ORDER_BY('created_at', 'desc')
             ->GET()->result_array();
             $result = array();
 
@@ -594,7 +595,7 @@ class Blog_model extends CI_Model {
                     'description'=>$q['description'],
                     'url'=>base_url('article/').$q['url'],
                     'article_image'=>base_url().$q['article_image'],
-                    'created_at'=>date('d F Y', strtotime($q['created_at'])),
+                    'created_at'=>date('d M Y', strtotime($q['created_at'])),
                 );
                 array_push($result, $array);
             }

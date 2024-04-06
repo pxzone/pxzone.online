@@ -77,9 +77,9 @@ class Blog extends CI_Controller {
                         
                         <div class=""> 
                             <ul class="article-share-icon mt-1">
-                                <li class="facebook-icon"><a href="https://www.facebook.com/sharer/sharer.php?u='.$article_data['url'].'" rel="nofollow noopener noreferrer" target="_blank"><i class="mdi mdi-facebook"></i></a></li>
-                                <li class="twitter-icon"><a href="https://twitter.com/intent/tweet?original_referer='.$article_data['url'].'&text='.$article_data['title'].'&url='.$article_data['url'].'&hashtags='.$article_data['category'].','.$hashtags.'PXDev" rel="nofollow noopener noreferrer" target="_blank"><i class="mdi mdi-twitter"></i></a></li>
-                                <li class="linkedin-icon"><a href="https://www.linkedin.com/shareArticle?mini=true&url='.$article_data['url'].'&title='.$article_data['title'].'" rel="nofollow noopener noreferrer" target="_blank"><i class="mdi mdi-linkedin"></i></a></li>
+                                <li class="facebook-icon"><a href="https://www.facebook.com/sharer/sharer.php?u='.$article_data['url'].'" rel="nofollow noopener noreferrer" target="_blank"><i class="uil uil-facebook-f"></i></a></li>
+                                <li class="twitter-icon"><a href="https://twitter.com/intent/tweet?original_referer='.$article_data['url'].'&text='.$article_data['title'].'&url='.$article_data['url'].'&hashtags='.$article_data['category'].','.$hashtags.'PXDev" rel="nofollow noopener noreferrer" target="_blank"><i class="uil uil-twitter"></i></a></li>
+                                <li class="linkedin-icon"><a href="https://www.linkedin.com/shareArticle?mini=true&url='.$article_data['url'].'&title='.$article_data['title'].'" rel="nofollow noopener noreferrer" target="_blank"><i class="uil uil-linkedin"></i></a></li>
                             </ul>
                          </div>
                     </div>
