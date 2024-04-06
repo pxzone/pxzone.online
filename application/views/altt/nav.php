@@ -31,9 +31,9 @@
                         <div class="page_menu_content">
                             <ul class="page_menu_nav menu_mm">
                                 <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('')">Home</a></li>
-                                <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('blog')">Blog</a></li>
+                                <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('altt/karma-log')">Karma Logs</a></li>
+                                <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('altt/archive')">Archive</a></li>
                                 <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('tools')">Tools</a></li>
-                                <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('about')">About Us</a></li>
                                 <?php if (isset($this->session->user_id)) {?><li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('account/dashboard')">Account</a></li><?php } ?>
                                 <!-- <li class="page_menu_item menu_mm cursor-pointer mt-3 install-app-btn-container"><button id="_install_app" class="btn rounded btn-warning c-white ">Install App</button></li> -->
                             </ul>
@@ -46,15 +46,9 @@
                     <ul class="navbar-nav me-auto align-items-right text-uppercase fw-500 web-view">
                     </ul>
                     <ul class="navbar-nav ms-auto align-items-center fw-500 web-view">
-                        <li class="nav-item mx-lg-1">
-                            <a class="nav-link cursor-pointer c-white" onclick="_accessPage('blog')">Blog</a>
-                        </li>
-                        <li class="nav-item mx-lg-1">
-                            <a class="nav-link cursor-pointer c-white" onclick="_accessPage('tools')">Tools</a>
-                        </li>
-                        <li class="nav-item mx-lg-1">
-                            <a class="nav-link cursor-pointer c-white" onclick="_accessPage('about')">About Us</a>
-                        </li>
+                        <li class="nav-item mx-lg-1"><a class="nav-link cursor-pointer c-white" onclick="_accessPage('altt/karma-log')">Karma Logs</a></li>
+                        <li class="nav-item mx-lg-1"><a class="nav-link cursor-pointer c-white" onclick="_accessPage('altt/archive')">Archive</a></li>
+                        <li class="nav-item mx-lg-1"><a class="nav-link cursor-pointer c-white" onclick="_accessPage('tools')">Tools</a></li>
                         <?php if(isset($this->session->user_id)) {?>
                         <li class="dropdown text-capitalize">
                             <a class="nav-link dropdown-toggle nav-user arrow-none me-0 margin-top-3" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"aria-expanded="false">
