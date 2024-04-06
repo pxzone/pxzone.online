@@ -25,10 +25,10 @@ class Tools_model extends CI_Model {
         $balance = $funded_txo_sum - $spent_txo_sum;
         return $balance / 100000000; 
     }
-    public function getFiatValue($btc_balance, $currency){
+    public function getFiatValue($coin_balance, $coin_name, $currency){
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=".$currency,
+            CURLOPT_URL => "https://api.coingecko.com/api/v3/simple/price?ids=$coin_name&vs_currencies=".$currency,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -43,8 +43,8 @@ class Tools_model extends CI_Model {
         $response = curl_exec($curl);
         curl_close($curl);
         $data_obj = json_decode($response);
-        $btc_fiat = $data_obj->bitcoin->$currency;
-        return $btc_balance * $btc_fiat;
+        $coin_to_fiat = $data_obj->$coin_name->$currency;
+        return $coin_balance * $coin_to_fiat;
     }
     public function btcPriceHistoryToImage($date,$currency){
         $curl = curl_init();
@@ -368,5 +368,174 @@ class Tools_model extends CI_Model {
     }
     // okilink api_key 
   
+    public function getWebsiteList(){
+        return $this->db->SELECT('id, website_url')
+            ->WHERE('status', 'active')
+            ->GET('monitor_website_tbl')->result_array();
+    }
+    public function insertWebsiteActivity($data_arr){
+        $this->db->INSERT('monitor_website_activity_tbl', $data_arr);
+    }
+    public function getMonitoredSiteStatus($site){
+        return $this->db->SELECT('name, website_url')
+            ->WHERE('name', $site)
+            ->WHERE('status', 'active')
+            ->GET('monitor_website_tbl')->row_array();
+    }
+    public function getMonitorWebsiteDataChart(){
+        $site = $this->input->get('site');
+
+        if($this->agent->is_mobile()){
+            $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-30 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+            $vert_count = 30;
+            $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.created_at')
+                ->FROM('monitor_website_tbl as mwt')
+                ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
+                ->WHERE('mwt.name', $site)
+                ->WHERE('mwt.status', 'active')
+                ->WHERE($date_range)
+                ->ORDER_BY('mwat.created_at','desc')
+                ->GET()->result_array();
+        }
+        else{
+            $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-60 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+            $vert_count = 60;
+            $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.created_at')
+                ->FROM('monitor_website_tbl as mwt')
+                ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
+                ->WHERE('mwt.name', $site)
+                ->WHERE('mwt.status', 'active')
+                ->WHERE($date_range)
+                ->ORDER_BY('mwat.created_at','desc')
+                ->GET()->result_array();
+        }
+        $latest_row = $this->getUptimeLatestRow($site);
+        
+        $result_arr = array();
+        foreach($query_all as $q){
+            $row_array = array(
+                'response_time' => $q['response_time'],
+                'status' => $q['status'],
+                'date' => date('M d, Y', strtotime($q['created_at']))
+            );
+            array_push($result_arr, $row_array);
+        }
+        $result_arr;
+
+        $grouped = array();
+        foreach($result_arr as $entry){
+            $date = $entry['date'];
+            $status = $entry['status'];
+            if(!isset($grouped[$date])){
+                $grouped[$date] = array(
+                    'date'=>$date,
+                    'status'=>array(),
+                    'down_count'=>0,
+                );
+            }
+            $grouped[$date]['status'][] = $status;
+            if ($status == 'down') {
+                $grouped[$date]['down_count']++;
+            }
+        }
+        foreach ($grouped as &$entry) {
+            $status = in_array('down', $entry['status']) ? 'down' : 'up';
+            $entry['status'] = $status;
+        }
+        $response['data'] = array_values($grouped);
+        $response['latest_query'] = $latest_row;
+        $response['count'] = $vert_count;
+        return $response;
+    }
+    public function getUptimeLatestRow($site){
+        return $this->db->SELECT('mwat.response_time, mwat.status, mwat.created_at')
+            ->FROM('monitor_website_tbl as mwt')
+            ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
+            ->WHERE('mwt.name', $site)
+            ->WHERE('mwt.status', 'active')
+            ->LIMIT(1)
+            ->ORDER_BY('mwat.created_at','desc')
+            ->GET()->row_array();
+    }
+    public function getMonitorWebsiteActivity(){
+        $site = $this->input->get('site');
+        $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-15 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+        $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.status_code, mwat.created_at')
+            ->FROM('monitor_website_tbl as mwt')
+            ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
+            ->WHERE('mwt.name', $site)
+            ->WHERE('mwt.status', 'active')
+            ->WHERE('mwat.status', 'down')
+            ->WHERE($date_range)
+            ->ORDER_BY('mwat.created_at','desc')
+            ->GET()->result_array();
+        
+            $result_arr = array();
+            foreach($query_all as $q){
+                $row_array = array(
+                    'response_time' => $q['response_time'],
+                    'status' => $q['status'],
+                    'status_code' => $q['status_code'],
+                    'date' => date('M d, Y H:i:s', strtotime($q['created_at']))
+                );
+                array_push($result_arr, $row_array);
+            }
+            $result_arr;
+    
+            $grouped = array();
+            $details = array();
+            $count = 1;
+            foreach($result_arr as $entry){
+                $datetime = date('h:i:s A', strtotime($entry['date']));
+                $date = date('M d, Y', strtotime($entry['date']));
+                $status = $entry['status'];
+                if(!isset($grouped[$date])){
+                    $grouped[$date] = array(
+                        'id'=>$count,
+                        'date'=>$date,
+                        'status'=>$status,
+                        'details'=>array(),
+                    );
+                    $count++;
+                }
+            }
+            foreach ($result_arr as $entry2) {
+                $date = date('M d, Y', strtotime($entry2['date']));
+                $details_arr = array(
+                    'datetime' =>date('h:i:s A', strtotime($entry2['date'])),
+                    'status_code' =>$entry2['status_code'],
+                    'response_time' =>$entry2['response_time'],
+                );
+                array_push($grouped[$date]['details'] , $details_arr);
+            }
+            
+            $response['data'] = array_values($grouped);
+            return $response;
+        
+    }
+    public function getResponseTimeActivity(){
+        $site = $this->input->get('site');
+        $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-24 hours')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+        $query_all = $this->db->SELECT('mwat.response_time, mwat.created_at as date')
+            ->FROM('monitor_website_tbl as mwt')
+            ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
+            ->WHERE('mwt.name', $site)
+            ->WHERE('mwt.status', 'active')
+            ->WHERE($date_range)
+            // ->LIMIT(360)
+            ->GROUP_BY('hour(mwat.created_at)')
+            ->GROUP_BY('hour(mwat.response_time)')
+            ->ORDER_BY('mwat.created_at','desc')
+            ->GET()->result_array();
+        $result = array();
+        foreach($query_all as $q){
+            $row_data = array(
+                'date'=>date('M d h:i A', strtotime($q['date'])),
+                'response_time'=>substr($q['response_time'], 0, -2)
+            );
+            array_push($result, $row_data);
+        }
+        return $result;
+    }
     
 }
