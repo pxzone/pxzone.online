@@ -225,7 +225,9 @@ class Scrapper_model extends CI_Model {
         ->WHERE('username', $username)->GET('altt_users_tbl')->row_array();
     }
     public function getMultipleUserData(){
+        $date_range = array('updated_at >'=>date('Y-m-d 00:00:00', strtotime('-2 days -7 hours')), 'updated_at <'=> date('Y-m-d H:i:s'));
         return $this->db->SELECT('uid, username, karma')
+           ->WHERE($date_range)
            ->WHERE('status', 'active')
            ->ORDER_BY('updated_at', 'desc')
            ->GET('altt_users_tbl ')->result_array();
