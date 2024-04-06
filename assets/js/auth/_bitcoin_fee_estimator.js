@@ -8,8 +8,8 @@ const getFeeEstimates = () =>  {
 	})
 	.then(response => response.json())
 	.then(res => {
-       $("#low_prio_fee").text(res.minimumFee+' sat/vB')
-       $("#med_prio_fee").text(res.economyFee+' sat/vB')
+       $("#low_prio_fee").text(res.hourFee+' sat/vB')
+       $("#med_prio_fee").text(res.halfHourFee+' sat/vB')
        $("#high_prio_fee").text(res.fastestFee+' sat/vB')
 
 	})
