@@ -22,23 +22,43 @@
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('tools/bitcoin-to-image');?></loc>
+        <loc><?= base_url('altt/karma-log');?></loc>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('tools/bitcoin-balance-checker');?></loc>
+        <loc><?= base_url('altt/archive');?></loc>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('tools/bitcoin-message-verifier');?></loc>
+        <loc><?= base_url('bitcoin-to-image');?></loc>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('tools/bitcoin-wallet-notifier');?></loc>
+        <loc><?= base_url('crypto/balance-checker');?></loc>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('tools/bitcoin-fee-estimator');?></loc>
+        <loc><?= base_url('bitcoin-message-verifier');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc><?= base_url('bitcoin-wallet-notifier');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc><?= base_url('bitcoin-fee-estimator');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc><?= base_url('website-status');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc><?= base_url('uptime/bitcointalk');?></loc>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc><?= base_url('uptime/altcoinstalks');?></loc>
         <priority>1.0</priority>
     </url>
     <?php foreach($articles as $a) { ?>
