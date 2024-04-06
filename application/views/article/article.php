@@ -14,7 +14,7 @@
 			<div class="article-container">
 			<div class="container mt-sm-1 mt-2 mb-3">
 				<div class="row">
-					<div class="col-lg-8 col-md-8 col-12 mb-4">
+					<div class="col-lg-9 col-md-8 col-12 mb-4">
 						<div class="article-body text-pxdev" id="article_body">
 							<div class="">
 								<span class="placeholder col-2"></span>
@@ -31,7 +31,7 @@
 							</div> 
 						</div>
 					</div>
-					<div class="col-lg-4 col-md-4 col-12">
+					<div class="col-lg-3 col-md-4 col-12">
 						<h2 class="recent-post-h font-20">Recent Post</h2>
 						<div id="_recent_posts">
 							<p class="card-text placeholder-glow mt-2">
