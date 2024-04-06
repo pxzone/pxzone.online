@@ -11,13 +11,14 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="AltcoinsTalks Archives">
+        <meta name="apple-mobile-web-app-title" content="<?= $description; ?>">
 
         <link rel="shortcut icon" href="<?=base_url('assets/images/logo/favicon.webp');?>">
         <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
         <link rel="canonical" href="<?=$canonical_url;?>">
         
         <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet" >
+        <link href="<?=base_url()?>assets/css/fonts.css" rel="stylesheet" type="text/css" id="light-style" />
         <link href="<?=base_url()?>assets/css/app.min.css" rel="stylesheet" type="text/css" id="light-style" />
         <link href="<?=base_url()?>assets/css/styles.css?v=<?=filemtime('assets/css/styles.css')?>" rel="stylesheet" type="text/css" />
         <link href="<?=base_url()?>assets/css/default.css?v=<?=filemtime('assets/css/default.css')?>" rel="stylesheet" type="text/css" />

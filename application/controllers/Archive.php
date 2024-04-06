@@ -105,14 +105,14 @@ class Archive extends CI_Controller {
     }
     public function getUserPosts($username){
         // $this->output->cache(60);
-        $row_data = $this->Archive_model->getUserPostsContent($topic_id);
+        $row_data = $this->Archive_model->getUserPostsContent($username);
 
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'AltcoinsTalks Archives';
         $data['description'] = 'Archives of posts, topics, users, karma, etc. of AltcoinsTalks.com';
         $data['canonical_url'] = base_url('altt');
         $data['state'] = "altt_archives";
-        $data['topic_id'] = $topic_id;
+        $data['username'] = $username;
         $data['post'] = $row_data;
     	$this->load->view('altt/header', $data);
     	$this->load->view('altt/nav');
@@ -123,7 +123,7 @@ class Archive extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['title'] = 'AltcoinsTalks Karma Logs';
         $data['description'] = 'Karma logs of AltcoinsTalks.com';
-        $data['canonical_url'] = base_url('altt');
+        $data['canonical_url'] = base_url('altt/karma_log');
         $data['state'] = "altt_karma_log";
     	$this->load->view('altt/header', $data);
     	$this->load->view('altt/nav');

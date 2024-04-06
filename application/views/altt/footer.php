@@ -43,28 +43,75 @@
 		</div>
 		<!-- bundle -->
 		<script>
-			var base_url = "<?=base_url();?>";
+			var base_url = "<?=base_url()?>";
 			var current_url = "<?=current_url();?>";
-			<?php if (stripos(current_url(), "karma-log") !== false ) { ?>
+			<?php if (stripos(current_url(), "altt/karma-log") !== false ) { ?>
 
 			var keyword = "<?=(isset($_GET['search'])) ? $_GET['search'] : ""?>";
 			var sort = "<?=(isset($_GET['sort'])) ? $_GET['sort'] : "default"?>";<?php }?>
+
+			<?php if (stripos(current_url(), "altt/karma-log") !== false && isset($_GET['sort']) && $_GET['sort'] == 'custom' && !empty($_GET['from']) && !empty($_GET['to'])) { ?>
+			
+			var from = "<?=$_GET['from']?>";
+			var to = "<?=$_GET['to']?>";
+
+			<?php } ?>
+
+			<?php if (stripos(current_url(), "altt/archive") !== false ) { 
+				
+			if(isset($_GET['topic'])){
+				$category = "topic";
+				$search = $_GET['topic'];
+			}
+			else if(isset($_GET['post'])){
+				$category = "post";
+				$search = $_GET['post'];
+			}
+			else if(isset($_GET['username'])){
+				$category = "username";
+				$search = $_GET['username'];
+			}
+			else {
+				$category = "";
+				$search = "";
+			}?>
+
+			var keyword = "<?=$search?>";
+			var category = "<?=$category?>";<?php } ?>
 
 		</script>
 	    <script src="<?=base_url('assets/js/jquery-3.6.3.min.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_web_package.min.js"></script>
 		<script src="<?=base_url()?>assets/js/_access.js?v=<?=filemtime('assets/js/_access.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_webapp.js?v=<?=filemtime('assets/js/_webapp.js')?>"></script>
+		<?= (current_url() == base_url('altt')) ? '<script src="'.base_url().'assets/js/auth/_altt.js?v='.filemtime('assets/js/auth/_altt.js').'"></script>' : "" ?>
+		
 		<script src="<?=base_url()?>assets/js/auth/_altt_archive.js?v=<?=filemtime('assets/js/auth/_altt_archive.js')?>"></script>
+		<script src="<?=base_url()?>assets/js/vendor/chart.js"></script>
+		<script src="<?=base_url()?>assets/js/vendor/moment.min.js"></script>
+		<script src="<?=base_url()?>assets/js/vendor/daterangepicker.min.js"></script>
 		<script>
-			<?php if (isset($_GET['search']) && stripos(current_url(), "karma-log") !== false ) { ?>
-
+			<?php if (isset($_GET['search']) && stripos(current_url(), "altt/karma-log") !== false ) { ?>
 			$("#search").val(keyword);
 			fetchKarmaLogs(1, keyword, 'default');
-			<?php } else if (stripos(current_url(), "karma-log") !== false) { ?>
-
-			fetchKarmaLogs(1, keyword, sort);<?php }?>
+			<?php } else if (stripos(current_url(), "altt/karma-log") !== false && isset($_GET['sort']) && $_GET['sort'] == 'custom' && !empty($_GET['from']) && !empty($_GET['to'])) { ?>
 			
+			$("#select_sort").val(sort)
+			$('.custom-date').daterangepicker();
+			from = "<?=$_GET['from']?>";
+			to = "<?=$_GET['to']?>";
+			fetchKarmaLogs(1, keyword, sort, from, to);
+
+			<?php } else if (stripos(current_url(), "altt/karma-log") !== false) { ?>
+				
+			$('.custom-date').daterangepicker();
+			fetchKarmaLogs(1, keyword, sort, '', '');<?php }?>
+			
+			<?php if (stripos(current_url(), "altt/archive") !== false ) { ?>
+
+			$("#keyword").val(keyword);
+			searchArchives(1, keyword, category);<?php }?>
+
 		</script>
 	</body>
 </html>

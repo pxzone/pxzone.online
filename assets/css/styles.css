@@ -51,17 +51,17 @@ h1, h2, h3, h4, h5 {
     width: 100%;
 }
 .f-h1{
-    font-weight: 600;
+    font-weight: 500;
     font-size: 2.2em;
     color: #383737;
 }
 .f-h2{
-    font-weight: 600;
+    font-weight: 500;
     font-size: 2em;
     color: #fff;
 }
 .f-h3{
-    font-weight: 600;
+    font-weight: 500;
     font-size: 1.8em;
     color: #fff;
 }
@@ -833,6 +833,14 @@ h1, h2, h3, h4, h5 {
     border-bottom-right-radius: 10px; 
     color: #cccfd8;
 }
+.search-archive-dropdown {
+    height: 70px; 
+    border-color: rgba(255, 255, 255, 0.07);  
+    background-color: rgba(255, 255, 255, 0.07); 
+    border-top-right-radius: 10px; 
+    border-bottom-right-radius: 10px; 
+    color: #cccfd8;
+}
 .inline-block{
     display: inline-block;
 }
@@ -841,6 +849,19 @@ h1, h2, h3, h4, h5 {
 }
 .search-wrapper{
     position: relative;
+}
+.dd-archives-wrapper {
+    
+    position: absolute;
+    top: 0;
+    right: 125px;
+    font-size: 20px;
+}
+.input-archives-dropdown{
+    height: 70px;
+    border-color: transparent;
+    background-color: transparent;
+    color: #cccfd8;
 }
 .search-archives-btn {
     height: 60px; 
@@ -859,6 +880,33 @@ h1, h2, h3, h4, h5 {
 .search-archive-icon{
     font-size: 1em;
 }
+.website-url-input{
+
+}
+.check-web-status-wrapper {
+    position: absolute;
+    top: 0;
+    right: 125px;
+    font-size: 20px;
+}
+.check-status-icon{
+    font-size: 1em;
+}
+.check-status-btn {
+    height: 60px; 
+    border-color: rgba(255, 255, 255, 0.07);  
+    /* background-color: rgba(26, 16, 16, 0.07);  */
+    /* border-top-right-radius: 10px;  */
+    /* border-bottom-right-radius: 10px;  */
+    border-radius: 12px;
+    color: #cccfd8;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+    padding: 10px 15px;
+}
+
 .quoteheader{
     margin-top: 10px;
     border: 1px solid rgba(213, 213, 213, 0.15);
@@ -901,4 +949,166 @@ h1, h2, h3, h4, h5 {
     width: 50px;
     z-index: 9999;
     background-color: rgb(49, 58, 70);
+}
+#top_topics label a {
+    width: 351px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display:inline-block;
+    white-space: nowrap; 
+}
+.custom-date {
+    display: block;
+    width: 100%;
+    padding: .45rem 2.7rem .45rem .9rem;
+    -moz-padding-start: calc(.9rem - 3px);
+    font-size: .9rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6c757d !important;
+    background-color: #fff !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right .9rem center;
+    background-size: 14px 10px;
+    border: 1px solid #dee2e6 !important;
+    border-radius: .25rem !important;
+    -webkit-transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.hr-vertical-up {
+    width: .56em;
+    height: 50px;
+    background-color: rgb(34, 186, 105);
+    border-radius: .15em;
+    display: inline-block;
+    cursor: pointer;
+    margin-right:.15em;
+    
+    position: relative;
+    border-bottom: 1px dotted black; 
+}
+.hr-vertical-down {
+    width: .56em;
+    height: 50px;
+    background-color: rgb(250, 92, 124);
+    border-radius: .15em;
+    display: inline-block;
+    cursor: pointer;
+    margin-right:.15em;
+    
+    position: relative;
+    border-bottom: 1px dotted black; 
+}
+.hr-vertical-disabled {
+    width: .56em;
+    height: 50px;
+    background-color: rgb(123, 123, 124);
+    border-radius: .15em;
+    display: inline-block;
+    cursor: pointer;
+    margin-right:.15em;
+}
+.hr-vertical-disabled:hover {
+    background-color: rgb(104, 104, 104);
+}
+.hr-vertical-up:hover {
+    background-color: rgb(0, 149, 70);
+}
+.hr-vertical-up:hover .tooltip_down {
+    visibility: visible;
+}
+.hr-vertical-down:hover .tooltip_down {
+    visibility: visible;
+}
+/* .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; 
+} */
+.hr-vertical-up .tooltip_down {
+    top: 100%;
+    left: 50%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+
+    visibility: hidden;
+    width: 140px;
+    background-color: rgb(28, 41, 55);
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    padding: 5px 10px 5px 10px;
+    border-radius: 6px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+.hr-vertical-down .tooltip_down {
+    top: 100%;
+    left: 50%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+
+    visibility: hidden;
+    width: 170px;
+    background-color: rgb(28, 41, 55);
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    padding: 5px 10px 5px 10px;
+    border-radius: 6px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+.hr-vertical-up .tooltip_down::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgb(28, 41, 55) transparent;
+}
+.hr-vertical-down .tooltip_down::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgb(28, 41, 55) transparent;
+}
+.hr-hover{
+    border-bottom: .5px solid #515659;
+}
+.wm-status-wrapper{
+    display: flex;
+    flex-direction: row-reverse;
+}
+.downtime-details{
+    border-top: 1px solid #5d5d5d;
+    padding: 10px 5px;
+}
+.downtime-details:last-child{
+    border-bottom: 1px solid #5d5d5d;
+}
+.dta-details{
+    display: flex;
+    flex-direction: row;
+    padding: 5px 5px;
+}
+.dta-details > div:first-child{
+    margin-right: 10px;
+}.uptime-hr{
+    border-bottom: 1px solid #5d5d5d;
+    width: 70%;
 }
