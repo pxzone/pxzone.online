@@ -30,7 +30,7 @@
         <priority>1.0</priority>
     </url>
     <url>
-        <loc><?= base_url('bitcoin-to-image');?></loc>
+        <loc><?= base_url('bitcoin-price-to-image');?></loc>
         <priority>1.0</priority>
     </url>
     <url>
