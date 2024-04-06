@@ -47,6 +47,9 @@
 			var _state = <?=($state) ? '"'.$state.'"' : ''?>;
 			<?php if ($state == 'bitcoin_wallet_notifier_logs') {?>var unique_id = "<?=$id;?>"<?php } ?>
 
+			<?php if ($state == 'crypto_balance_checker') {?>var wallet_address = "<?=isset($_GET['wallet_address']) ? $_GET['wallet_address'] : ''?>";
+			var coin = "<?=isset($_GET['coin']) ? $_GET['coin'] : ''?>";<?php } ?>
+
 		</script>
 	    <script src="<?=base_url('assets/js/jquery-3.6.3.min.js')?>"></script>
 		<script src="<?=base_url()?>assets/js/_web_package.min.js"></script>
@@ -63,6 +66,10 @@
 		<?php } else if ($state == 'bitcoin_fee_estimator') {?><script src="<?=base_url()?>assets/js/auth/_bitcoin_fee_estimator.js?v=<?=filemtime('assets/js/auth/_bitcoin_fee_estimator.js')?>"></script>
 		<?php } else if ($state == 'crypto_balance_checker' ) {?><script src="<?=base_url()?>assets/js/auth/_crypto.js?v=<?=filemtime('assets/js/auth/_crypto.js')?>"></script>
 		<?php } ?>
+		
+		<script>
+			<?php if ($state == 'crypto_balance_checker') {?>getWalletBalance(wallet_address, coin); <?php } ?>
 
+		</script>
 	</body>
 </html>

@@ -20,7 +20,7 @@
                     <div class="mt-4 row">
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/altcoinstalks-telegram-notifier')" class="text-white">
+                                <a href="#access" onclick="_accessPage('altcoinstalks-telegram-notifier')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm">
@@ -37,12 +37,30 @@
                         </div>
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/crypto/balance-checker')" class="text-white">
+                                <a href="#access" onclick="_accessPage('altt/karma-log')" class="text-white">
+                                    <div class=" tilebox-one">
+                                        <div class="card-body">
+                                            <div class="avatar-sm">
+                                                <span class="avatar-title bg-secondary rounded-circle">
+                                                    <i class="uil-list-ol-alt padding-left-50"></i>
+                                                </span>
+                                            </div>
+                                            <h2 class="font-18 fw-600 mt-1" >AltcoinsTalks Karma Logs</h2>
+                                            <p class="my-2 font-14" id="">Karma logs with sorting features</p>
+                                        </div> 
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 ">
+                            <div class="card card-anchor bg-dark br-10">
+                                <a href="#access" onclick="_accessPage('crypto/balance-checker')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm ">
                                                 <span class="avatar-title bg-warning-gradient rounded-circle">
-                                                    <i class="uil-credit-card-search padding-left-50"></i>
+                                                    <i class="uil-file-search-alt padding-left-50"></i>
                                                 </span>
                                             </div>
                                             <h2 class="font-18 fw-600 mt-1" >Crypto Balance Checker</h2>
@@ -55,7 +73,7 @@
                         
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/bitcoin-price-to-image')" class="text-white">
+                                <a href="#access" onclick="_accessPage('bitcoin-price-to-image')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm">
@@ -64,7 +82,7 @@
                                                 </span>
                                             </div>
                                             <h2 class="font-18 fw-600 mt-1" >Bitcoin Price to Image Converter</h2>
-                                            <p class="my-2 font-14" id="">Bitcoin to fiat conversion, price history convert to image.</p>
+                                            <p class="my-2 font-14" id="">Bitcoin to fiat conversion, price history to image.</p>
                                         </div> 
                                     </div>
                                 </a>
@@ -72,7 +90,7 @@
                         </div>
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/bitcoin-wallet-notifier')" class="text-white">
+                                <a href="#access" onclick="_accessPage('bitcoin-wallet-notifier')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm">
@@ -89,7 +107,7 @@
                         </div>
                         <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/bitcoin-message-verifier')" class="text-white">
+                                <a href="#access" onclick="_accessPage('bitcoin-message-verifier')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
                                             <div class="avatar-sm">
@@ -104,14 +122,14 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- <div class="col-lg-3 ">
+                        <div class="col-lg-3 ">
                             <div class="card card-anchor bg-dark br-10">
-                                <a href="#access" onclick="_accessPage('tools/bitcoin-fee-estimator')" class="text-white">
+                                <a href="#access" onclick="_accessPage('bitcoin-fee-estimator')" class="text-white">
                                     <div class=" tilebox-one">
                                         <div class="card-body">
-                                            <div class="avatar-sm">
-                                                <span class="avatar-title bg-danger-gradient rounded">
-                                                    <i class="mdi mdi-calculator-variant-outline padding-left-50"></i>
+                                        <div class="avatar-sm">
+                                                <span class="avatar-title bg-primary rounded-circle">
+                                                    <i class="uil-calculator-alt padding-left-50"></i>
                                                 </span>
                                             </div>
                                             <h2 class="font-18 fw-600 mt-1" >Bitcoin Transaction Fee Estimator</h2>
@@ -120,7 +138,7 @@
                                     </div>
                                 </a>
                             </div>
-                        </div> -->
+                        </div>
                         
                     </div>
                 </div>
