@@ -209,7 +209,7 @@ $('#_blog_tbl_pagination').on('click','a',function(e){
     var page_no = $(this).attr('data-ci-pagination-page');
     _showArticles(page_no);
 });
-$("#_search_article_form").on('submit', function(e){
+$("#_search_article_form").on('submit', function(){
 	e.preventDefault();
 	search = $("#_search").val();
 	page_no = 1;
