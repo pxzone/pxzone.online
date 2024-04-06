@@ -15,3 +15,6 @@ application/libraries/Telegram_api.php
 application/libraries/Api_auth.php
 application/models/Telegram_bot_test_model.php
 assets/js/test.js
+*.woff2
+*.webp
+application/config/database.php
