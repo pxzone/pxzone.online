@@ -71,6 +71,20 @@ $route['tools/bitcoin-wallet-notifier'] = 'Page/bitcoinWalletWatcherPage';
 $route['tools/wallet-notifier-logs/(:any)'] = 'Page/walletNotifierLogs/$1';
 $route['tools/bitcoin-fee-estimator'] = 'Page/bitcoinFeeEstimator';
 $route['tools/altcoinstalks-telegram-notifier'] = 'Page/alttTelegramNotifier';
+$route['tools/website-status'] = 'Page/websiteStatusChecker';
+$route['uptime/(:any)'] = 'Page/websiteMonitor/$1';
+
+$route['bitcoin-balance-checker'] = 'Page/bitcoinBalanceChecker';
+$route['crypto/balance-checker'] = 'Page/cryptoBalanceChecker';
+$route['bitcoin-message-verifier'] = 'Page/bitcoinMessageVerifier';
+$route['bitcoin-price-to-image'] = 'Page/bitcoinToImage';
+$route['crypto/image/-to-image'] = 'Page/cryptoToImage';
+$route['bitcoin-wallet-notifier'] = 'Page/bitcoinWalletWatcherPage';
+$route['wallet-notifier-logs/(:any)'] = 'Page/walletNotifierLogs/$1';
+$route['bitcoin-fee-estimator'] = 'Page/bitcoinFeeEstimator';
+$route['altcoinstalks-telegram-notifier'] = 'Page/alttTelegramNotifier';
+$route['website-status'] = 'Page/websiteStatusChecker';
+$route['uptime/(:any)'] = 'Page/websiteMonitor/$1';
 
 # TOOLS 
 $route['api/v1/bitcoin/_get_wallet_balance'] = 'Tools/getwalletBalance';
@@ -86,12 +100,12 @@ $route['api/v1/bitcoin/_get_recommended_fees'] = 'Tools/bicoinFeeEstimate';
 $route['api/crypto/price-to-img'] = 'Tools/cryptoPriceToImage';
 $route['api/crypto/balance-checker'] = 'Tools/cryptoPriceToImage';
 $route['api/v1/crypto/_get_wallet_balance'] = 'Tools/getCryptoWalletBalance';
-$route['altt'] = 'Page/alttArchives';
+$route['altt'] = 'Page/alttTools';
 $route['altt/post/(:num)'] = 'Archive/getPosts/$1';
 $route['altt/topic/(:num)'] = 'Archive/getTopics/$1';
-$route['altt/user/(:num)'] = 'Archive/getTopics/$1';
+$route['altt/user/(:num)'] = 'Archive/getUserPosts/$1';
 $route['altt/karma-log'] = 'Archive/karmaLog';
-$route['api/altt/karma/_get'] = 'Archive/getKarmaLogSort';
+$route['altt/archive'] = 'Page/archive';
 
 #ACCOUNT 
 $route['account/dashboard'] = 'Page/dashboard';
@@ -126,6 +140,7 @@ $route['api/v1/article/_get'] = 'Blog/getArticlesHomePageJS';
 $route['api/v1/article/_get_data'] = 'Blog/getArticleDataJS';
 $route['api/v1/article/_get_blog_category'] = 'Blog/getCategoryForPageJS';
 $route['api/v1/article/_get_blog_tags'] = 'Blog/getArticleTagForPageJS';
+$route['api/altt/karma/_get'] = 'Archive/getKarmaLogSort';
 
 # LOGIN
 $route['api/v1/account/_login'] = 'Login/loginProcess';
@@ -134,10 +149,11 @@ $route['api/v1/account/_login'] = 'Login/loginProcess';
 $route['api/scrapper/_set_time'] = 'Scrapper/setTimeRunning';
 $route['api/scrapper/altcoinstalks'] = 'Scrapper/alttScrapeForumRecentPosts';
 // $route['api/scrapper/altcoinstalks/msg_id'] = 'Scrapper/scrapeAlttForum';
-$route['api/scrapper/altcoinstalks_users'] = 'Scrapper/scrapeAlttTelegramUserData';
+// $route['api/scrapper/altcoinstalks_users'] = 'Scrapper/scrapeAlttTelegramUserData';
 $route['api/scrapper/altt/opt/(:num)'] = 'Scrapper/scrapeAlttForumOption2/$1';
 $route['api/scrapper/altcoinstalks/edited/posts'] = 'Scrapper/scrapeAlttForumForEditedPosts';
-$route['api/scrapper/altcoinstalks/karma_count'] = 'Scrapper/scrapeForumActiveUsersKarmaCount';
+$route['api/scrapper/altt/karma_count'] = 'Scrapper/scrapeForumActiveUsersKarmaCount';
+$route['altt/active_users'] = 'Scrapper_test/activeUsers';
 
 #TELEGRAM
 $route['api/telegram/bot/callback'] = 'Telegram_bot/callback';
@@ -149,6 +165,7 @@ $route['api/telegram/bot/get-update'] = 'Telegram_bot/getUpdate';
 $route['api/_telegram_register'] = 'Telegram_bot/registerTelegramData';
 $route['api/_get_telegram_data'] = 'Telegram_bot/getTelegramData';
 $route['api/_insert_telegram_msg'] = 'Telegram_bot/insertTelegramMsg';
+$route['api/telegram/most_track_users'] = 'Telegram_bot/mostTrackedUsers';
 
 #ARCHIVE
 $route['api/topic/(:num)'] = 'Archive/getTopicContent/$1';
@@ -156,12 +173,37 @@ $route['api/post/(:num)'] = 'Archive/getPostContent/$1';
 $route['api/user/(:any)'] = 'Archive/getUserPostsContent/$1';
 $route['api/altt/_search'] = 'Archive/searchPosts';
 
+# ALTT STAT
+$route['api/altt/statistics/_get_basic_stat'] = 'Altt/getKarmaPostStat';
+$route['api/altt/statistics/_get_posts_chart'] = 'Altt/getPostsChartStat';
+$route['api/altt/statistics/_get_topics_chart'] = 'Altt/getTopicsChartStat';
+$route['api/altt/statistics/_get_most_topic_replies'] = 'Altt/getTopicsByReplies';
+$route['api/altt/statistics/_get_most_topic_starter'] = 'Altt/getTopicStarters';
+$route['api/altt/statistics/_get_top_board'] = 'Altt/getTopBoards';
+$route['api/altt/statistics/_get_top_posters'] = 'Altt/getTopPosters';
+
 #CRON
 $route['api/v1/email/_bitcoin_wallet_watcher'] = 'Tools/bitcoinWalletWatcherNotifier';
 
+#WEBSITE STATUS
+$route['tool/website-status'] = 'Web_status/checkWebsiteStatus';
+$route['api/v1/email/_bitcoin_wallet_watcher'] = 'Tools/bitcoinWalletWatcherNotifier';
+
+#WEBSITE STATUS MONITOR
+$route['api/v1/monitor-website-status'] = 'Web_status/monitorWebsiteStatus';
+$route['api/v1/teleg/_get_data'] = 'Web_status/getMonitorWebsiteData';
+$route['api/v1/monitor/_get_data'] = 'Web_status/getMonitorWebsiteData';
+$route['api/v1/monitor/_get_data_activity'] = 'Web_status/getMonitorWebsiteActivity';
+$route['api/v1/monitor/_get_response_time'] = 'Web_status/getResponseTimeActivity';
+
+
+#WEB STATUS
+$route['api/website_status'] = 'Tools/checkUptimeStatus';
 $route['api/v1/xss/_get_csrf_data'] = 'App/getCsrfData';
 $route['api/v1/_land'] = 'Page/newWebsiteVisits';
 
 $route['default_controller'] = 'App/index';
 $route['404_override'] = 'Error404';
 $route['translate_uri_dashes'] = TRUE;
+
+
