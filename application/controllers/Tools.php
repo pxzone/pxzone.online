@@ -22,8 +22,8 @@ class Tools extends CI_Controller {
 		$verify_wallet_address = $this->Tools_model->verifyWalletAddress($wallet_address);
         if($verify_wallet_address == true){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($wallet_address);
-            $usd_value = $this->Tools_model->getFiatValue($balance,'usd');
-            $eur_value = $this->Tools_model->getFiatValue($balance,'eur');
+            $usd_value = $this->Tools_model->getFiatValue($balance, 'bitcoin', 'usd');
+            $eur_value = $this->Tools_model->getFiatValue($balance, 'bitcoin', 'eur');
             $response = array(
                 array(
                 'balance'=>$balance,
@@ -43,19 +43,19 @@ class Tools extends CI_Controller {
         $btc_balance = $btc_data; 
         
         if($this->input->get('currency') == 'usd' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($btc_balance,'usd');
+            $fiat_value = $this->Tools_model->getFiatValue($btc_balance, 'bitcoin', 'usd');
             $final_value = number_format($fiat_value,2).' USD';
         }
         else if($this->input->get('currency') == 'eur' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($btc_balance,'eur');
+            $fiat_value = $this->Tools_model->getFiatValue($btc_balance, 'bitcoin', 'eur');
             $final_value = number_format($fiat_value,2).' EUR';
         }
         else if($this->input->get('currency') == 'gbp' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($btc_balance,'gbp');
+            $fiat_value = $this->Tools_model->getFiatValue($btc_balance, 'bitcoin', 'gbp');
             $final_value = number_format($fiat_value,2).' GBP';
         }
         else if($this->input->get('currency') == 'php' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($btc_balance,'php');
+            $fiat_value = $this->Tools_model->getFiatValue($btc_balance, 'bitcoin', 'php');
             $final_value = number_format($fiat_value,2).' PHP';
         }
         else{
@@ -90,19 +90,19 @@ class Tools extends CI_Controller {
     }
     public function btcPriceToImage($price){
         if($this->input->get('currency') == 'eur' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($price,'eur');
+            $fiat_value = $this->Tools_model->getFiatValue($price, 'bitcoin', 'eur');
             $final_value = number_format($fiat_value,2).' EUR';
         }
         else if($this->input->get('currency') == 'gbp' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($price,'gbp');
+            $fiat_value = $this->Tools_model->getFiatValue($price, 'bitcoin', 'gbp');
             $final_value = number_format($fiat_value,2).' GBP';
         }
         else if($this->input->get('currency') == 'php' && $this->input->get('currency') !== null){
-            $fiat_value = $this->Tools_model->getFiatValue($price,'php');
+            $fiat_value = $this->Tools_model->getFiatValue($price, 'bitcoin', 'php');
             $final_value = number_format($fiat_value,2).' PHP';
         }
         else{
-            $fiat_value = $this->Tools_model->getFiatValue($price,'usd');
+            $fiat_value = $this->Tools_model->getFiatValue($price, 'bitcoin', 'usd');
             $final_value = number_format($fiat_value,2).' USD';
         }
 
@@ -719,13 +719,12 @@ class Tools extends CI_Controller {
         return number_format($fiat_value, 2) .' '.strtoupper($currency);
     }
     public function getCryptoWalletBalance(){
-        $this->output->cache(.3);
         $status = false;
 		$data_balance = $this->getCryptoBalance();
         if($data_balance){
             // $btc_balance = $this->Tools_model->getCryptoBalance($wallet_address);
-            $usd_value = $this->Tools_model->getFiatValue($data_balance['balance'], 'usd');
-            $eur_value = $this->Tools_model->getFiatValue($data_balance['balance'], 'eur');
+            $usd_value = $this->Tools_model->getFiatValue($data_balance['balance'], $data_balance['coin_name'], 'usd');
+            $eur_value = $this->Tools_model->getFiatValue($data_balance['balance'], $data_balance['coin_name'], 'eur');
             $response = array(
                 'balance'=>$data_balance['balance'],
                 'ticker'=>$data_balance['ticker'],
@@ -740,60 +739,87 @@ class Tools extends CI_Controller {
 		
         $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$response)));
     }
-    function getCryptoBalance(){
+    public function getCryptoBalance(){
         $coin = $this->input->get('coin');
         $address = $this->input->get('wallet_address');
 
         if($coin == 'btc'){
-            $balance = $this->Tools_model->getBtcBalance($address);
-            // $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'btc');
+            // $balance = $this->Tools_model->getBtcBalance($address);
+            $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'btc');
             $ticker = "BTC";
+            $coin_name = "bitcoin";
         }
         else if($coin == 'ethereum' && $token == 'usdt'){
             $balance = $this->Tools_model->okLinkFetchTokenBalanceApi($address, 'eth', 'token_20');
             $ticker = "TRX";
+            $coin_name = "USDT";
         }
         else if($coin == 'eth'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'eth');
             $ticker = "ETH";
+            $coin_name = "ethereum";
         }
         else if($coin == 'bsc' || $coin == 'bnb'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'bsc');
             $ticker = "BNB";
+            $coin_name = "binancecoin";
         }
         else if($coin == 'tron' && $token == 'usdt'){
             $balance = $this->Tools_model->okLinkFetchTokenBalanceApi($address, $coin, 'token_20');
             $ticker = "USDT";
+            $coin_name = "USDT";
         }
         else if($coin == 'tron'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'tron');
             $ticker = "TRX";
+            $coin_name = "tron";
         }
         else if($coin == 'ltc'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'ltc');
             $ticker = "LTC";
+            $coin_name = "litecoin";
         }
         else if($coin == 'doge'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'doge');
             $ticker = "DOGE";
+            $coin_name = "dogecoin";
         }
         else if($coin == 'bitcoin-cash'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'bch');
             $ticker = "BCH";
+            $coin_name = "dogecoin";
         }
         else if($coin == 'dash'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'dash');
             $ticker = "DASH";
+            $coin_name = "dash";
         }
         else if($coin == 'matic'){
             $balance = $this->Tools_model->okLinkFetchCoinBalanceApi($address, 'polygon');
             $ticker = "MATIC";
+            $coin_name = "matic-network";
         }
 
         $data = array(
             'balance'=>$balance,
-            'ticker'=>$ticker
+            'ticker'=>$ticker,
+            'coin_name'=>$coin_name
         );
         return $data;
     }
+    public function checkUptimeStatus() {
+        // $data = shell_exec('uptime');
+        // $uptime = explode(' up ', $data);
+        // $uptime = explode(',', $uptime[1]);
+        // $uptime = $uptime[0].', '.$uptime[1];
+
+        $header_check = get_headers("https://www.altcoinstalks.com");
+        $response_code = $header_check[0];
+        $data_res = array(
+            'website'=>"https://www.altcoinstalks.com",
+            'status'=>$response_code,
+        );
+        $this->output->set_content_type('application/json')->set_output(json_encode(array($data_res)));
+    }
+    
 }
