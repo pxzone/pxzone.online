@@ -36,10 +36,11 @@ const _accessPage = (page) => {
 const _guest_defaults = () => {
 	fetch(base_url+'api/v1/_land',{
   		method: "GET",
-		  	headers: {
-		    	'Accept': 'application/json',
-		    	'Content-Type': 'application/json'
-		  	},
+      mode: 'no-cors',
+		  headers: {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json'
+		  },
 	})
 	.then(response => response.json())
 	.then(res => {})
