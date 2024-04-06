@@ -183,19 +183,19 @@ class Tools extends CI_Controller {
     }
     public function fiatBitcoinToImage($fiat_value){
         if($this->input->get('currency') == 'eur' && $this->input->get('currency') !== null){
-            $currency_value = $this->Tools_model->getFiatValue(1,'eur');
+            $currency_value = $this->Tools_model->getFiatValue(1, 'bitcoin', 'eur');
             $final_value = round($fiat_value/$currency_value,5).' BTC';
         }
         else if($this->input->get('currency') == 'gbp' && $this->input->get('currency') !== null){
-            $currency_value = $this->Tools_model->getFiatValue(1,'gbp');
+            $currency_value = $this->Tools_model->getFiatValue(1, 'bitcoin', 'gbp');
             $final_value = round($fiat_value/$currency_value,5).' BTC';
         }
         else if($this->input->get('currency') == 'php' && $this->input->get('currency') !== null){
-            $currency_value = $this->Tools_model->getFiatValue(1,'php');
+            $currency_value = $this->Tools_model->getFiatValue(1, 'bitcoin', 'php');
             $final_value = round($fiat_value/$currency_value,5).' BTC';
         }
         else{
-            $currency_value = $this->Tools_model->getFiatValue(1,'usd');
+            $currency_value = $this->Tools_model->getFiatValue(1, 'bitcoin', 'usd');
             $final_value = round($fiat_value/$currency_value,5).' BTC';
         }
         $width = strlen($final_value) * 11;
