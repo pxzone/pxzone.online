@@ -42,7 +42,7 @@
                         </div> -->
                         <h1 class="f-h1 mb-2 c-white">Bitcoin Fee Estimator</h1>
                         <p class="p-text c-white font-15">
-                        The fee estimator takes into account the current network conditions and calculates the fee required to have your transaction included in the next block.
+                        Fee estimator takes into account the current network conditions and calculates the fee required to have your transaction included in the next block.
                         </p>
                     </div>
                 </div>
@@ -52,22 +52,22 @@
                         <div class="col-lg-12">
                             <div class="card card-anchor bg-dark pt-2 pb-2 padding-right-30 padding-left-30">
                                 <div class="mt-2 mb-2 text-center">
-                                    <label for="" class="text-uppercase">Real Time Transaction Fees</label>
-                                    <div class="row card-fees c-white text-center bg-primary-gradient br-5 font-13">
-                                        <div class="col-lg-4 col-4">
-                                            <div class=" pt-2 pb-2 mt-2">
+                                    <label for="" class="text-capitalize font-20 mb-3 mt-3">Real Time Transaction Fees</label>
+                                    <div class="row c-white text-center br-5 font-13">
+                                        <div class="col-lg-4 col-4 ">
+                                            <div class=" pt-4 pb-4 mt-2 bg-primary-gradient br-10">
                                                 <label class="c-white ">Low Piority</label><br>
                                                 <span id="low_prio_fee"></span>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-4">
-                                            <div class=" pt-2 pb-2 mt-2">
+                                        <div class="col-lg-4 col-4 ">
+                                            <div class=" pt-4 pb-4 mt-2 bg-primary-gradient br-10">
                                                 <label class="c-white ">Medium Piority</label><br>
                                                 <span id="med_prio_fee"></span>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-4">
-                                            <div class=" pt-2 pb-2 mt-2">
+                                        <div class="col-lg-4 col-4 ">
+                                            <div class=" pt-4 pb-4 mt-2 bg-primary-gradient br-10 ">
                                                 <label class="c-white">High Piority</label><br>
                                                 <span id="high_prio_fee"></span>
                                             </div>

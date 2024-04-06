@@ -50,10 +50,10 @@
                             <label for="" class="mt-3">Enter your wallet address.</label>
                             <input type="hidden" id="_global_csrf" name="<?=$csrf_data['name']?>" value="<?=$csrf_data['hash']?>">
                             <div class="input-group ">
-                                <input type="text" class="form-control" id="wallet_address" aria-label="Text input with dropdown button">
+                                <input type="text" class="form-control" id="wallet_address" aria-label="Text input with dropdown button" value="<?=isset($_GET['wallet_address']) ? $_GET['wallet_address'] : ''?>">
                                 <div class="input-group-append">
-                                    <button id="wallet_balance_dd" class="btn btn-outline-secondary dropdown-toggle wallet-balance-dropdown" data-coin="btc" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="BTC">  BTC &nbsp;&nbsp;
+                                    <button id="wallet_balance_dd" class="btn btn-outline-secondary dropdown-toggle wallet-balance-dropdown text-uppercase" data-coin="<?=isset($_GET['coin']) ? $_GET['coin'] : 'btc'?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <img src="<?=base_url('assets/images/crypto/')?><?=isset($_GET['coin']) ? $_GET['coin'].'.webp' : 'btc.webp'?>" height="20" class="me-1" alt="BTC">  <?=isset($_GET['coin']) ? $_GET['coin'] : 'BTC'?> &nbsp;&nbsp;
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" id="crypto_currency">
                                         <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('btc')"><img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="BTC"> BTC</a></li>
@@ -61,7 +61,7 @@
                                         <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bnb')"><img src="<?=base_url('assets/images/crypto/bnb.webp')?>" height="20" class="me-1" alt="bnb"> BNB</a></li>
                                         <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('ltc')"><img src="<?=base_url('assets/images/crypto/ltc.webp')?>" height="20" class="me-1" alt="ltc"> LTC</a></li>
                                         <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('doge')" ><img src="<?=base_url('assets/images/crypto/doge.webp')?>" height="20" class="me-1" alt="doge"> DOGE</a></li>
-                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('tron')"><img src="<?=base_url('assets/images/crypto/btc.webp')?>" height="20" class="me-1" alt="tron"> TRON</a></li>
+                                        <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('tron')"><img src="<?=base_url('assets/images/crypto/tron.webp')?>" height="20" class="me-1" alt="tron"> TRON</a></li>
                                         <li><a class="dropdown-item cursor-pointer" onclick="selectCrypto('bch')" ><img src="<?=base_url('assets/images/crypto/bch.webp')?>" height="20" class="me-1" alt="bch"> BCH</a></li>
                                     </ul>
                                 </div>
@@ -83,8 +83,17 @@
                                     <small class="text-muted">Data provided by <a rel="nofollow" target="_blank" href="https://mempool.space/docs/api/rest">Mempool.space</a>, <a rel="nofollow" target="_blank"  href="https://www.oklink.com/docs/en/#introduction">OkLink</a>, & <a rel="nofollow" target="_blank" href="https://www.coingecko.com/en/api/documentation">Coingecko API</a></small>
                                 </div>
                             </div>
+                        </div> 
 
-                            </div> 
+                        <div id="" class="card card-anchor bg-dark c-white pt-2 pb-2 padding-right-30 padding-left-30">
+                            <h2 class="mt-3">What Crypto Balance Checker?</h2>
+                            <p class="mt-2">
+                            Crypto Balance Checker is a comprehensive online tool designed to assist cryptocurrency investors and enthusiasts in tracking 
+                            and manage their digital asset portfolios. With the exponential growth of the cryptocurrency market and the increasing number 
+                            of available digital assets, it has become essential for investors to have efficient means to monitor their holdings across 
+                            multiple wallets and exchanges. This tool provides users with a centralized platform to conveniently check the balances of 
+                            their cryptocurrency holdings in real time, empowering them to make informed investment decisions. 
+                           </p>
                         </div> 
                     </div>
                 </div>
