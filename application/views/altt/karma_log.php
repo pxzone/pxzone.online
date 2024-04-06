@@ -33,6 +33,7 @@
                             <table class="table table-centered mb-0 font-14">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Username</th>
                                         <th id="position">Position</th>
                                         <th id="karma_point">Karma Point</th>
@@ -59,10 +60,19 @@
                                     <div class="mt-2">
                                         <select name="select_sort" id="select_sort" class="form-select">
                                             <option value="default">Default</option>
+                                            <option value="karma_30_days">Karma in 30 days</option>
+                                            <option value="karma_60_days">Karma in 60 days</option>
+                                            <option value="karma_90_days">Karma in 90 days</option>
+                                            <option value="karma_120_days">Karma in 120 days</option>
                                             <option value="highest_karma_today">Highest Karma Earner (Today)</option>
                                             <option value="highest_karma_this_month">Highest Karma Earner (<?=date('F')?>)</option>
                                             <option value="highest_karma_all_time">All-time High Karma Earner</option>
+                                            <option value="custom">Custom</option>
                                         </select>
+                                    </div>
+
+                                    <div class="" id="custom_date_wrapper" hidden="hidden">
+                                        <input value="<?=date('m/01/Y')?> - <?=date('m/d/Y')?>" type="text" class="form-control date me-2 mt-2 custom-date" id="custom_date" data-toggle="date-picker" data-cancel-class="btn-light">
                                     </div>
                                     <div class="text-end mb-2 mt-2">
                                         <button class="btn btn-dark rounded btn-md" id="sort_btn">Sort</button>

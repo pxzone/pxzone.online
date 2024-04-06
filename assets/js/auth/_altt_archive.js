@@ -1,3 +1,7 @@
+var sort;
+var from;
+var to;
+
 get_search = $("#search").val();
 if(current_url.indexOf("topic/") > 0 || current_url.indexOf("post/") >  0){
     $('html, body').animate({
@@ -16,17 +20,27 @@ $(".back-to-top").on('click', function(){
 $("#search_archive_btn").on('click', function(){
     page_no = 1;
     let keyword = $("#keyword").val();
-    searchArchives(page_no, keyword);
+    let category = $("#select_category_dd").attr('data-select');
+    console.log(category)
+    searchArchives(page_no, keyword, category);
 });
 $('#pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
     let keyword = $("#keyword").val();
-    searchArchives(page_no, keyword);
+    let category = $("#select_category_dd").attr('data-select');
+    searchArchives(page_no, keyword, category);
 });
-function searchArchives(page_no, keyword){
+function selectCategory(cat){
+	$("#select_category_dd").attr('data-select', cat);
+	$("#select_category_dd").html( "&nbsp;"+cat+"&nbsp;" );
+}
+function searchArchives(page_no, keyword, category){
+    if(keyword == ''){
+        return false;
+    }
     $("#search_archive_btn").html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
-	let params = new URLSearchParams({'keyword':keyword, 'page_no':page_no});
+	let params = new URLSearchParams({'keyword':keyword, 'page_no':page_no, 'category':category});
     fetch(base_url+'api/altt/_search?' + params, {
         cache: 'no-cache',
         method: "GET",
@@ -37,6 +51,9 @@ function searchArchives(page_no, keyword){
     })
     .then(response => response.json())
     .then(res => {
+        if (history.pushState) {
+            history.pushState({path:base_url+'altt/archive?'+category+'='+keyword},"", base_url+'altt/archive?'+category+'='+keyword);
+        }
         showArchives(page_no, res.data.result, res.data.pagination);
     })
     .catch((error) => {
@@ -45,6 +62,7 @@ function searchArchives(page_no, keyword){
     });
 }
 function showArchives(page_no, result, pagination){
+    
     $('#pagination').html(pagination);
     post_content = "";
     if(result.length > 0){
@@ -73,37 +91,42 @@ function showArchives(page_no, result, pagination){
             scrollTop: $("#search_result_wrapper").offset().top
         }, 500);
     }
+    else{
+        $("#search_archive_btn").html('<i class="uil uil-search search-archive-icon"></i> Search').removeAttr('disabled','disabled');
+        $("#search_result_wrapper").html('');
+    }
     $("#search_archive_btn").html('<i class="uil uil-search search-archive-icon"></i> Search').removeAttr('disabled','disabled');
+    
 }
 function refreshKarmaLogs(){
     $("#karma_log_pagination").html();
     if (history.pushState) {
-        history.pushState({path:'/altt/karma-log'},"", '/altt/karma-log');
+        history.pushState({path:base_url+'altt/karma-log'},"", base_url+'altt/karma-log');
     }
     $("#search").val('');
     $("#select_sort").val('default');
-    fetchKarmaLogs(1, '', 'default')
+    fetchKarmaLogs(1, '', 'default', '','')
 }
 $('#karma_log_pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
     let keyword = $("#search").val();
     let select_sort = $("#select_sort").val();
-    fetchKarmaLogs(page_no, keyword, select_sort);
+    fetchKarmaLogs(page_no, keyword, select_sort, from, to);
 });
 $("#search_form").on('submit', function(e){
     e.preventDefault(); 
     page_no = 1;
     let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
-    fetchKarmaLogs(page_no, keyword, select_sort);
+    fetchKarmaLogs(page_no, keyword, select_sort, '','');
     if (history.pushState) {
-        history.pushState({path:'/altt/karma-log?search='+keyword},"", '/altt/karma-log?search='+keyword);
+        history.pushState({path:base_url+'altt/karma-log?search='+keyword},"", 'altt/karma-log?search='+keyword);
     }
 });
-function fetchKarmaLogs(page_no, keyword, select_sort){
-	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>Getting data...</td></tr>");
-	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no});
+function fetchKarmaLogs(page_no, keyword, select_sort, from, to){
+	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='6'>Getting data...</td></tr>");
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'from':from, 'to':to, 'page_no':page_no});
     fetch(base_url+'api/altt/karma/_get?' + params, {
         cache: 'no-cache',
         method: "GET",
@@ -114,23 +137,24 @@ function fetchKarmaLogs(page_no, keyword, select_sort){
     })
     .then(response => response.json())
     .then(res => {
-        showLogs(page_no, res.data.result, res.data.pagination, select_sort);
+        showLogs(page_no, res.data.result, res.data.pagination, select_sort, res.data.row);
     })
     .catch((error) => {
-		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>No records found!</td></tr>");
+		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='6'>No records found!</td></tr>");
     });
 }
-function showLogs(page_no, result, pagination, select_sort){
+function showLogs(page_no, result, pagination, select_sort, row){
     $('#karma_log_pagination').html(pagination);
     karma_logs = "";
     if(result.length > 0){
+        n = 1 + row;
         for(var i = 0; i < result.length; i++){
-
             if(select_sort == 'default'){
                 $("#title_sort").text('Default Sort');
                 $("#karma_point").removeAttr('hidden','hidden');
                 $("#datetime").removeAttr('hidden', 'hidden');
                 karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
                     +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
                     +'<td>'+result[i].position+'</td>'
                     +'<td>'+result[i].karma+'</td>'
@@ -143,8 +167,22 @@ function showLogs(page_no, result, pagination, select_sort){
                 $("#karma_point").attr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
                     +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
                     +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                +'</tr>'
+            }
+            else if(select_sort == 'karma_30_days'  || select_sort == 'karma_60_days' || select_sort == 'karma_90_days' || select_sort == 'karma_120_days'){
+                title = select_sort.replace('_', ' ');
+                title = title.replace('_', ' ');
+                $("#title_sort").text("Earned "+title).addClass('text-capitalize');
+                $("#datetime").attr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].karma+'</td>'
                     +'<td>'+result[i].total_karma+'</td>'
                 +'</tr>'
             }
@@ -153,6 +191,7 @@ function showLogs(page_no, result, pagination, select_sort){
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
                     +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
                     +'<td>'+result[i].position+'</td>'
                     +'<td>'+result[i].karma+'</td>'
@@ -165,32 +204,70 @@ function showLogs(page_no, result, pagination, select_sort){
                 $("#karma_point").removeAttr('hidden', 'hidden');
                 $("#datetime").attr('hidden', 'hidden');
                 karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
                     +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
                     +'<td>'+result[i].position+'</td>'
                     +'<td>'+result[i].karma+'</td>'
                     +'<td>'+result[i].total_karma+'</td>'
                 +'</tr>'
             }
+            else if(select_sort == 'custom'){
+                $("#title_sort").text('Custom Sort');
+                $("#karma_point").removeAttr('hidden', 'hidden');
+                $("#datetime").attr('hidden', 'hidden');
+                karma_logs += '<tr>'
+                    +'<td>'+ n +'</td>'
+                    +'<td><a href="https://www.altcoinstalks.com/index.php?action=profile;u='+result[i].uid+'" target="_blank" rel="nofollow">'+result[i].username+'</a></td>'
+                    +'<td>'+result[i].position+'</td>'
+                    +'<td>'+result[i].karma+'</td>'
+                    +'<td>'+result[i].total_karma+'</td>'
+                +'</tr>'
+            }
+            n++;
         }
         $('#karma_log_tbl').html(karma_logs);
     }
     else{
-		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='5'>No records found!</td></tr>");
+		$("#karma_log_tbl").html("<tr class='text-center'><td colspan='6'>No records found!</td></tr>");
 
     }
 }
 $("#sort_modal_btn").on('click', function(){
+    $('.daterangepicker').css('z-index','1600');
     $("#sort_modal").modal('show');
 });
 $("#sort_btn").on('click', function(){
     let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
-    if (history.pushState) {
-        history.pushState({path:'/altt/karma-log?sort='+select_sort},"", '/altt/karma-log?sort='+select_sort);
+
+    if(select_sort == 'custom'){
+        select_from = $('#custom_date').data('daterangepicker').startDate;
+        select_to = $('#custom_date').data('daterangepicker').endDate;
+
+        from = new Date(select_from);
+        f_month = from.getMonth() +1;
+        from = from.getFullYear() +'/'+f_month+'/'+from.getDate()
+
+        to = new Date(select_to);
+        t_month = to.getMonth() +1;
+        to = to.getFullYear()+'/'+ t_month +'/'+ to.getDate();
+        
+        if (history.pushState) {
+            history.pushState({path:base_url+'altt/karma-log?sort='+select_sort},"", base_url+'altt/karma-log?sort='+select_sort+'&from='+from+'&to='+to);
+        }
     }
+    else{
+        from = "";
+	    to = "";
+
+        if (history.pushState) {
+            history.pushState({path:base_url+'altt/karma-log?sort='+select_sort},"", base_url+'altt/karma-log?sort='+select_sort);
+        }
+    }
+   
 
     page_no = 1;
-	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no});
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no, 'from':from, 'to':to});
     $("#sort_btn").html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
 
     fetch(base_url+'api/altt/karma/_get?' + params, {
@@ -203,7 +280,7 @@ $("#sort_btn").on('click', function(){
     })
     .then(response => response.json())
     .then(res => {
-        showLogs(page_no, res.data.result, res.data.pagination, select_sort);
+        showLogs(page_no, res.data.result, res.data.pagination, select_sort, res.data.row);
         $("#sort_modal").modal('hide');
         $("#sort_btn").html('Sort').removeAttr('disabled','disabled');
     })
@@ -217,3 +294,12 @@ function getMonth(){
     const d = new Date();
     return month[d.getMonth()];
 }
+$("#select_sort").on('change', function(){
+    sort = $(this).val();
+    if(sort == 'custom'){
+        $("#custom_date_wrapper").removeAttr('hidden','hidden')
+    }
+    else{
+        $("#custom_date_wrapper").attr('hidden','hidden')
+    }
+})
