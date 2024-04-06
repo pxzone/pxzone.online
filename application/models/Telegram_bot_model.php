@@ -176,6 +176,7 @@ class Telegram_bot_model extends CI_Model {
            ->GET('telegram_bot_tbl ')->result_array();
     }
     public function getUserDatabyAlttID($altt_uid){
+        # GET 3 DAY OF ACTIVE USERS
         return $this->db->SELECT('altt_username, chat_id, karma, altt_uid')
             ->WHERE('altt_uid', $altt_uid)
             ->WHERE('status', 'active')
@@ -233,7 +234,7 @@ class Telegram_bot_model extends CI_Model {
         $scrape_time = strtotime($date_posted);
         $time_difference = $current_time - $scrape_time;
 
-        if ($time_difference <= 120) { // if the time difference is equal or below 2 mins
+        if ($time_difference <= 240) { // if the time difference is equal or below 3 mins
             foreach($user_data as $user){
                 $altt_username = $user['altt_username'];
                 $board_name = $user['board_name'];
@@ -272,7 +273,6 @@ class Telegram_bot_model extends CI_Model {
                 }
             }
         }
-
     }
     public function saveKarmaPoint($data){
         # INSERT KARMA LOG
@@ -464,7 +464,6 @@ class Telegram_bot_model extends CI_Model {
 
                 # Don't notify when poster_username is equal to the subscriber/user. && If the poster_username is ignored 
                 if($poster_username !== $tp['altt_username'] && !in_array($poster_username, $ignore_user_arr)){ 
-                        
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
                     $username = $data['poster_username'];
                     $subject_url = $data['subject_url'];
@@ -576,18 +575,20 @@ class Telegram_bot_model extends CI_Model {
         }
     }
     public function saveScrapedData($data, $topic_data){
-        $data_arr['msg_id'] = $data['msg_id'];
-        $data_arr['topic_id'] = $data['topic_id'];
-        $data_arr['board_id'] = $data['board_id'];
-        $data_arr['username'] = $data['poster_username'];
-        $data_arr['subject_url'] = $data['subject_url'];
-        $data_arr['subject'] = $data['subject'];
-        $data_arr['post_content'] = $data['post'];
-        $data_arr['html_post'] = $data['html_post'];
-        $data_arr['date_posted'] = $data['date_posted'];
-        $data_arr['is_archive'] = "no";
-        $data_arr['created_at'] = date('Y-m-d H:i:s');
-        $this->db->INSERT('altt_scraped_archive_data_tbl ', $data_arr);
+        if($data['msg_id'] > 1 && !empty($data['msg_id'])){
+            $data_arr['msg_id'] = $data['msg_id'];
+            $data_arr['topic_id'] = $data['topic_id'];
+            $data_arr['board_id'] = $data['board_id'];
+            $data_arr['username'] = $data['poster_username'];
+            $data_arr['subject_url'] = $data['subject_url'];
+            $data_arr['subject'] = $data['subject'];
+            $data_arr['post_content'] = $data['post'];
+            $data_arr['html_post'] = $data['html_post'];
+            $data_arr['date_posted'] = $data['date_posted'];
+            $data_arr['is_archive'] = "no";
+            $data_arr['created_at'] = date('Y-m-d H:i:s');
+            $this->db->INSERT('altt_scraped_archive_data_tbl ', $data_arr);
+        }
 
         $new_topic =  $this->insertNewTopics($data, $topic_data);
         if($new_topic == true){
@@ -623,7 +624,19 @@ class Telegram_bot_model extends CI_Model {
 
     }
     public function checkScrapedPost(){
-        return $this->db->SELECT('msg_id, post_content, created_at')->WHERE('is_archive','no')->LIMIT(15)->GET('altt_scraped_archive_data_tbl ')->result_array();
+        return $this->db->SELECT('msg_id, post_content, created_at')
+            ->WHERE('is_archive', 'no')
+            ->WHERE('status', 'active')
+            ->LIMIT(10)
+            ->GET('altt_scraped_archive_data_tbl ')->result_array();
+    }
+
+    public function updateArchivePosts($msg_id){
+        $archive_data_status = array(
+            'status'=>"trashed",
+            'is_archive'=>"yes"
+        );
+        $this->db->WHERE('msg_id', $msg_id)->UPDATE('altt_scraped_archive_data_tbl', $archive_data_status);
     }
   
     public function updateArchiveScrapedPost($edited_data, $saved_data, $status){
@@ -669,9 +682,10 @@ class Telegram_bot_model extends CI_Model {
     public function insertNewTrackedBoard($chat_id, $board_id, $board_name){
         $check = $this->db->WHERE('chat_id', $chat_id)->WHERE('board_id', $board_id)->GET('tracked_board_tbl')->num_rows();
         if($check > 0){
-            return $check;
+            $response = "already_exist";
+            return $response;
         }
-        else if(!empty($board_id) && !empty($board_id) && !empty($board_name)){
+        else if(!empty($board_id) && !empty($board_name)){
             $data_arr = array(
                 'board_id'=>$board_id,
                 'chat_id'=>$chat_id,
@@ -679,6 +693,8 @@ class Telegram_bot_model extends CI_Model {
                 'created_at'=>date('Y-m-d H:i:s')
             );
             $this->db->INSERT('tracked_board_tbl', $data_arr);
+            $response = "success";
+            return $response;
         }
     }
     public function getTrackBoardDataByID($chat_id, $board_id){
@@ -691,5 +707,12 @@ class Telegram_bot_model extends CI_Model {
         return $this->db->WHERE('chat_id', $chat_id)
            ->WHERE('board_id', $board_id)
            ->DELETE('tracked_board_tbl');
+    }
+    public function mostTrackedUsers(){
+        return $this->db->SELECT('username, COUNT(*) as count')
+            ->WHERE('type', 'track')
+            ->GROUP_BY('username')
+            ->ORDER_BY('count', 'desc')
+            ->GET('tracked_users_tbl')->result_array();
     }
 }

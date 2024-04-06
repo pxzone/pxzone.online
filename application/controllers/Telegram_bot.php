@@ -136,7 +136,7 @@ class Telegram_bot extends CI_Controller {
                         ),
                         array(
                             array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
-                            array('text' => '🚫 Stop Notifying Me', 'callback_data' => 'stop_notify_btn'),
+                            array('text' => '💡 About', 'callback_data' => 'about'),
                             // array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
                         )
                     )
@@ -213,7 +213,7 @@ class Telegram_bot extends CI_Controller {
             else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?board=') !== FALSE ) {
                 $board_url = $update['message']['text'];
                 $board_data = explode("board=", $board_url);
-                $board_id = $board_data[1];
+                $board_id = (int)$board_data[1];
                 $board_name = $this->Telegram_bot_model->getBoardNameById($board_id);
                 $response_text = "You are now tracking the board: \n\n<a href='$board_url'>$board_name</a>";
                 $post_data = array(
@@ -222,14 +222,22 @@ class Telegram_bot extends CI_Controller {
                     'parse_mode'=> 'html',
                 );
                
-    	        $topic = $this->Telegram_bot_model->insertNewTrackedBoard($chat_id, $board_id, $board_name);
-                if($topic > 0){
+    	        $topic_response = $this->Telegram_bot_model->insertNewTrackedBoard($chat_id, $board_id, $board_name);
+                if($topic_response == 'already_exist'){
                     $post_data = array(
                         'chat_id' => $chat_id,
                         'text' => "You already tracking this board!",
                     );
                 }
-                else{
+                else if ($topic_response == 'success'){
+                    $response_text = "You are now tracking the board: \n\n<a href='$board_url'>$board_name</a>";
+                    $post_data = array(
+                        'chat_id' => $chat_id,
+                        'text' => $response_text,
+                        'parse_mode'=> 'html',
+                    );
+                }
+                else if(empty($board_name)){
                     $post_data = array(
                         'chat_id' => $chat_id,
                         'text' => "Cannot get Board data!",
@@ -359,12 +367,102 @@ class Telegram_bot extends CI_Controller {
                 );
                 $this->sendMessage($post_data);
             }
+            else if ($callback_data === 'about') {
+                $response_text = "More information about the bot.";
+
+                $keyboard = array(
+                    'inline_keyboard' => array(
+                        array(
+                            array('text' => '📙 Topic', 'url' => 'https://www.altcoinstalks.com/index.php?topic=315728.0'),
+                        ),
+                        array(
+                            array('text' => '💝 Donate', 'callback_data' => 'donation'),
+                        ),
+                        array(
+                            array('text' => '↩️ Go Back', 'callback_data' => 'go_back')
+                        ),
+                    )
+                );
+                $encoded_keyboard = json_encode($keyboard);
+
+                $post_data = array(
+                    'message_id' => $message_id,
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'reply_markup' => $encoded_keyboard,
+                );
+                $this->editMessageText($post_data);
+            }
+            else if ($callback_data === 'donation') {
+                $response_text = "All donations will go towards the server/domain expense.";
+
+                $keyboard = array(
+                    'inline_keyboard' => array(
+                        array(
+                            array('text' => '₿ Bitcoin (bech32)', 'callback_data' => 'btc_bech32'),
+                        ),
+                        array(
+                            array('text' => '♢ Ethereum', 'callback_data' => 'eth_address'),
+                        ),
+                        array(
+                            array('text' => '💲 USDT (TRC20)', 'callback_data' => 'usdt_trc20'),
+                        ),
+                        array(
+                            array('text' => '𝐌 XMR', 'callback_data' => 'xmr_address'),
+                        ),
+                        array(
+                            array('text' => '↩️ Go Back', 'callback_data' => 'go_back')
+                        ),
+                    )
+                );
+                $encoded_keyboard = json_encode($keyboard);
+
+                $post_data = array(
+                    'message_id' => $message_id,
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                    'reply_markup' => $encoded_keyboard,
+                );
+                $this->editMessageText($post_data);
+            }
+            
+            else if ($callback_data === 'xmr_address') {
+                $response_text = "45eoPvxBkZeJ2nSQHGd9VRCeSvdmKcaV35tbjmprKa13UWVgFzArNR1PWNrZ9W4XwME3iJB9gzMKuSqGc2EWR4ZCTX66NAV";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                );
+                $this->sendMessage($post_data);
+            }
+            else if ($callback_data === 'usdt_trc20') {
+                $response_text = "TWyvoyijQY2mhnpUMY4bmpk3fX8A66KZTX";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                );
+                $this->sendMessage($post_data);
+            }
+            else if ($callback_data === 'eth_address') {
+                $response_text = "0x6e212cB02e53c7d53b84277ecC7A923601422a46";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                );
+                $this->sendMessage($post_data);
+            }
+            else if ($callback_data === 'btc_bech32') {
+                $response_text = "bc1q00pxz0k04ndxqdvmkr8kj3fwtlntfctlzp37xl";
+                $post_data = array(
+                    'chat_id' => $chat_id,
+                    'text' => $response_text,
+                );
+                $this->sendMessage($post_data);
+            }
             else if ($callback_data === 'add_new_topic') {
                 $response_text = "What is the URL of the topic you want to track?";
                 $post_data = array(
                     'chat_id' => $chat_id,
                     'text' => $response_text,
-                    'parse_mode'=> 'html',
                 );
                 $this->sendMessage($post_data);
             }
@@ -397,7 +495,7 @@ class Telegram_bot extends CI_Controller {
                         ),
                         array(
                             array('text' => '🚫 Ignore Users', 'callback_data' => 'ignore_user'),
-                            array('text' => '🚫 Stop Notifying Me', 'callback_data' => 'stop_notify_btn'),
+                            array('text' => '💡 About', 'callback_data' => 'about'),
                             // array('text' => '✖️ Close Menu', 'callback_data' => 'close_menu'),
                         )
                     )
@@ -895,49 +993,42 @@ class Telegram_bot extends CI_Controller {
 
 
     # MANUAL MESSAGING SUBSCRIBERS
-    public function sendMessageToAllSubsribers(){
+    public function sendMessageToAllSubscribers(){
         $users_data = $this->Telegram_bot_model->getAllUsersData();
-        $altt_username = $users_data['altt_username'];
         $user_count = count($users_data);
-$response_text = 
-"Hello <b>$altt_username</b>,
 
-Thank you for using the AltcoinsTalks Telegram Notifier bot. Here's a little summary of the bot as of January 31 since it was published.
-
-<b>Features</b>
-- Mention/quote notification
-- Stop notification/unsubscribe
-- Track phrase
-- Track user posts
-- Ignore users
-- Track replies in a topic thread
-
-<b>Current active users</b>
-$user_count
-
-These features can be accessed and used using the /menu command. If you encounter bugs and issues, feel free to post them on this <a href='https://www.altcoinstalks.com/index.php?topic=315728.0'>thread</a>.
-Have a nice day a head!
-
-Cheers!!! 🥂🥂🥂
-";
+        # LIVEEE
         foreach($users_data as $users){
+$response_text = 
+"⚠️⁉️ Your account was detected cheating by admin, you receiveD negative karma and your account are tagged with red dot. <a href='https://www.altcoinstalks.com/index.php?topic=315728.new#new'>Here's the reason why </a>.";
             $post_data = array(
-                'chat_id' => $users_data['chat_id'],
+                'chat_id' => $users['chat_id'],
                 'text' => $response_text,
                 'parse_mode'=> 'html',
             );
             $this->sendMessage($post_data);
         }
+        # END LIVEEE
 
-        // $post_data = array(
-        //     'chat_id' => '625982027',
-        //     'text' => $response_text,
-        //     'parse_mode'=> 'html',
-        // );
-        // $this->sendMessage($post_data);
+        # SAMPLEEEE
+// $response_text = 
+// "⚠️⁉️ Your account was detected cheating by admin, you receiveD negative karma and your account are tagged with red dot. <a href='https://www.altcoinstalks.com/index.php?topic=315728.new#new'>Here's the reason why </a>.
+// ";
+//         $post_data = array(
+//             'chat_id' => '625982027',
+//             'text' => $response_text,
+//             'parse_mode'=> 'html',
+//         );
+         # END SAMPLEEEE
+
+        $this->sendMessage($post_data);
         $response = array(
             'status'=>true,
         );
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+    public function mostTrackedUsers(){
+        $response = $this->Telegram_bot_model->mostTrackedUsers();
         $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
     # FOR TESTING ONLY
