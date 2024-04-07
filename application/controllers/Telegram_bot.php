@@ -399,16 +399,16 @@ class Telegram_bot extends CI_Controller {
                 $keyboard = array(
                     'inline_keyboard' => array(
                         array(
-                            array('text' => '₿ Bitcoin (bech32)', 'callback_data' => 'btc_bech32'),
+                            array('text' => 'Bitcoin (bech32)', 'callback_data' => 'btc_bech32'),
                         ),
                         array(
-                            array('text' => '♢ Ethereum', 'callback_data' => 'eth_address'),
+                            array('text' => 'Ethereum', 'callback_data' => 'eth_address'),
                         ),
                         array(
-                            array('text' => '💲 USDT (TRC20)', 'callback_data' => 'usdt_trc20'),
+                            array('text' => 'USDT (TRC20)', 'callback_data' => 'usdt_trc20'),
                         ),
                         array(
-                            array('text' => '𝐌 XMR', 'callback_data' => 'xmr_address'),
+                            array('text' => 'XMR', 'callback_data' => 'xmr_address'),
                         ),
                         array(
                             array('text' => '↩️ Go Back', 'callback_data' => 'go_back')
