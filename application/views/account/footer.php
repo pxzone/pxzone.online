@@ -97,10 +97,11 @@
 			<script src="<?=base_url()?>assets/js/_webapp.js?v=<?=filemtime('assets/js/_webapp.js')?>"></script>
 			<script src="<?=base_url()?>assets/js/sweetalert2.all.min.js"></script>
 			<script src="<?=base_url()?>assets/js/auth/_csrf.js?v=<?=filemtime('assets/js/auth/_csrf.js')?>"></script>
+
 			<script src="<?=base_url()?>assets/js/auth/_statistics.js?v=<?=filemtime('assets/js/auth/_statistics.js')?>"></script>
 			<?= ($state == 'url_list') ? '<script src="'.base_url().'assets/js/auth/_account.js?'.filemtime('assets/js/auth/_account.js').'"></script>' : '' ?>
 			
-			<?= ($state == 'dashboard') ? '<script src="'.base_url().'assets/js/vendor/Chart.bundle.min.js"></script>' : '' ?>
+			<?= ($state == 'dashboard') ? '<script src="'.base_url().'assets/js/vendor/chart.js"></script>' : '' ?>
 
 			<?= ($state == 'new_blog' || $state == 'blog_list' || $state == 'edit_blog') ? '
 			<script src="'.base_url().'assets/js/vendor/croppie.js"></script>
