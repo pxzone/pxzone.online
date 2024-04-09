@@ -54,7 +54,7 @@
 
                     <div class="col-lg-12 scroll-here">
                         <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-30 padding-left-30">
-                            <label for="font-15" class="mt-3 mb-2">Topic ID: <?=$post['topic_id']?></label>
+                            <label for="font-15" class="mt-3 mb-2">Post ID: <?=$post['msg_id']?></label>
                             <div class="hr"></div>
                             <div>
                                 <div>
@@ -72,7 +72,7 @@
 
                     <div class="col-lg-12 scroll-here">
                         <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-30 padding-left-30">
-                            <label for="font-15" class="mt-3 mb-2">Msg ID: <?=$post['msg_id']?></label>
+                            <label for="font-15" class="mt-3 mb-2">Post ID: <?=$post['msg_id']?></label>
                             <div class="hr"></div>
                             <div>
                                 <div>

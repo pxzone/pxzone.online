@@ -2,13 +2,14 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Archive_model extends CI_Model {
-    public function getTopicContent($topic_id){
-        return $this->db->SELECT('adt.msg_id, att.board_id, att.topic_id, att.username, abt.board_name, att.topic_name as title, att.post, att.date_posted')
-            ->FROM('altt_topics_tbl as att')
-            ->JOIN('altt_scraped_archive_data_tbl as adt','adt.topic_id = att.topic_id','left')
-            ->JOIN('altt_boards_tbl as abt', 'abt.board_id=att.board_id', 'left')
-            ->WHERE('att.topic_id', $topic_id)
-            ->GET()->row_array();
+    public function getTopicContent($row_per_page, $row_no, $topic_id){
+        return $this->db->SELECT('asdt.board_id, asdt.topic_id, asdt.msg_id, asdt.username, abt.board_name, asdt.subject as title, asdt.html_post as post, asdt.date_posted')
+        ->WHERE($where_category)
+        ->LIMIT($row_per_page, $row_no)
+        ->ORDER_BY('date_posted',' desc')
+        ->FROM('altt_scraped_archive_data_tbl as asdt')
+        ->JOIN('altt_boards_tbl as abt', 'abt.board_id=asdt.board_id', 'left')
+        ->GET()->result_array();
     }
     public function getPostContent($msg_id){
         return $this->db->SELECT('asdt.board_id, topic_id, msg_id, username, abt.board_name, subject as title, html_post as post, date_posted')
