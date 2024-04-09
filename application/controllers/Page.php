@@ -27,6 +27,21 @@ class Page extends CI_Controller {
     	$this->load->view('pages/about');
     	$this->load->view('home/footer');
     }
+    public function donate(){
+        $data['siteSetting'] = $this->Site_settings_model->siteSettings();
+        $data['social_media'] = $this->Site_settings_model->getSocialMedias();
+        $data['title'] = 'Donate';
+        $data['description'] = '
+        ';
+        $data['canonical_url'] = base_url('donate');
+        $data['state'] = "donate";
+        $data['url_param'] = "";
+        $data['csrf_data'] = $this->Csrf_model->getCsrfData();
+    	$this->load->view('home/header', $data);
+    	$this->load->view('home/nav');
+    	$this->load->view('pages/donate');
+    	$this->load->view('home/footer');
+    }
     public function privacy(){
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['social_media'] = $this->Site_settings_model->getSocialMedias();
@@ -456,33 +471,9 @@ class Page extends CI_Controller {
         $data['siteSetting'] = $this->Site_settings_model->siteSettings();
         $data['site_data'] = $this->Tools_model->getMonitoredSiteStatus($site);
         $type = $this->input->get('type');
-        if($data['site_data'] && $type == 'html'){
+        if($data['site_data'] ){
             $data['title'] = ucwords($data['site_data']['name']).' uptime status';
-            $data['description'] = $data['site_data']['name']." website uptime and downtime status";
-            $data['canonical_url'] = base_url('uptime/').$data['site_data']['name'];
-            $data['state'] = "website_monitor";
-            $this->load->view('pages/tools/header', $data);
-            // $this->load->view('home/nav');
-            $this->load->view('pages/tools/uptime');
-            $this->load->view('pages/tools/footer');
-        }
-        else if($data['site_data'] && $type == 'img'){
-            $htmlFile = base_url('uptime/').$data['site_data']['name'].'?type=html';
-            $imageFile = 'output/'.$data['site_data']['name'].'.png';
-            
-            // Use wkhtmltoimage to convert HTML to image
-            exec("wkhtmltoimage --format png $htmlFile $imageFile");
-            
-            // Check if the image file was created successfully
-            if (file_exists($imageFile)) {
-                echo "Image created successfully: $imageFile";
-            } else {
-                echo "Failed to create image.";
-            }
-        }
-        else if($data['site_data']){
-            $data['title'] = ucwords($data['site_data']['name']).' uptime status';
-            $data['description'] = $data['site_data']['name']." website uptime and downtime status";
+            $data['description'] = "Check the current website uptime monitoring status, response and downtime activity of ".str_replace(array('https://','http://'), '', $data['site_data']['website_url']).".";
             $data['canonical_url'] = base_url('uptime/').$data['site_data']['name'];
             $data['state'] = "website_monitor";
             $this->load->view('pages/tools/header', $data);
