@@ -17,7 +17,7 @@
                                     <p class="p-text">
                                     </p>
                                     <p class="p-text">
-                                        For more information, you can <a href="<?=base_url('#contact_us')?>">contact us</a>.
+                                        Contact me through <a target="_blank" rel="nooepener" href="https://bitcointalk.org/index.php?action=profile;u=1000813;">Bitcointalk</a> and <a target="_blank" rel="nooepener" href="https://www.altcoinstalks.com/index.php?action=profile;u=97172;">Altcoinstalks</a>.
                                     </p>
                                 </div>
                                 
