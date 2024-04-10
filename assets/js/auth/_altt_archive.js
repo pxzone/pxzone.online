@@ -36,6 +36,9 @@ function selectCategory(cat){
 	$("#select_category_dd").html( "&nbsp;"+cat+"&nbsp;" );
 }
 function searchArchives(page_no, keyword, category){
+    $("#search_result_wrapper").html('<div class="text-center mt-5 mb-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+    $('#pagination').html('');
+    
     if(keyword == ''){
         return false;
     }
@@ -68,7 +71,7 @@ function showArchives(page_no, result, pagination){
     if(result.length > 0){
         for(var i = 0; i < result.length; i++){
             post_content += '<div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-30 padding-left-30">'
-            +'<label for="font-15" class="mt-3 mb-2">Topic ID: '+result[i].topic_id+'</label>'
+            +'<label for="font-15" class="mt-3 mb-2">Post ID: '+result[i].msg_id+'</label>'
             +'<div class="hr"></div>'
             +'<div>'
                 +'<div>'
