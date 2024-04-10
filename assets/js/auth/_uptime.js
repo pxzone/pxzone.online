@@ -1,8 +1,18 @@
 function getUptimeData(site){
+    str ="";
+    div_num = 60;
+    if ($(window).width() < 500) {
+        div_num = 30;
+        
+    } 
+    for(var n = 0; n < div_num; n++){
+        str += '<div class="hr-vertical-disabled"></div>';
+    }
+    $("#wm_status_wrapper").html(str);
+
+
     getUptimeActivty(site);
     getUptimeResponseTime(site);
-
-	$("#_url_tbl").html("<tr class='text-center'><td colspan='6'>Loading data...</td></tr>");
 	let params = new URLSearchParams({'site':site});
 	fetch(base_url+'api/v1/monitor/_get_data?' + params, {
   		method: "GET",
@@ -49,7 +59,7 @@ function getUptimeData(site){
                 }
                 else{
                     uptime_color = "hr-vertical-down";
-                    uptime_text = "<div class='fw-500'><i class='uil-exclamation-circle text-danger'></i> Downtime</div> <div class='c-light-gray'> Down for less than "+query_all[i].down_count+" mins </div>";
+                    uptime_text = "<div class='fw-500'><i class='uil-exclamation-circle text-danger'></i> Downtime</div> <div class='c-light-gray'> Down for "+query_all[i].down_count+" mins </div>";
                 }
                 string += '<div class="'+uptime_color+'"><div class="tooltip_down font-12">'+uptime_text+' <div class="hr-hover"></div><span class="c-light-gray">'+query_all[i].date+'</span></div></div>';
             }
