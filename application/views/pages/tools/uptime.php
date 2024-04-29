@@ -48,9 +48,19 @@
                         <div class="col-lg-2"></div>
                         <div class="col-lg-8">
                             <div id="" class="card card-anchor bg-dark c-white pt-2 pb-2 padding-right-20 padding-left-20 ">
-                                <div class="d-flex justify-content-between mt-2">
-                                    <div class="mt-2 text-left">Current status</div>
-                                    <div class="mt-2 text-right font-14" id="current_status">...</div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <h2 class="mt-2 text-left font-14">Current status: <span class="font-14" id="current_status">...</span></h2>
+                                    <div class="dropdown float-end mt-2">
+                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="uil-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a href="javascript:void(0);" onclick="sortUptime('30')" class="dropdown-item mobile-view">30 days</a>
+                                            <a href="javascript:void(0);" onclick="sortUptime('60')" class="dropdown-item">60 days</a>
+                                            <a href="javascript:void(0);" onclick="sortUptime('90')" class="dropdown-item">90 days</a>
+                                            <a href="javascript:void(0);" onclick="sortUptime('120')" class="dropdown-item">120 days</a>
+                                        </div>
+                                    </div>
                                 </div>                   
                                 <div class="mt-2 mb-2">
                                     <label for="" class="website_url"><span class="icon-status"></span> <?= str_replace(array('https://','http://'), '', $site_data['website_url'])?></label>
@@ -72,7 +82,7 @@
                         <div class="col-lg-2"></div>
                         <div class="col-lg-8">
                             <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-20 padding-left-20">
-                                <h3 class="font-20 mt-3">Response Time</h3>
+                                <h3 class="font-20 mt-2">Response Time</h3>
                                 <div dir="ltr">
                                     <canvas id="response_time_chart" class="apex-charts mt-3"></canvas>
                                 </div>
@@ -85,7 +95,7 @@
                         <div class="col-lg-2"></div>
                         <div class="col-lg-8">
                             <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-20 padding-left-20">
-                                <h3 class="font-20 mt-3">Recent Downtime Activity</h3>
+                                <h3 class="font-20 mt-2">Recent Downtime Activity</h3>
                                 <div class="mt-2" id="down_time_activity">
                                 </div>
                             </div>
