@@ -590,6 +590,12 @@ h1, h2, h3, h4, h5 {
     }
 }
 @media only screen and (max-width: 500px){
+    .footer-details{
+        float: left !important;
+    }
+    .footer-text .footer-details {
+        padding-left: .1rem !important;
+    }
     #usd_balance{
         display: inline-block;
     }
@@ -802,6 +808,9 @@ h1, h2, h3, h4, h5 {
 .bg-danger-gradient{
     background: rgb(247,37,79);
     background: linear-gradient(180deg, rgba(250,92,124,1) 0%,rgba(247,37,79,1)  100%); 
+}
+.bg-white{
+    background-color: #fff !important;
 }
 .br-5{
     border-radius: 5px;
