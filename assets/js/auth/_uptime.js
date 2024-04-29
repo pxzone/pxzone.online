@@ -1,4 +1,8 @@
-function getUptimeData(site){
+function sortUptime(sort_days){
+    $("#loader").removeAttr('hidden', 'hidden');
+    getUptimeData(site, sort_days);
+}
+function getUptimeData(site, sort_days){
     str ="";
     div_num = 60;
     if ($(window).width() < 500) {
@@ -11,9 +15,9 @@ function getUptimeData(site){
     $("#wm_status_wrapper").html(str);
 
 
-    getUptimeActivty(site);
-    getUptimeResponseTime(site);
-	let params = new URLSearchParams({'site':site});
+    getUptimeActivty(site, sort_days);
+    getUptimeResponseTime(site, sort_days);
+	let params = new URLSearchParams({'site':site, 'sort':sort_days});
 	fetch(base_url+'api/v1/monitor/_get_data?' + params, {
   		method: "GET",
 		  	headers: {
@@ -31,36 +35,45 @@ function getUptimeData(site){
         uptime_text = "";
         uptime_text2 = "";
         uptime_icon = "";
+        span_class = "";
 
         query_all = res.result.data;
-        latest_row = res.result.latest_query;
+        latest_row = res.result.data[0];
         row_count = query_all.length;
         default_count = res.result.count;
         diff_count = default_count - row_count;
         $("#uptime_days").text(default_count+' days ago');
-
+        console.log()
         if (latest_row.status == 'up') {
             uptime_icon = "<i class='uil uil-check-circle text-success'></i>";
             uptime_text2 = "Operational";
+            span_class = "text-success";
         }
         else
         {
             uptime_icon = "<i class='uil-exclamation-circle text-danger'></i>";
-            uptime_text2 = "Downtime";
+            uptime_text2 = "Down";
+            span_class = "text-danger";
         }
-        $("#current_status").html(uptime_icon +' '+ uptime_text2)
+        $("#current_status").html(uptime_icon +' '+ uptime_text2).addClass(span_class)
         $(".icon-status").html(uptime_icon)
 
         if (query_all.length > 0) {
             for(var i = 0; i < query_all.length; i++){
-                if(query_all[i].status == 'up'){
-                    uptime_color = "hr-vertical-up";
-                    uptime_text = "<i class='uil uil-check-circle text-success'></i> Operational";
-                }
-                else{
+                if(query_all[i].down_count >=5 ){
                     uptime_color = "hr-vertical-down";
                     uptime_text = "<div class='fw-500'><i class='uil-exclamation-circle text-danger'></i> Downtime</div> <div class='c-light-gray'> Down for "+query_all[i].down_count+" mins </div>";
                 }
+                else if(query_all[i].down_count < 5 && query_all[i].down_count >= 1 ){
+                    uptime_color = "hr-vertical-up";
+                    uptime_text = "<div class='fw-500'><i class='uil uil-check-circle text-success'></i>  Operational</div> <div class='c-light-gray'> Down for "+query_all[i].down_count+" mins </div>";
+                }
+                else{
+                    uptime_color = "hr-vertical-up";
+                    uptime_text = "<i class='uil uil-check-circle text-success'></i> Operational";
+                }
+
+                
                 string += '<div class="'+uptime_color+'"><div class="tooltip_down font-12">'+uptime_text+' <div class="hr-hover"></div><span class="c-light-gray">'+query_all[i].date+'</span></div></div>';
             }
             $("#wm_status_wrapper").html(string);
@@ -69,14 +82,15 @@ function getUptimeData(site){
             string2 += '<div class="hr-vertical-disabled"></div>';
         }
         $("#wm_status_wrapper").append(string2);
+        $("#loader").attr('hidden', 'hidden');
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
 }
-function getUptimeActivty(site){
+function getUptimeActivty(site, sort_days){
     $("#down_time_activity").html('<div class="text-center mt-2 mb-2 font-12 c-light-gray">Getting records...</div>');
-	let params = new URLSearchParams({'site':site});
+	let params = new URLSearchParams({'site':site, 'sort':sort_days});
 	fetch(base_url+'api/v1/monitor/_get_data_activity?' + params, {
   		method: "GET",
 		  	headers: {
@@ -121,8 +135,8 @@ function getUptimeActivty(site){
 	});
 }
 var response_time_chart;
-function getUptimeResponseTime(site){
-    let params = new URLSearchParams({'site':site});
+function getUptimeResponseTime(site, sort_days){
+    let params = new URLSearchParams({'site':site, 'sort':sort_days});
 	fetch(base_url+'api/v1/monitor/_get_response_time?' + params, {
   		method: "GET",
 		headers: {
@@ -182,39 +196,4 @@ function getUptimeResponseTime(site){
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-}
-function generateDate(){
-    // Get the current date and time
-var currentDate = new Date();
-
-// Array to hold the hourly data
-var hourlyData = [];
-
-// Loop to generate hourly data for the next 24 hours
-for (var i = 0; i < 24; i++) {
-    // Calculate the date and time for the next hour
-    var futureDate = new Date(currentDate.getTime() + (i * 60 * 60 * 1000));
-
-    // Extract hour and AM/PM from the future date
-    var hour = futureDate.getHours();
-    var ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    hour = hour ? hour : 12; // Handle midnight (0 hours)
-
-    // Construct the time string
-    var timeString = hour + ' ' + ampm;
-
-    // Create an object with the time
-    var hourObject = {
-        time: timeString
-    };
-
-    // Push the hour object into the hourlyData array
-    hourlyData.push(hourObject);
-}
-
-// Output the hourly data
-// console.log(hourlyData);
-return hourlyData;
-
 }
