@@ -135,11 +135,40 @@ function getBasicStat(){
     })
     .then(response => response.json())
     .then(res => {
-        $("#posts_24h").text(res.data.post_count);
-        $("#karma_24h").text(res.data.karma_count);
+        $("#posts_24h").text(res.data.post_24h);
+        $("#topics_24h").text(res.data.topic_24h);
+        $("#karma_24h").text(res.data.karma_24h);
         $("#archive_posts_all").text(res.data.archive_posts_count);
         $("#archive_topic_all").text(res.data.archive_topics_count);
         $("#parsed_users_all").text(res.data.parsed_users);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+function getLatestTopic(){
+    fetch(base_url+'api/altt/statistics/_get_latest_topic', {
+        mode: 'no-cors',
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(res => {
+        data = res.data;
+        latest_topics = "";
+        if (data.length > 0) {
+            for(var i = 0; i < data.length; i++){
+                latest_topics += '<div class=" row">'
+                    +'<div class="col-lg-12">'
+                        +'<label><a target="_blank" rel="noopener" href="https://www.altcoinstalks.com/index.php?topic='+data[i].topic_id+'">'+data[i].topic_name+'</a></label>'
+                    +'</div>'
+                +'</div>';
+            }
+            $("#latest_topics").html(latest_topics);
+        }
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -277,6 +306,7 @@ function getTopBoards(){
 getBasicStat();
 getPostsChartStat();
 getTopicsChartStat();
+getLatestTopic();
 // getTopPosters();
 // getTopTopicStarter();
 // getMostTopicByReplies();
