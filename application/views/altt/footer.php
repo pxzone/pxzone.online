@@ -9,34 +9,26 @@
 
 		<div class="footer-div pb-4">
 			<div class="container">
-				<div class="row  footer-text">
+				<div class="row  footer-text font-14  pt-4">
 					<div class="col-lg-6">
-						<div class="cursor-pointer"> <!-- logo -->
+						<div class="cursor-pointer footer-details">
+							<p>Show your support: <br>
+								<a class="btn btn-lg btn-primary rounded c-white" href="<?=base_url('donate')?>">Donate</a>
+							</p>
 		            	</div>
 					</div>
+					
 					<div class="col-lg-6">
-			            <ul class="no-list-style-inline ml-n-3 mt-2 font-20 footer-social-icon">
-						</ul>
-					</div>
-					<div class="col-lg-6">
-					</div>
-					<div class="col-lg-3">
-						<ul class="no-list-style ml-n-3">
+						<ul class="no-list-style float-right footer-details">
+							<li><i class="uil-github"></i> <a href="https://github.com/pxzone/pxzone.online" rel="noopener nofollow" target="_blank">Github</a></li>
+							<li><i class="uil-bitcoin"></i> <a href="https://bitcointalk.org/index.php?action=profile;u=1000813;" rel="noopener nofollow" target="_blank">Bitcointalk</a></li>
+							<li><i class="uil-yen-circle"></i> <a href="https://www.altcoinstalks.com/index.php?action=profile;u=97172;" rel="noopener nofollow" target="_blank">AltcoinsTalks</a></li>
 						</ul>
 					</div>	
-
-					<div class="col-lg-3">
-						<ul class="no-list-style ml-n-3 ">
-						</ul>
-					</div>	
-
 				</div>
-				<div class="footer-text pb-3">
-					<div class="float-start font-13 ">
+				<div class="footer-text pb-3 pt-3">
+					<div class="text-center font-13 ">
 						&copy; <?=date('Y', strtotime($siteSetting['created_at']))?>. <?=$siteSetting['website_name']?> All rights reserved.
-					</div>
-					<div class="float-end  font-13 ">
-						<i class="uil-github"></i> <a href="https://github.com/pxzone/pxzone.online" rel="noopener" target="_blank">PX Zone</a>
 					</div>
 				</div>
 			</div>
@@ -105,12 +97,12 @@
 			<?php } else if (stripos(current_url(), "altt/karma-log") !== false) { ?>
 				
 			$('.custom-date').daterangepicker();
-			fetchKarmaLogs(1, keyword, sort, '', '');<?php }?>
+			fetchKarmaLogs(1, keyword, sort, '', '', 50);<?php }?>
 			
 			<?php if (stripos(current_url(), "altt/archive") !== false ) { ?>
 
 			$("#keyword").val(keyword);
-			searchArchives(1, keyword, category);<?php }?>
+			searchArchives(1, keyword, category, 'asc');<?php }?>
 
 		</script>
 	</body>

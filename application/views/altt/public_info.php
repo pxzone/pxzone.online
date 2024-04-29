@@ -18,6 +18,12 @@
                         </div>
                         <div class="col-lg-2 col-6">
                             <div class="card card-anchor bg-dark c-white pt-2 pb-3 padding-right-30 padding-left-30">
+                                <h2 class="font-15">Topics 24h</h2>
+                                <h4 class="font-14" id="topics_24h">0</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-6">
+                            <div class="card card-anchor bg-dark c-white pt-2 pb-3 padding-right-30 padding-left-30">
                                 <h2 class="font-15">Karma 24h</h2>
                                 <h4 class="font-14" id="karma_24h">0</h4>
                             </div>
@@ -41,8 +47,6 @@
                                 <h4 class="font-14" id="archive_topic_all">0</h4>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-lg-6">
                             <div class="card card-anchor bg-dark c-white pt-2 pb-3 padding-right-20 padding-left-20">
                                 <h2 class="font-15">Posts per day</h2>
@@ -60,6 +64,24 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-lg-6">
+                            <div class="card card-anchor bg-dark c-white pt-2 pb-3 padding-right-20 padding-left-20">
+                                <h2 class="font-15">Latest Topics</h2>
+                                <div id="latest_topics" class="font-13">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-lg-6">
+                            <div class="card card-anchor bg-dark c-white pt-2 pb-3 padding-right-20 padding-left-20">
+                                <h2 class="font-15"></h2>
+                                <div dir="ltr">
+                                </div>
+                            </div>
+                        </div> -->
+
+                        
                     </div>
 
                     <!-- <div class="row">

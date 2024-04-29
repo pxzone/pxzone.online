@@ -8,12 +8,7 @@ if(current_url.indexOf("topic/") > 0 || current_url.indexOf("post/") >  0){
         scrollTop: $(".scroll-here").offset().top
     }, 500);
 }
-// else if(keyword !== ''){
-//     fetchKarmaLogs(1, keyword)
-// }
-// else if(current_url.indexOf("karma-log") > 0){
-//     fetchKarmaLogs(1, '')
-// }
+
 $(".back-to-top").on('click', function(){
     $("html, body").animate({scrollTop: 0}, 400);
 })
@@ -22,34 +17,57 @@ $("#search_archive_btn").on('click', function(){
     let keyword = $("#keyword").val();
     let category = $("#select_category_dd").attr('data-select');
     console.log(category)
-    searchArchives(page_no, keyword, category);
+    searchArchives(page_no, keyword, category, 'asc');
 });
 $('#pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
     let keyword = $("#keyword").val();
     let category = $("#select_category_dd").attr('data-select');
-    searchArchives(page_no, keyword, category);
+    let sort = $(".sort-btn.active").attr("data-sort");
+    searchArchives(page_no, keyword, category, sort);
 });
+function sortBtn(sort){
+    var page_no = $(this).attr('data-ci-pagination-page');
+    let keyword = $("#keyword").val();
+    let category = $("#select_category_dd").attr('data-select');
+    $(".sort-btn").removeClass('active');
+    $("."+sort).addClass('active');
+    searchArchives(page_no, keyword, category, sort);
+}
 function selectCategory(cat){
 	$("#select_category_dd").attr('data-select', cat);
 	$("#select_category_dd").html( "&nbsp;"+cat+"&nbsp;" );
 }
-function searchArchives(page_no, keyword, category){
+function searchArchives(page_no, keyword, category, sort){
     $("#search_result_wrapper").html('<div class="text-center mt-5 mb-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
     $('#pagination').html('');
+
+    if(category == 'topic' || category == 'username'){
+        $("#sort_wrapper").removeAttr('hidden','hidden');
+        
+    }
+    else if (category == 'post'){
+        $("#sort_wrapper").attr('hidden','hidden');
+    }
+    else{
+        category = 'topic';
+    }
+    
+    $("#select_category_dd").attr('data-select', category);
+	$("#select_category_dd").html( "&nbsp;"+category+"&nbsp;" );
     
     if(keyword == ''){
         return false;
     }
     $("#search_archive_btn").html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
-	let params = new URLSearchParams({'keyword':keyword, 'page_no':page_no, 'category':category});
+	let params = new URLSearchParams({'keyword':keyword, 'page_no':page_no, 'category':category, 'sort':sort});
     fetch(base_url+'api/altt/_search?' + params, {
         cache: 'no-cache',
         method: "GET",
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
+              'Accept': 'application/json; charset=utf8mb4_unicode_ci 	',
+              'Content-Type': 'application/json; charset=utf8mb4_unicode_ci 	'
             },
     })
     .then(response => response.json())
@@ -65,7 +83,6 @@ function searchArchives(page_no, keyword, category){
     });
 }
 function showArchives(page_no, result, pagination){
-    
     $('#pagination').html(pagination);
     post_content = "";
     if(result.length > 0){
@@ -108,28 +125,38 @@ function refreshKarmaLogs(){
     }
     $("#search").val('');
     $("#select_sort").val('default');
-    fetchKarmaLogs(1, '', 'default', '','')
+    let num_sort = $("#num_sort").val();
+    fetchKarmaLogs(1, '', 'default', '','', num_sort)
 }
 $('#karma_log_pagination').on('click','a',function(e){
     e.preventDefault(); 
     var page_no = $(this).attr('data-ci-pagination-page');
     let keyword = $("#search").val();
     let select_sort = $("#select_sort").val();
-    fetchKarmaLogs(page_no, keyword, select_sort, from, to);
+    let num_sort = $("#num_sort").val();
+    fetchKarmaLogs(page_no, keyword, select_sort, from, to, num_sort);
 });
 $("#search_form").on('submit', function(e){
     e.preventDefault(); 
     page_no = 1;
     let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
-    fetchKarmaLogs(page_no, keyword, select_sort, '','');
+    let num_sort = $("#num_sort").val();
+    fetchKarmaLogs(page_no, keyword, select_sort, '','', num_sort);
     if (history.pushState) {
-        history.pushState({path:base_url+'altt/karma-log?search='+keyword},"", 'altt/karma-log?search='+keyword);
+        history.pushState({path:base_url+'altt/karma-log?search='+keyword},"", base_url+'altt/karma-log?search='+keyword);
     }
 });
-function fetchKarmaLogs(page_no, keyword, select_sort, from, to){
+$("#num_sort").on('change', function(){
+    page_no = 1;
+    let select_sort = $("#select_sort").val();
+    let keyword = $("#search").val();
+    let num_sort = $("#num_sort").val();
+    fetchKarmaLogs(page_no, keyword, select_sort, '','', num_sort);
+})
+function fetchKarmaLogs(page_no, keyword, select_sort, from, to, num_sort){
 	$("#karma_log_tbl").html("<tr class='text-center'><td colspan='6'>Getting data...</td></tr>");
-	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'from':from, 'to':to, 'page_no':page_no});
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'from':from, 'to':to, 'page_no':page_no, 'num_sort':num_sort});
     fetch(base_url+'api/altt/karma/_get?' + params, {
         cache: 'no-cache',
         method: "GET",
@@ -239,6 +266,10 @@ $("#sort_modal_btn").on('click', function(){
     $('.daterangepicker').css('z-index','1600');
     $("#sort_modal").modal('show');
 });
+$("#export_modal_btn").on('click', function(){
+    $('.daterangepicker').css('z-index','1600');
+    $("#export_modal").modal('show');
+});
 $("#sort_btn").on('click', function(){
     let select_sort = $("#select_sort").val();
     let keyword = $("#search").val();
@@ -270,7 +301,8 @@ $("#sort_btn").on('click', function(){
    
 
     page_no = 1;
-	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no, 'from':from, 'to':to});
+    let num_sort = $("#num_sort").val();
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'page_no':page_no, 'from':from, 'to':to, 'num_sort':num_sort});
     $("#sort_btn").html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>').attr('disabled','disabled');
 
     fetch(base_url+'api/altt/karma/_get?' + params, {
@@ -306,3 +338,30 @@ $("#select_sort").on('change', function(){
         $("#custom_date_wrapper").attr('hidden','hidden')
     }
 })
+function exportKarmaLogData(type){
+    page_no = 1;
+    let select_sort = $("#select_sort").val();
+    if(select_sort == 'custom'){
+        select_from = $('#custom_date').data('daterangepicker').startDate;
+        select_to = $('#custom_date').data('daterangepicker').endDate;
+
+        from = new Date(select_from);
+        f_month = from.getMonth() +1;
+        from = from.getFullYear() +'/'+f_month+'/'+from.getDate()
+
+        to = new Date(select_to);
+        t_month = to.getMonth() +1;
+        to = to.getFullYear()+'/'+ t_month +'/'+ to.getDate();
+    }
+    else{
+        from = "";
+	    to = "";
+    }
+
+    let keyword = $("#search").val();
+    let num_sort = $("#num_sort").val();
+    
+	let params = new URLSearchParams({'select_sort':select_sort, 'keyword':keyword, 'from':from, 'to':to, 'page_no':page_no, 'num_sort':num_sort,'type':type});
+    window.location.href = base_url+'export/csv/karma_log?' + params;
+    $("#export_modal").modal('hide');
+}

@@ -23,13 +23,25 @@
                                 <div class="col-xl-6">
                                     <div class="text-xl-end mt-xl-0 mt-2">
                                         <button type="button" class="btn rounded btn-secondary mb-2" id="sort_modal_btn"><i class="uil-sort"></i> Sort</button>
+                                        <button type="button" class="btn rounded btn-secondary mb-2" id="export_modal_btn"><i class="uil-export"></i> Export</button>
                                         <button type="button" class="btn rounded btn-secondary mb-2" onclick="refreshKarmaLogs()"><i class="uil-redo"></i> Refresh</button>
                                     </div>
                                 </div> 
                             </div>
 
                             <div class="mt-2 table-responsive">
-                            <h2 class="font-20" id="title_sort">Default Sort</h2>
+                                <div class="d-flex justify-content-between">
+                                    <div class="">
+                                        <h2 class="font-20" id="title_sort">Default Sort</h2>
+                                    </div>
+                                    <div class="float-end">
+                                        <select name="" id="num_sort" class="form-select">
+                                            <option value="50" selected>50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
                             <table class="table table-centered mb-0 font-14">
                                 <thead>
                                     <tr>
@@ -76,6 +88,30 @@
                                     </div>
                                     <div class="text-end mb-2 mt-2">
                                         <button class="btn btn-dark rounded btn-md" id="sort_btn">Sort</button>
+                                        <button class="btn btn-secondary rounded" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade margin-top-10" id="export_modal" data-bs-backdrop="static" data-bs-keyboard="false"   tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content br-10">
+                                <div class="modal-body">
+                                    <div class="mt-2 ">
+                                        <h3 class="text-left text-capitalize text-dark"> <i class="uil-export"></i> Export</h3>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button class="btn btn-dark rounded btn-md" onclick="exportKarmaLogData('excel')">Export as Excel</button>
+                                        <button class="btn btn-dark rounded btn-md" onclick="exportKarmaLogData('csv')">Export as CSV</button>
+                                    </div>
+
+                                    <div class="" id="custom_date_wrapper" hidden="hidden">
+                                        <input value="<?=date('m/01/Y')?> - <?=date('m/d/Y')?>" type="text" class="form-control date me-2 mt-2 custom-date" id="custom_date" data-toggle="date-picker" data-cancel-class="btn-light">
+                                    </div>
+                                    <div class="text-end mb-2 mt-2">
+                                        <!-- <button class="btn btn-dark rounded btn-md" id="export_btn">Export</button> -->
                                         <button class="btn btn-secondary rounded" data-bs-dismiss="modal">Close</button>
                                     </div>
                                 </div>

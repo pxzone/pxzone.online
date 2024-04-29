@@ -55,6 +55,7 @@ $route['privacy-terms'] = 'Page/terms';
 $route['login'] = 'Page/login';
 $route['logout'] = 'Page/logout';
 $route['account'] = 'Page/dashboard';
+$route['donate'] = 'Page/donate';
 $route['blog'] = 'Page/blog';
 $route['tools'] = 'Page/tools';
 $route['sitemap.xml'] = 'Sitemap/show';
@@ -76,6 +77,7 @@ $route['uptime/(:any)'] = 'Page/websiteMonitor/$1';
 
 $route['bitcoin-balance-checker'] = 'Page/bitcoinBalanceChecker';
 $route['crypto/balance-checker'] = 'Page/cryptoBalanceChecker';
+$route['crypto/qrcode-generator'] = 'Page/qrcodeGenerator';
 $route['bitcoin-message-verifier'] = 'Page/bitcoinMessageVerifier';
 $route['bitcoin-price-to-image'] = 'Page/bitcoinToImage';
 $route['crypto/image/-to-image'] = 'Page/cryptoToImage';
@@ -84,7 +86,6 @@ $route['wallet-notifier-logs/(:any)'] = 'Page/walletNotifierLogs/$1';
 $route['bitcoin-fee-estimator'] = 'Page/bitcoinFeeEstimator';
 $route['altcoinstalks-telegram-notifier'] = 'Page/alttTelegramNotifier';
 $route['website-status'] = 'Page/websiteStatusChecker';
-$route['uptime/(:any)'] = 'Page/websiteMonitor/$1';
 
 # TOOLS 
 $route['api/v1/bitcoin/_get_wallet_balance'] = 'Tools/getwalletBalance';
@@ -140,7 +141,7 @@ $route['api/v1/article/_get'] = 'Blog/getArticlesHomePageJS';
 $route['api/v1/article/_get_data'] = 'Blog/getArticleDataJS';
 $route['api/v1/article/_get_blog_category'] = 'Blog/getCategoryForPageJS';
 $route['api/v1/article/_get_blog_tags'] = 'Blog/getArticleTagForPageJS';
-$route['api/altt/karma/_get'] = 'Archive/getKarmaLogSort';
+$route['api/altt/karma/_get'] = 'Altt/getKarmaLogSort';
 
 # LOGIN
 $route['api/v1/account/_login'] = 'Login/loginProcess';
@@ -181,6 +182,7 @@ $route['api/altt/statistics/_get_most_topic_replies'] = 'Altt/getTopicsByReplies
 $route['api/altt/statistics/_get_most_topic_starter'] = 'Altt/getTopicStarters';
 $route['api/altt/statistics/_get_top_board'] = 'Altt/getTopBoards';
 $route['api/altt/statistics/_get_top_posters'] = 'Altt/getTopPosters';
+$route['api/altt/statistics/_get_latest_topic'] = 'Altt/getLatestTopic';
 
 #CRON
 $route['api/v1/email/_bitcoin_wallet_watcher'] = 'Tools/bitcoinWalletWatcherNotifier';
@@ -190,12 +192,16 @@ $route['tool/website-status'] = 'Web_status/checkWebsiteStatus';
 $route['api/v1/email/_bitcoin_wallet_watcher'] = 'Tools/bitcoinWalletWatcherNotifier';
 
 #WEBSITE STATUS MONITOR
-$route['api/v1/monitor-website-status'] = 'Web_status/monitorWebsiteStatus';
-$route['api/v1/teleg/_get_data'] = 'Web_status/getMonitorWebsiteData';
+$route['api/v1/monitor/uptime-status'] = 'Web_status/monitorWebsiteStatus';
 $route['api/v1/monitor/_get_data'] = 'Web_status/getMonitorWebsiteData';
 $route['api/v1/monitor/_get_data_activity'] = 'Web_status/getMonitorWebsiteActivity';
 $route['api/v1/monitor/_get_response_time'] = 'Web_status/getResponseTimeActivity';
 
+#WEB STATISTICS
+$route['api/v1/statistics/_get_site_visits'] = 'Statistics/getSiteVisits';
+
+#EXPORT
+$route['export/csv/karma_log'] = 'Spreadsheet_export/exportKarmaLog';
 
 #WEB STATUS
 $route['api/website_status'] = 'Tools/checkUptimeStatus';

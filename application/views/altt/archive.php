@@ -3,6 +3,9 @@
                 <div class="first-section padding-bottom-30 c-dwhite">
                     <div class="container">
                         <div class="text-center">
+                            <!-- <div class="mb-5">
+                                <img src="<?=base_url('assets/images/other/advertise-here.webp')?>" alt="">
+                            </div> -->
                             <h1 class="f-h1 mb-2 c-white">AltcoinsTalks Archives</h1>
                             <p class="p-text c-white font-15"></p>
                         </div>
@@ -13,7 +16,7 @@
                         <div class="card card-anchor bg-dark c-white pt-2 pb-5 padding-right-30 padding-left-30">
                             <label for="" class="mt-3">Search...</label>
                             <div class="input-group ">
-                                <input type="text" class="form-control" id="keyword" placeholder="">
+                                <input type="text" class="form-control" id="keyword" placeholder="Topic id, msg id, username...">
                                 <div class="input-group-append">
                                     <button id="select_category_dd" class="btn btn-outline-secondary dropdown-toggle search-archive-dropdown text-capitalize" data-select="topic" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Topic
@@ -26,28 +29,22 @@
                                 </div>
                             </div>
                             <div class="mt-1 mb-1">
-                                
                                 <div class="float-end">
                                     <button class="btn btn-lg btn-primary rounded text-white mt-1" id="search_archive_btn"><i class="uil uil-search"></i> Search</button>
                                 </div>
                             </div>
-                            <!-- <div class="search-wrapper">
-                                <input type="text" class="form-control altt-search-content" id="keyword" placeholder="Topic ID, msg ID, username, topic title, post content.">
-                                <div class="dd-archives-wrapper">
-                                    <button id="archive_dd" class="btn btn-outline-secondary dropdown-toggle input-archives-dropdown" data-coin="btc" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Post
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" id="">
-                                        <li><a class="dropdown-item cursor-pointer"> Post</a></li>
-                                        <li><a class="dropdown-item cursor-pointer"> Topic</a></li>
-                                        <li><a class="dropdown-item cursor-pointer"> User</a></li>
-                                    </ul>
-                                </div>
-                                <button class="btn btn-primary search-archives-btn" type="button" id="search_archive_btn">
-                                    <i class="uil uil-search search-archive-icon"></i> Search
-                                </button>
+
+                            <!-- <div class="mt-4 text-end" id="more_option">
+                                <a href="#">+ Option</a>
                             </div> -->
                         </div> 
+                    </div>
+
+                    <div class="text-end">
+                        <div class="btn-group mb-3" id="sort_wrapper" hidden="hidden">
+                            <button type="button"  onclick="sortBtn('asc')" class="btn btn-outline-secondary sort-btn asc active">ASC</button>
+                            <button type="button" onclick="sortBtn('desc')" class="btn btn-outline-secondary sort-btn desc">DESC</button>
+                        </div>
                     </div>
                     
                     <?php if(stripos(current_url(), "topic/") !== false && !empty($post['post'])) { ?>
