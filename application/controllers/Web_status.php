@@ -110,61 +110,106 @@ class Web_status extends CI_Controller {
         imagedestroy($im);
     }
     public function monitorWebsiteStatus(){
-        $websites = $this->Tools_model->getWebsiteList();
+        $ip_address = $this->input->ip_address();
+        $ip_whitelisted = array(
+            '195.211.124.130',
+        );
+        if (in_array($ip_address, $ip_whitelisted)) {
+            $allowed = true;
+        } 
+        else {
+            $allowed = false;
+        }
 
-        foreach($websites as $website){
-            $http_status = 503;
-            if (!empty($website['website_url'])) {
-                $ch = curl_init($website['website_url']);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects if any
-                curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout in seconds
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); 
-                curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36');
-                $start_time = microtime(true);
-                // Execute the request
-                curl_exec($ch);
-                $response_time = (microtime(true) - $start_time) * 1000; 
+        if($allowed == true){
+            $websites = $this->Tools_model->getWebsiteList();
+            foreach($websites as $website){
+                if (!empty($website['website_url'])) {
+                    $ch = curl_init($website['website_url']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects if any
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout in seconds
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); 
+                    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36');
+                    $start_time = microtime(true);
+                    // Execute the request
+                    curl_exec($ch);
+                    $response_time = (microtime(true) - $start_time) * 1000; 
+        
+                    // Check if any error occurred
+                    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+                    if ($http_status >= 200 && $http_status < 300 ) {
+                        $timezone = $this->Tools_model->getTimeZone($website['name']);
+                        $timestamp = strtotime(date('Y-m-d H:i:s'));
+                        date_default_timezone_set($timezone);
+                        $created_at = date('Y-m-d H:i:s', $timestamp);
     
-                // Check if any error occurred
-                $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        $data_arr = array(
+                            'website_id'=> $website['id'],
+                            'response_time'=> round($response_time, 2). ' ms',
+                            'status'=> 'up',
+                            'status_code'=> $http_status,
+                            'created_at'=> $created_at,
+                        );
+                        $this->Tools_model->insertWebsiteActivity($data_arr);
+                    }
+                    else {
+                        $timezone = $this->Tools_model->getTimeZone($website['name']);
+                        $timestamp = strtotime(date('Y-m-d H:i:s'));
+                        date_default_timezone_set($timezone);
+                        $created_at = date('Y-m-d H:i:s', $timestamp);
     
-                if ($http_status >= 200 && $http_status < 300 ) {
-                    $data_arr = array(
-                        'website_id'=> $website['id'],
-                        'response_time'=> round($response_time, 2). ' ms',
-                        'status'=> 'up',
-                        'status_code'=> $http_status,
-                        'created_at'=> date('Y-m-d H:i:s'),
-                    );
-                    $this->Tools_model->insertWebsiteActivity($data_arr);
+                        $data_arr = array(
+                            'website_id'=> $website['id'],
+                            'response_time'=> round($response_time, 2). ' ms',
+                            'status'=> 'down',
+                            'status_code'=> $http_status,
+                            'created_at'=> $created_at,
+                        );
+                        $this->Tools_model->insertWebsiteActivity($data_arr);
+
+                        // DOWNTIME ALERT
+                        if($website['name'] == 'altcoinstalks' && $http_status > 500){
+                            
+                        }
+
+                    }
+                    $response = "Monitor: Successs";
                 }
-                else {
-                    $data_arr = array(
-                        'website_id'=> $website['id'],
-                        'response_time'=> round($response_time, 2). ' ms',
-                        'status'=> 'down',
-                        'status_code'=> $http_status,
-                        'created_at'=> date('Y-m-d H:i:s'),
-                    );
-                    $this->Tools_model->insertWebsiteActivity($data_arr);
-                }
-            }
-            else{
             }
         }
+        else{
+            $response = "Action not allowed";
+        }
+        
+        $this->output->set_content_type('application/json')->set_output(json_encode(array('data'=>$response)));
+
     }
     public function getMonitorWebsiteData(){
-        $response = $this->Tools_model->getMonitorWebsiteDataChart();
+        $site = $this->input->get('site');
+        $timezone = $this->Tools_model->getTimeZone($site);
+        $response = $this->Tools_model->getMonitorWebsiteDataChart($timezone);
         $this->output->set_content_type('application/json')->set_output(json_encode(array('result'=>$response)));
     }
     public function getMonitorWebsiteActivity(){
-        $response = $this->Tools_model->getMonitorWebsiteActivity();
+        $site = $this->input->get('site');
+        $timezone = $this->Tools_model->getTimeZone($site);
+        $response = $this->Tools_model->getMonitorWebsiteActivity($timezone);
         $this->output->set_content_type('application/json')->set_output(json_encode(array('result'=>$response)));
     }
     public function getResponseTimeActivity(){
-        $response = $this->Tools_model->getResponseTimeActivity();
+        $site = $this->input->get('site');
+        $timezone = $this->Tools_model->getTimeZone($site);
+        $response = $this->Tools_model->getResponseTimeActivity($timezone);
         $this->output->set_content_type('application/json')->set_output(json_encode(array('result'=>$response)));
+    }
+    public function test(){
+        $offset = $this->input->get('offset');
+        $json_data = file_get_contents('https://raw.githubusercontent.com/pxzone/utc_timezone_offset/main/data.json');
+        $data = json_decode($json_data, true);
+        $response = $data[$offset];
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 }
     
