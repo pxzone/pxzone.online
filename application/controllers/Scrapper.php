@@ -423,8 +423,8 @@ class Scrapper extends CI_Controller {
 
 
             # GET POST HTML CONTENT
-            $postDiv = $xpath->query('//div[@class="post"]//div[@id="msg_'.$msg_id.'"]')->item(0);
-            $html_post = $dom->saveHTML($postDiv);
+            $post_div = $xpath->query('//div[@class="postarea"]//div[@class="post"]//div[@id="msg_'.$msg_id.'"]')->item(0);
+            $html_post = $dom->saveHTML($post_div);
 
             $data_res = array(
                 'response'=>false,
@@ -997,4 +997,53 @@ class Scrapper extends CI_Controller {
             $this->output->set_content_type('application/json')->set_output(json_encode($response));
         }
     }
+
+
+    public function alttScrapeForumRecentPostPages(){
+        $ip_address = $this->input->ip_address();
+        $ip_whitelisted = array(
+            '23.88.105.37',
+            '143.44.165.218',
+            '66.29.137.113',
+            '116.203.134.67'
+        );
+        $allowed = false;
+        if (in_array($ip_address, $ip_whitelisted)) {
+            $allowed = true;
+        } 
+
+        if($allowed == false){
+            $forum_url = "https://www.altcoinstalks.com/index.php?action=recent;start=30"; 
+            $scrape_data = $this->scrapeForumRecentPosts($forum_url);
+            $scrape_result = array();
+            if(!empty($scrape_data)){
+                foreach($scrape_data as $scrape){
+                    date_default_timezone_set('Asia/Manila');
+                    $topic_inserted = $this->Scrapper_model->saveScrapedData($scrape); // SAVED SCRAPED DATA
+        
+                    $msg_id = $scrape['msg_id'];
+                    date_default_timezone_set('Asia/Manila');
+                    $message = "System: Rescraped post. Msg ID [$msg_id]";
+                    $this->Scrapper_model->insertSystemActivityLog($message);
+                    array_push($scrape_result, $scrape['msg_id']);
+                 }
+            }
+             $data_res = array(
+                'status'=>true,
+                'msg_id'=>$scrape_result,
+            );
+        }
+        else{
+            $message = "Scraping recent posts. Access not allowed";
+            $data_res = array(
+                'status'=>false,
+                'response' => $message
+            );
+            $this->Scrapper_model->insertSystemActivityLog($message);
+        }
+        
+        $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
+    }
+
 }
+

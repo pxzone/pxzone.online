@@ -232,4 +232,23 @@ class Scrapper_model extends CI_Model {
            ->ORDER_BY('updated_at', 'desc')
            ->GET('altt_users_tbl ')->result_array();
     }
+    public function saveScrapedData($data){
+        if(!empty($data['msg_id'])){
+            $data_arr['msg_id'] = $data['msg_id'];
+            $data_arr['topic_id'] = $data['topic_id'];
+            $data_arr['board_id'] = $data['board_id'];
+            $data_arr['username'] = $data['poster_username'];
+            $data_arr['subject_url'] = $data['subject_url'];
+            $data_arr['subject'] = $data['subject'];
+            $data_arr['post_content'] = $data['post'];
+            $data_arr['html_post'] = $data['html_post'];
+            $data_arr['date_posted'] = $data['date_posted'];
+            $data_arr['is_archive'] = "no";
+            $data_arr['created_at'] = date('Y-m-d H:i:s');
+            $this->db->WHERE('msg_id', $data_arr['msg_id'])->UPDATE('altt_scraped_archive_data_tbl ', $data_arr);
+        }
+
+      
+        
+    }
 }
