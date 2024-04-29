@@ -123,7 +123,7 @@ class Telegram_bot_model extends CI_Model {
             $topic_id = $topic_id[0];
         }
 
-        $check_topic = $this->db->WHERE('topic_id', $topic_id)->GET('tracked_topics_tbl')->num_rows();
+        $check_topic = $this->db->WHERE('chat_id', $chat_id)->WHERE('topic_id', $topic_id)->GET('tracked_topics_tbl')->num_rows();
 
         if($check_topic > 0){
             return true;
@@ -376,7 +376,7 @@ class Telegram_bot_model extends CI_Model {
                     $subject_url = $data['subject_url'];
                     $subject = $data['subject'];
                     $message_text = "💬 You have been mentioned in an edited post by <b>$username</b> in <a href='$subject_url'>$subject</a> <blockquote>$text</blockquote>";
-    
+                    
                     $post_data = array( 
                         'chat_id' => $scanned_data['chat_id'],
                         'text' => $message_text,
@@ -389,6 +389,10 @@ class Telegram_bot_model extends CI_Model {
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $response = curl_exec($ch);
                     curl_close($ch);
+
+                    $log_message = "Telegram mention edited post. Poster: $username. Mentioned: $altt_username. Msg id: ".$data['msg_id'];
+                    $this->insertSystemActivityLog($log_message);
+
                     $this->output->set_content_type('application/json')->set_output(json_encode($response));
                 }
             }
@@ -413,7 +417,7 @@ class Telegram_bot_model extends CI_Model {
                 }
                 # end - IF IGNORE USERS EXISTS
 
-                if($poster_username !== $altt_username && !in_array($poster_username, $ignore_user_arr)){ // altt username is not equal to the notification subscriber/user so the user wont notify h
+                if($poster_username !== $altt_username && !in_array($poster_username, $ignore_user_arr)){ // altt username is not equal to the notification subscriber/user so the user wont be notified 
                     $scanned_data = $this->db->SELECT('chat_id')->WHERE('chat_id', $q['chat_id'])->WHERE('altt_username', $q['altt_username'])->WHERE('status', 'active')->GET('telegram_bot_tbl')->row_array();
                       
                     $text = (strlen($data['tg_post']) >= 150) ? substr($data['tg_post'], 0, 120).'...' : $data['tg_post'];
@@ -434,6 +438,9 @@ class Telegram_bot_model extends CI_Model {
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $response = curl_exec($ch);
                     curl_close($ch);
+
+                    $log_message = "Telegram mention sent. Poster: $username. Mentioned: $altt_username. Msg id: ".$data['msg_id'];
+                    $this->insertSystemActivityLog($log_message);
                     $this->output->set_content_type('application/json')->set_output(json_encode($response));
                 }
             }
@@ -624,7 +631,7 @@ class Telegram_bot_model extends CI_Model {
 
     }
     public function checkScrapedPost(){
-        return $this->db->SELECT('msg_id, post_content, created_at')
+        return $this->db->SELECT('msg_id, subject_url, post_content, created_at')
             ->WHERE('is_archive', 'no')
             ->WHERE('status', 'active')
             ->LIMIT(10)
@@ -642,18 +649,17 @@ class Telegram_bot_model extends CI_Model {
     public function updateArchiveScrapedPost($edited_data, $saved_data, $status){
         $check_data = $this->db->WHERE('msg_id', $edited_data['msg_id'])->GET('altt_scraped_archive_data_tbl')->row_array();
         $data_arr = array(
-            'username'=>$edited_data['poster_username'],
-            'topic_id'=>$edited_data['topic_id'],
+            // 'username'=>$edited_data['poster_username'],
+            // 'topic_id'=>$edited_data['topic_id'],
             'board_id'=>$edited_data['board_id'],
-            // 'board_name'=>$edited_data['board_name'],
-            'subject_url'=>$edited_data['subject_url'],
+            // 'subject_url'=>$edited_data['subject_url'],
             'subject'=>$edited_data['subject'],
             'post_content'=>$edited_data['tg_post'],
             'html_post'=>$edited_data['html_post'],
-            'date_posted' => $edited_data['date_posted'],
+            // 'date_posted' => $edited_data['date_posted'],
             'status'=>$status,
             'is_archive'=>'yes',
-            'created_at'=>date('Y-m-d H:i:s'),
+            'updated_at'=>date('Y-m-d H:i:s'),
         );
 
         if($check_data['is_archive'] == 'no'){
@@ -714,5 +720,13 @@ class Telegram_bot_model extends CI_Model {
             ->GROUP_BY('username')
             ->ORDER_BY('count', 'desc')
             ->GET('tracked_users_tbl')->result_array();
+    }
+    public function insertSystemActivityLog ($message) {
+        $msg_log = array(
+            'msg_log'=>$message, 
+            'ip_address'=>$this->input->ip_address(), 
+            'created_at'=>date('Y-m-d H:i:s')
+        ); 
+        $this->db->INSERT('altt_syslog_tbl', $msg_log);
     }
 }

@@ -21,63 +21,60 @@ class Scrapper extends CI_Controller {
             '66.29.137.113',
             '116.203.134.67'
         );
+        $allowed = false;
         if (in_array($ip_address, $ip_whitelisted)) {
             $allowed = true;
         } 
-        else {
-            $allowed = false;
-        }
 
         if($allowed == true){
-                // $forum_url_page_2 = "https://www.altcoinstalks.com/index.php?action=recent;start=10"; 
-                // $scrape_data_page_2 = $this->scrapeForumRecentPosts($forum_url_page_2);
-                // foreach($scrape_data_page_2 as $scrape2){
-                //     $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape2['msg_id']);
-                //     if($check_msg_id <= 0){ // msg id if not yet exist
-                //         $this->Telegram_bot_model->notifyUser($scrape2);
-                //         date_default_timezone_set('Asia/Manila');
-                //         $topic_data = $this->scrapeTopicData($scrape2['topic_id']);
-                //         $this->Scrapper_model->insertNewBoardData($scrape2['board_id'], $scrape2['board_name']);
-                //         $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape2, $topic_data); // SAVED SCRAPED DATA
+            $forum_url_page_2 = "https://www.altcoinstalks.com/index.php?action=recent;start=10"; 
+            $scrape_data_page_2 = $this->scrapeForumRecentPosts($forum_url_page_2);
+            foreach($scrape_data_page_2 as $scrape2){
+                $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape2['msg_id']);
+                if($check_msg_id <= 0){ // msg id if not yet exist
+                    $this->Telegram_bot_model->notifyUser($scrape2);
+                    date_default_timezone_set('Asia/Manila');
+                    $topic_data = $this->scrapeTopicData($scrape2['topic_id']);
+                    $this->Scrapper_model->insertNewBoardData($scrape2['board_id'], $scrape2['board_name']);
+                    $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape2, $topic_data); // SAVED SCRAPED DATA
                         
-                //         if($topic_inserted == true){
-                //             $this->Telegram_bot_model->notifyTrackedBoard($scrape2, $topic_data); // NOTIFY TRACKED BOARDS
-                //         }
-                //         $msg_id = $scrape2['msg_id'];
-                        // $message = "System: Scraped post. Msg ID [$msg_id]";
-                            //         $this->Scrapper_model->insertSystemActivityLog($message);
-                //     }
-                // }
-        
-                $forum_url = "https://www.altcoinstalks.com/index.php?action=recent"; 
-                $scrape_data = $this->scrapeForumRecentPosts($forum_url);
-                $scrape_result = array();
-                if(!empty($scrape_data)){
-                    foreach($scrape_data as $scrape){
-                        $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape['msg_id']);
-                        if($check_msg_id <= 0){
-                            $this->Telegram_bot_model->notifyUser($scrape);
-                            date_default_timezone_set('Asia/Manila');
-                            $topic_data = $this->scrapeTopicData($scrape['topic_id']);
-                            $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
-                            $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
-                            if($topic_inserted == true){
-                                $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
-                            }
-            
-                            $msg_id = $scrape['msg_id'];
-                            date_default_timezone_set('Asia/Manila');
-                            $message = "System: Scraped post. Msg ID [$msg_id]";
-                            $this->Scrapper_model->insertSystemActivityLog($message);
-                        }
-                        array_push($scrape_result, $scrape['msg_id']);
+                    if($topic_inserted == true){
+                            $this->Telegram_bot_model->notifyTrackedBoard($scrape2, $topic_data); // NOTIFY TRACKED BOARDS
                     }
+                    $msg_id = $scrape2['msg_id'];
+                    $message = "System: Scraped post. Msg ID [$msg_id]";
+                    $this->Scrapper_model->insertSystemActivityLog($message);
                 }
-                // $this->insertTopicAuthor();
-                $data_res = array(
-                    'status'=>true,
-                    'msg_id'=>$scrape_result,
-                );
+            }
+        
+            $forum_url = "https://www.altcoinstalks.com/index.php?action=recent"; 
+            $scrape_data = $this->scrapeForumRecentPosts($forum_url);
+            $scrape_result = array();
+            if(!empty($scrape_data)){
+                foreach($scrape_data as $scrape){
+                    $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape['msg_id']);
+                    if($check_msg_id <= 0){
+                    $this->Telegram_bot_model->notifyUser($scrape);
+                    date_default_timezone_set('Asia/Manila');
+                    $topic_data = $this->scrapeTopicData($scrape['topic_id']);
+                    $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
+                    $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
+                    if($topic_inserted == true){
+                        $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
+                    }
+        
+                        $msg_id = $scrape['msg_id'];
+                        date_default_timezone_set('Asia/Manila');
+                        $message = "System: Scraped post. Msg ID [$msg_id]";
+                        $this->Scrapper_model->insertSystemActivityLog($message);
+                    }
+                    array_push($scrape_result, $scrape['msg_id']);
+                 }
+            }
+             $data_res = array(
+                'status'=>true,
+                'msg_id'=>$scrape_result,
+            );
         }
         else{
             $message = "Scraping recent posts. Access not allowed";
@@ -200,16 +197,14 @@ class Scrapper extends CI_Controller {
         $ip_address = $this->input->ip_address();
         $ip_whitelisted = array(
             '23.88.105.37',
-            '143.44.165.218',
-            '66.29.137.113',
+            '143.44.165.189',
+            '195.211.124.130',
             '116.203.134.67'
         );
+        $allowed = false;
         if (in_array($ip_address, $ip_whitelisted)) {
             $allowed = true;
         } 
-        else {
-            $allowed = false;
-        }
 
         $result = array();
         if($allowed == true){
@@ -223,21 +218,27 @@ class Scrapper extends CI_Controller {
                     if ($time_difference > 300) { // 5 mins past after date posted
                         $data_res['response'] = false;
                         $data_res['error_message'] = "";
-                        $login_page_data = $this->Scrapper_model->scrapeLoginPage();
-                        $login_forum = $this->Scrapper_model->loginForum($login_page_data);
-                        if($login_forum){
-                            $data_res = $this->scrapeEditedPosts($login_page_data, $sp['msg_id'], $sp['post_content']);
-                        }
-                        
+                        // $login_page_data = $this->Scrapper_model->scrapeLoginPage();
+                        // $login_forum = $this->Scrapper_model->loginForum($login_page_data);
+                        // if($login_forum){
+                        //     $data_res = $this->scrapeEditedPosts($login_page_data, $sp['msg_id'], $sp['post_content']);
+                        // }
+                        // $data_res = $this->scrapeEditedPosts($sp['msg_id'], $sp['post_content']);
+                        $data_res = $this->scrapeEditedPostspOption2($sp['msg_id'], $sp['subject_url'], $sp['post_content']);
+
                         if($data_res['response'] == true){
                             date_default_timezone_set('Asia/Manila');
                             $this->Telegram_bot_model->updateArchiveScrapedPost($data_res, $sp, 'active');
                             array_push($result, $data_res);
                         }
                         else if($data_res['response'] == false && $data_res['error_message'] == "Moved to trash" ){
+                            $data_res['msg_id'] = $sp['msg_id'];
+                            $data_res['mentioned'] = 'no';
                             array_push($result, $data_res);
                         }
                         else{
+                            $data_res['msg_id'] = $sp['msg_id'];
+                            $data_res['mentioned'] = 'no';
                             array_push($result, $data_res);
                         }
                     }
@@ -260,20 +261,21 @@ class Scrapper extends CI_Controller {
         $this->output->set_content_type('application/json')->set_output(json_encode($result));
 	}
 
-    
-    public function scrapeEditedPosts($login_page_data, $msg_id, $initial_scraped_post)
+    public function scrapeEditedPostspOption2($msg_id, $forum_url, $initial_scraped_post)
     {
         $user = "";
-        $forum_url = $this->getRedirectedURL($msg_id);
+        $subjectContent = "";
+        $postContent = "";
+        $subject_url = "";
         $ch = curl_init($forum_url);
-        curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$login_page_data['session_id'].";");
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
+        curl_setopt($ch, CURLOPT_HEADER, true);
         $html = curl_exec($ch);
+        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
         if (curl_errno($ch)) {
-            $message = 'Curl error during request: ' . curl_error($ch);
-            $this->Scrapper_model->insertSystemActivityLog($message);
+            echo 'Curl error during request: ' . curl_error($ch);
             exit;
         }
         curl_close($ch);
@@ -281,21 +283,53 @@ class Scrapper extends CI_Controller {
         @$dom->loadHTML($html);
         $xpath = new DOMXPath($dom);
         
+        # CHECK POST CONTENT IF OFF LIMITs / DELETED POST
         $fatal_error_page = $xpath->query('//div[@id="fatal_error"]')->item(0);
         $expression = "//*[@id='fatal_error']//div[contains(concat(' ', normalize-space(@class), ' '), ' padding ')]";
         $fatal_error_message = $xpath->query($expression);
+        if(strpos($html, "Please login below or") !== false){
+            $data_res = array(
+                'status'=>false,
+                'msg_id'=>$msg_id,
+                'error_message'=>"Moved to trash",
+            );
+        }
 
-        
+        else if ($fatal_error_page) {
+            foreach ($fatal_error_message as $fatal_error_message) {
+                $fatal_error_message = $fatal_error_message->textContent . PHP_EOL;
+            }
 
-        if ($html){
-            # HTML CONTENT
-            $post_div = $xpath->query('//div[@class="post"]//div[@id="msg_'.$msg_id.'"]')->item(0);
-            $html_post = $dom->saveHTML($post_div);
+            if(stripos($fatal_error_message, "topic doesn't exist on this board" ) !== false){
+                $message = "Scrapper Status: Error. Topic doesn't exist on this board. [msg_id ".$msg_id."]";
+                // $this->Scrapper_model->insertSystemActivityLog($message);
+            }
+            else if(stripos($fatal_error_message, "missing or off limits to you" ) !== false){
+                $message = "Scrapper Status: Error. Page doesn't exist yet. [msg_id ".$msg_id."]";
+                // $this->Scrapper_model->insertSystemActivityLog($message);
+                $fatal_error_page = $fatal_error_page->textContent;
+            }
+            $data_res = array(
+                'status'=>false,
+                'msg_id'=>$msg_id,
+                'error_message'=>$fatal_error_message,
+            );
+        }
+        else{
+
+            # GET USERNAME
+            $aWith_id = $xpath->query('//a[@id="msg'.$msg_id.'"]')->item(0);
+            if ($aWith_id) {
+                $posterAnchor = $xpath->query('following::div[@class="poster"][1]//a', $aWith_id)->item(0);
+                if ($posterAnchor) {
+                    $user = $posterAnchor->textContent;
+                }
+            } 
 
             # GET DATE POSTED
             $date_posted_element = $xpath->query("//h5[@id='subject_".$msg_id."']/following-sibling::div[contains(@class, 'smalltext')]");
-            date_default_timezone_set('Europe/Rome');
-            $date_posted = date('Y-m-d H:i:s');
+            // date_default_timezone_set('Europe/Rome');
+            
             foreach ($date_posted_element as $date_posted_node) {
                 $datetime = trim(str_replace(array('at',' »'), '', $date_posted_node->nodeValue));
             }
@@ -309,6 +343,10 @@ class Scrapper extends CI_Controller {
                 $datetime = explode("on: ", $datetime);
                 $date_posted = date('Y-m-d H:i:s', strtotime($datetime[1]));
             }
+            $timestamp = strtotime($date_posted);
+            $newTimezone = 'Europe/Rome'; // Replace 'New/Timezone' with the desired new timezone
+            date_default_timezone_set($newTimezone);
+            $date_posted = date('Y-m-d H:i:s', $timestamp);
 
             # GET BOARD ID
             $board_id = "";
@@ -318,7 +356,7 @@ class Scrapper extends CI_Controller {
                 if ($anchor_node !== null) {
                     $board_href = $anchor_node->getAttribute('href');
                     $board_name = $anchor_node->textContent;
-                    $board_id = explode("=",$board_href);
+                    $board_id = explode("board=",$board_href);
                     $board_id = substr($board_id[1], 0, -2);
                 }
             }
@@ -348,10 +386,192 @@ class Scrapper extends CI_Controller {
                 $subject_content = $subjectContentElements->textContent;
             }
 
-            # GET POST URL
-            $aTag = $xpath->query('//h5[@id="subject_'.$msg_id.'"]//a')->item(0);
-            if ($aTag) {
-                $subject_url = $aTag->getAttribute('href');
+        
+            # GET POST WHOLE CONTENT INCLUDING DIVS/BLOCKQUOTE
+            $postContentElements = $xpath->query('//div[@id="msg_'.$msg_id.'"][position() = 1]')->item(0);
+            if($postContentElements){
+                $post_content = $postContentElements->textContent;
+            }
+
+            # GET POST CONTENT WITHOUT OTHER DIVS/BLOCKQUOTE
+            $target_div = $xpath->query('//*[@id="msg_'.$msg_id.'"]')->item(0);
+            $text_content = '';
+            if($target_div){
+                $divs_to_remove = $xpath->query('.//div', $target_div);
+                foreach ($divs_to_remove as $div) {
+                    $div->nodeValue = '';
+                }
+                $blockquotes_to_remove = $xpath->query('.//blockquote', $target_div);
+                foreach ($blockquotes_to_remove as $blockquote) {
+                    $blockquote->nodeValue = '';
+                }
+                $text_content = $target_div->textContent;
+            }
+            
+            # CHECK IF POST IS EDITED
+            $edited_post_status = $xpath->query('//*[@id="modified_$msg_id"]')->item(0);
+            if ($edited_post_status) {
+                // Check if there is an <em> tag inside the specific div
+                $emTags = $xpath->query('.//em', $edited_post_status);
+        
+                if ($emTags->length > 0) {
+                    $edited_post_status = true;
+                } else {
+                    $edited_post_status = false;
+                }
+            }
+
+
+            # GET POST HTML CONTENT
+            $postDiv = $xpath->query('//div[@class="post"]//div[@id="msg_'.$msg_id.'"]')->item(0);
+            $html_post = $dom->saveHTML($postDiv);
+
+            $data_res = array(
+                'response'=>false,
+                'msg_id'=>$msg_id,
+            );
+
+            if($user){
+                $initial_scraped_post = str_word_count($initial_scraped_post, 1);
+                $edited_post = str_word_count($post_content, 1); // from new scraped data on the msg_id
+
+                $added = array_diff($edited_post, $initial_scraped_post);
+                $removed = array_diff($initial_scraped_post, $edited_post);
+
+                if (!empty($added) || !empty($removed)) { // check if there's difference between initial_scraped_post and edited_post
+                    $new_edited_post = implode(' ', $added).' '.implode(' ', $removed); 
+                    
+                    $data = array(
+                        'response'=>true,
+                        'poster_username'=>$user,
+                        'msg_id'=>$msg_id,
+                        'board_id'=>$board_id,
+                        'topic_id'=>$topic_id,
+                        'subject_url'=>"https://www.altcoinstalks.com/index.php?topic=$topic_id.msg$msg_id#msg$msg_id",
+                        'subject'=>$subject_content,
+                        'post'=>$new_edited_post, 
+                        'tg_post'=>$text_content,
+                        'html_post'=>$html_post,
+                        'edited_post'=>implode(" ", $edited_post),
+                    );
+        
+                    $this->Telegram_bot_model->notifyUserEditedPost($data);
+                    $message = "Status: okay. Scraped again [$msg_id]";
+                    $this->Scrapper_model->insertSystemActivityLog($message);
+                    return $data;
+                } 
+                else{
+                    $data = array(
+                        'response'=>true,
+                        'poster_username'=>$user,
+                        'msg_id'=>$msg_id,
+                        'board_id'=>$board_id,
+                        'topic_id'=>$topic_id,
+                        'subject_url'=>"https://www.altcoinstalks.com/index.php?topic=$topic_id.msg$msg_id#msg$msg_id",
+                        'subject'=>$subject_content,
+                        'post'=>$post_content, 
+                        'tg_post'=>$text_content,
+                        'html_post'=>$html_post,
+                    );
+                    return $data;
+                }
+            }
+            else{
+                
+                
+            }
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($data_res));
+    }
+    public function scrapeEditedPosts($msg_id, $initial_scraped_post)
+    {
+        $user = "";
+        $forum_url = $this->getRedirectedURL($msg_id);
+        $ch = curl_init($forum_url);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+
+        $html = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $message = 'Curl error during request: ' . curl_error($ch);
+            $this->Scrapper_model->insertSystemActivityLog($message);
+            exit;
+        }
+        curl_close($ch);
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+        
+        # CHECK POST CONTENT IF OFF LIMITs / DELETED POST
+        $fatal_error_page = $xpath->query('//div[@id="fatal_error"]')->item(0);
+        $expression = "//*[@id='fatal_error']//div[contains(concat(' ', normalize-space(@class), ' '), ' padding ')]";
+        $fatal_error_message = $xpath->query($expression);
+        if(strpos($html, "Please login below or") !== false){
+            $data_res = array(
+                'response'=>false,
+                'msg_id'=>$msg_id,
+                'error_message'=>"Moved to trash",
+            );
+            $this->Telegram_bot_model->updateArchivePosts($msg_id);
+            return $data_res;
+        }
+
+        else if ($fatal_error_page) {
+            foreach ($fatal_error_message as $fatal_error_message) {
+                $fatal_error_message = $fatal_error_message->textContent . PHP_EOL;
+            }
+
+            if(stripos($fatal_error_message, "topic doesn't exist on this board" ) !== false){
+                $message = "Scrapper Status: Error. Topic doesn't exist on this board. [msg_id ".$msg_id."]";
+                $this->Scrapper_model->insertSystemActivityLog($message);
+            }
+            else if(stripos($fatal_error_message, "missing or off limits to you" ) !== false){
+                $message = "Scrapper Status: Error. Page doesn't exist yet. [msg_id ".$msg_id."]";
+                $this->Scrapper_model->insertSystemActivityLog($message);
+                $fatal_error_page = $fatal_error_page->textContent;
+            }
+            $data_res = array(
+                'response'=>false,
+                'msg_id'=>$msg_id,
+                'error_message'=>$fatal_error_message,
+            );
+            $this->Telegram_bot_model->updateArchivePosts($msg_id);
+            return $data_res;
+        }
+        else{
+            # HTML CONTENT
+            $post_div = $xpath->query('//div[@class="post"]//div[@id="msg_'.$msg_id.'"]')->item(0);
+            $html_post = $dom->saveHTML($post_div);
+
+            # GET TOPIC ID
+            $long_url = explode(".msg", $forum_url);
+            $topic = explode("=", $long_url[0]);
+            if(stripos($forum_url,"PHPSESSID") !== false){
+                $topic_id = $topic[2];
+            }
+            else{
+                $topic_id = $topic[1];
+            }
+
+            # GET BOARD ID
+            $board_id = "";
+            $li_nodes = $xpath->query('(//div[@class="navigate_section"]/ul/li)[last()-1]');
+            if ($li_nodes->length > 0) {
+                $anchor_node = $xpath->query('.//a', $li_nodes->item(0))->item(0);
+                if ($anchor_node !== null) {
+                    $board_href = $anchor_node->getAttribute('href');
+                    $board_name = $anchor_node->textContent;
+                    $board_id = explode("=",$board_href);
+                    $board_id = substr($board_id[1], 0, -2);
+                }
+            }
+
+
+            # GET POST SUBJECT
+            $subjectContentElements = $xpath->query('//h5[@id="subject_'.$msg_id.'"]//a');
+            foreach ($subjectContentElements as $subjectContentElements) {
+                $subject_content = $subjectContentElements->textContent;
             }
 
             # GET POST WHOLE CONTENT INCLUDING DIVS/BLOCKQUOTE
@@ -378,7 +598,10 @@ class Scrapper extends CI_Controller {
             # IF POST IF EDITED 
             # Scraped post were saved and compared when the post is rescraped. The difference between the two scraped posts
             # will be scanned for possible mentions and notifications.
-            if($user){
+            if(!empty($subject_content)){
+                $message = "Post $msg_id check for comparison.";
+                $this->Scrapper_model->insertSystemActivityLog($message);
+
                 $initial_scraped_post = str_word_count($initial_scraped_post, 1);
                 $edited_post = str_word_count($post_content, 1); // from new scraped data on the msg_id
 
@@ -390,12 +613,10 @@ class Scrapper extends CI_Controller {
                     
                     $data = array(
                         'response'=>true,
-                        'date_posted'=>$date_posted,
+                        // 'date_posted'=>$date_posted,
                         'msg_id'=>$msg_id,
-                        'topic_id'=>$topic_id,
                         'board_id'=>$board_id,
-                        'board_name'=>$board_name,
-                        'poster_username'=>$user,
+                        'topic_id'=>$topic_id,
                         'subject_url'=>"https://www.altcoinstalks.com/index.php?topic=$topic_id.msg$msg_id#msg$msg_id",
                         'subject'=>$subject_content,
                         'post'=>$new_edited_post, 
@@ -410,15 +631,14 @@ class Scrapper extends CI_Controller {
                     return $data;
                 } 
                 else {
+                    
                     $data = array(
                         'response'=>true,
-                        'date_posted'=>$date_posted,
+                        // 'date_posted'=>$date_posted,
                         'msg_id'=>$msg_id,
-                        'topic_id'=>$topic_id,
                         'board_id'=>$board_id,
-                        'board_name'=>$board_name,
-                        'poster_username'=>$user,
-                        'subject_url'=>$subject_url,
+                        'topic_id'=>$topic_id,
+                        'subject_url'=>"https://www.altcoinstalks.com/index.php?topic=$topic_id.msg$msg_id#msg$msg_id",
                         'subject'=>$subject_content,
                         'post'=>$post_content, 
                         'tg_post'=>$text_content,
@@ -429,50 +649,22 @@ class Scrapper extends CI_Controller {
                 }
             }
             else{
-                $data_res = array(
-                    'response'=>false,
-                    'edited_post_status' => false,
-                    'msg_id'=>$msg_id,
-                );
-                $this->Telegram_bot_model->updateArchivePosts($msg_id);
-                return $data_res;
-            }
-        }
-        else if ($fatal_error_page) {
-            foreach ($fatal_error_message as $fatal_error_message) {
-                $fatal_error_message = $fatal_error_message->textContent . PHP_EOL;
-            }
-
-            if(stripos($fatal_error_message, "topic doesn't exist on this board" ) !== false){
-                $message = "Scrapper Status: Error. Topic doesn't exist on this board. [msg_id ".$msg_id."]";
+                $message = "Post $msg_id check for comparison on else.";
                 $this->Scrapper_model->insertSystemActivityLog($message);
             }
-            else if(stripos($fatal_error_message, "missing or off limits to you" ) !== false){
-                $message = "Scrapper Status: Error. Page doesn't exist yet. [msg_id ".$msg_id."]";
-                $this->Scrapper_model->insertSystemActivityLog($message);
-                $fatal_error_page = $fatal_error_page->textContent;
-            }
-            $data_res = array(
-                'response'=>false,
-                'msg_id'=>$msg_id,
-                'error_message'=>$fatal_error_message,
-            );
-            $this->Telegram_bot_model->updateArchivePosts($msg_id);
-            return $data_res;
-        }
-        else if(strpos($html, "Please login below or") !== false){
-            $data_res = array(
-                'response'=>false,
-                'msg_id'=>$msg_id,
-                'error_message'=>"Moved to trash",
-            );
-            $this->Telegram_bot_model->updateArchivePosts($msg_id);
-            return $data_res;
-        }
-        else{
-            $this->Telegram_bot_model->updateArchivePosts($msg_id);
+            // else{
+            //     $data_res = array(
+            //         'response'=>false,
+            //         'error_message'=>"Error occurs!",
+            //         'edited_post_status' => false,
+            //         'msg_id'=>$msg_id,
+            //     );
+            //     $this->Telegram_bot_model->updateArchivePosts($msg_id);
+            //     return $data_res;
+            // }
         }
     }
+
     public function getRedirectedURL($msg_id){
         $url = "https://www.altcoinstalks.com/index.php?msg=".$msg_id;
         $ch = curl_init($url);
@@ -649,12 +841,10 @@ class Scrapper extends CI_Controller {
             '66.29.137.107', // old cpanel cron
             '195.211.124.130' // new hosting vps
         );
+        $allowed = false;
         if (in_array($ip_address, $ip_whitelisted)) {
             $allowed = true;
         } 
-        else {
-            $allowed = false;
-        }
 
         if($allowed == true){
             $user_data = $this->Scrapper_model->getMultipleUserData();

@@ -193,18 +193,20 @@ class Telegram_bot extends CI_Controller {
             else if (stripos($update['message']['text'], 'https://www.altcoinstalks.com/index.php?topic=') !== FALSE ) {
                 $topic_url = $update['message']['text'];
                 $topic_title = $this->Scrapper_model->scrapeTopicData($topic_url);
-                $response_text = "You are now tracking the topic: \n\n<a href='$topic_url'>$topic_title</a>";
-                $post_data = array(
-                    'chat_id' => $chat_id,
-                    'text' => $response_text,
-                    'parse_mode'=> 'html',
-                );
-               
     	        $topic = $this->Telegram_bot_model->insertNewTrackURL($chat_id, $topic_url, trim($topic_title));
+                
                 if($topic > 0){
                     $post_data = array(
                         'chat_id' => $chat_id,
                         'text' => "You already tracking this topic!",
+                    );
+                }
+                else{
+                    $response_text = "You are now tracking the topic: \n\n<a href='$topic_url'>$topic_title</a>";
+                    $post_data = array(
+                        'chat_id' => $chat_id,
+                        'text' => $response_text,
+                        'parse_mode'=> 'html',
                     );
                 }
                 $this->sendMessage($post_data);

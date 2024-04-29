@@ -201,7 +201,7 @@ $route['api/v1/monitor/_get_response_time'] = 'Web_status/getResponseTimeActivit
 $route['api/v1/statistics/_get_site_visits'] = 'Statistics/getSiteVisits';
 
 #EXPORT
-$route['export/csv/karma_log'] = 'Spreadsheet_export/exportKarmaLog';
+$route['export/file/karma_log'] = 'Spreadsheet_export/exportKarmaLog';
 
 #WEB STATUS
 $route['api/website_status'] = 'Tools/checkUptimeStatus';
