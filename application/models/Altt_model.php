@@ -320,21 +320,6 @@ class Altt_model extends CI_Model {
                 array_push($result, $row_array);
             }
         }
-        else if($sort == 'default'){
-            $data_res = $this->defaultSortKarma($row_per_page, $row_no);
-            date_default_timezone_set("Europe/Rome");
-            foreach($data_res['logs'] as $log){
-                $row_array = array(
-                    'uid'=>$log['uid'],
-                    'username'=>$log['username'],
-                    'position'=>$log['position'],
-                    'karma'=>$log['karma'],
-                    'total_karma'=>$log['total_karma'],
-                    'created_at'=> date('Y-m-d H:i:s T', strtotime($log['created_at'])),
-                );
-                array_push($result, $row_array);
-            }
-        }
         else{
             $data_res = $this->defaultSortKarma($row_per_page, $row_no);
             date_default_timezone_set("Europe/Rome");

@@ -52,14 +52,27 @@ class Archive_model extends CI_Model {
             $where_category = array('asdt.topic_id'=>$search);
         }
         
-        $posts = $this->db->SELECT('asdt.board_id, asdt.topic_id, asdt.msg_id, asdt.username, abt.board_name, asdt.subject as title, asdt.html_post as post, asdt.date_posted')
+        if($category == 'post'){
+            $posts = $this->db->SELECT('asdt.board_id, asdt.topic_id, asdt.msg_id, asdt.username, abt.board_name, asdt.subject as title, asdt.html_post as post, asdt.date_posted')
             // ->WHERE("(asdt.board_id LIKE '%".$search."%' OR asdt.topic_id LIKE '%".$search."%' OR asdt.msg_id LIKE '%".$search."%' OR asdt.username LIKE '%".$search."%' OR asdt.post_content LIKE '%".$search."%' OR abt.board_name LIKE '%".$search."%')", NULL, FALSE)
-            ->WHERE($where_category)
-            ->LIMIT($row_per_page, $row_no)
-            ->ORDER_BY('date_posted', $sort)
-            ->FROM('altt_scraped_archive_data_tbl as asdt')
-            ->JOIN('altt_boards_tbl as abt', 'abt.board_id=asdt.board_id', 'left')
-            ->GET()->result_array();
+                ->WHERE($where_category)
+                ->LIMIT($row_per_page, $row_no)
+                ->ORDER_BY('date_posted', $sort)
+                ->FROM('altt_scraped_archive_data_tbl as asdt')
+                ->JOIN('altt_boards_tbl as abt', 'abt.board_id=asdt.board_id', 'left')
+                ->GET()->row_array();
+        }
+        else{
+            $posts = $this->db->SELECT('asdt.board_id, asdt.topic_id, asdt.msg_id, asdt.username, abt.board_name, asdt.subject as title, asdt.html_post as post, asdt.date_posted')
+                // ->WHERE("(asdt.board_id LIKE '%".$search."%' OR asdt.topic_id LIKE '%".$search."%' OR asdt.msg_id LIKE '%".$search."%' OR asdt.username LIKE '%".$search."%' OR asdt.post_content LIKE '%".$search."%' OR abt.board_name LIKE '%".$search."%')", NULL, FALSE)
+                ->WHERE($where_category)
+                ->LIMIT($row_per_page, $row_no)
+                ->ORDER_BY('date_posted', $sort)
+                ->FROM('altt_scraped_archive_data_tbl as asdt')
+                ->JOIN('altt_boards_tbl as abt', 'abt.board_id=asdt.board_id', 'left')
+                ->GET()->result_array();
+        }
+        
 
         $query_count = $this->db->FROM('altt_scraped_archive_data_tbl as asdt')
             ->JOIN('altt_boards_tbl as abt', 'abt.board_id=asdt.board_id', 'left')
@@ -68,19 +81,36 @@ class Archive_model extends CI_Model {
             ->GET()->num_rows();
 
         $result = array();
-        foreach($posts as $post){
+        if($category == 'post'){
             $row_array = array(
-                'board_id'=>$post['board_id'],
-                'topic_id'=>$post['topic_id'],
-                'msg_id'=>$post['msg_id'],
-                'username'=>$post['username'],
-                'board_name'=>$post['board_name'],
-                'title'=>$post['title'],
-                'post'=>$post['post'],
-                'date_posted'=>date('M d, Y H:i:s', strtotime($post['date_posted'])).' CET',
+                'board_id'=>$posts['board_id'],
+                'topic_id'=>$posts['topic_id'],
+                'msg_id'=>$posts['msg_id'],
+                'username'=>$posts['username'],
+                'board_name'=>$posts['board_name'],
+                'title'=>$posts['title'],
+                'post'=>$posts['post'],
+                'date_posted'=>date('M d, Y H:i:s', strtotime($posts['date_posted'])).' CET',
             );
             array_push($result, $row_array);
+
         }
+        else{
+            foreach($posts as $post){
+                $row_array = array(
+                    'board_id'=>$post['board_id'],
+                    'topic_id'=>$post['topic_id'],
+                    'msg_id'=>$post['msg_id'],
+                    'username'=>$post['username'],
+                    'board_name'=>$post['board_name'],
+                    'title'=>$post['title'],
+                    'post'=>$post['post'],
+                    'date_posted'=>date('M d, Y H:i:s', strtotime($post['date_posted'])).' CET',
+                );
+                array_push($result, $row_array);
+            }
+        }
+        
         $data['posts'] = $result;
         $data['count'] = $query_count;
         return $data;
