@@ -33,7 +33,7 @@ class User_model extends CI_Model {
         }
     }
     public function newWebsiteVisits() {
-		if (!isset($this->session->website_views)) {
+		if (!isset($this->session->website_views) && !empty($this->agent->browser())) {
 		    $view_id = $this->generateWebsiteVisitorID();
 			$this->session->set_tempdata('website_views', $view_id, 86400); /* set session visitor views for 24 hours then reset after */
 			$data = array(
