@@ -36,7 +36,6 @@
                                 <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('tools')">Tools</a></li>
                                 <li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('about')">About Us</a></li>
                                 <?php if (isset($this->session->user_id)) {?><li class="page_menu_item menu_mm cursor-pointer"><a onclick="_accessPage('account/dashboard')">Account</a></li><?php } ?>
-                                <!-- <li class="page_menu_item menu_mm cursor-pointer mt-3 install-app-btn-container"><button id="_install_app" class="btn rounded btn-warning c-white ">Install App</button></li> -->
                             </ul>
                         </div>
                     </div>
@@ -58,7 +57,7 @@
                         </li>
                         <?php if(isset($this->session->user_id)) {?>
                         <li class="dropdown text-capitalize">
-                            <a class="nav-link dropdown-toggle nav-user arrow-none me-0 margin-top-3" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"aria-expanded="false">
+                            <a class="nav-link dropdown-toggle nav-user arrow-none me-0 margin-top-3" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <i class="uil-user-circle font-40"></i>
                                 <span>
                                     <span class="account-user-name text-capitalize"></span>
