@@ -35,7 +35,7 @@
                                         <h2 class="font-20" id="title_sort">Default Sort</h2>
                                     </div>
                                     <div class="float-end">
-                                        <select name="" id="num_sort" class="form-select">
+                                        <select name="" id="num_sort" class="form-select bg-dark c-white">
                                             <option value="50" selected>50</option>
                                             <option value="100">100</option>
                                         </select>
