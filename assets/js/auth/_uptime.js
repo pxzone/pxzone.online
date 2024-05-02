@@ -38,7 +38,7 @@ function getUptimeData(site, sort_days){
         span_class = "";
 
         query_all = res.result.data;
-        latest_row = res.result.data[0];
+        latest_row = res.result.latest_row;
         row_count = query_all.length;
         default_count = res.result.count;
         diff_count = default_count - row_count;
@@ -49,7 +49,7 @@ function getUptimeData(site, sort_days){
             uptime_text2 = "Operational";
             span_class = "text-success";
         }
-        else
+        else if (latest_row.status == 'down')
         {
             uptime_icon = "<i class='uil-exclamation-circle text-danger'></i>";
             uptime_text2 = "Down";

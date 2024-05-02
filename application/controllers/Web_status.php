@@ -121,7 +121,7 @@ class Web_status extends CI_Controller {
             $allowed = false;
         }
 
-        if($allowed == true){
+        if($allowed == false){
             $websites = $this->Tools_model->getWebsiteList();
             foreach($websites as $website){
                 if (!empty($website['website_url'])) {

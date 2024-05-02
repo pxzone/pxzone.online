@@ -46,7 +46,7 @@ class Tools_model extends CI_Model {
         $coin_to_fiat = $data_obj->$coin_name->$currency;
         return $coin_balance * $coin_to_fiat;
     }
-    public function btcPriceHistoryToImage($date,$currency){
+    public function btcPriceHistoryToImage($date, $currency){
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.coingecko.com/api/v3/coins/bitcoin/history?date=".$date,
@@ -369,7 +369,7 @@ class Tools_model extends CI_Model {
     // okilink api_key 
   
     public function getWebsiteList(){
-        return $this->db->SELECT('id, website_url')
+        return $this->db->SELECT('id, name, website_url')
             ->WHERE('status', 'active')
             ->GET('monitor_website_tbl')->result_array();
     }
@@ -382,40 +382,42 @@ class Tools_model extends CI_Model {
             ->WHERE('status', 'active')
             ->GET('monitor_website_tbl')->row_array();
     }
-    public function getMonitorWebsiteDataChart(){
+    public function getMonitorWebsiteDataChart($timezone){
         $site = $this->input->get('site');
-
+        $sort = $this->input->get('sort');
         if($this->agent->is_mobile()){
-            $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-30 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
-            $vert_count = 30;
+            $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-'.$sort.' days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+            $vert_count = $sort;
             $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.created_at')
                 ->FROM('monitor_website_tbl as mwt')
                 ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
                 ->WHERE('mwt.name', $site)
                 ->WHERE('mwt.status', 'active')
+                ->WHERE('mwat.status_code !=', 0)
                 ->WHERE($date_range)
                 ->ORDER_BY('mwat.created_at','desc')
                 ->GET()->result_array();
         }
         else{
-            $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-60 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
-            $vert_count = 60;
-            $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.created_at')
+            $date_range = array('mwat.created_at >'=>date('Y-m-d H:i:s', strtotime('-'.$sort.' days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+            $vert_count = $sort;
+            $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.status_code, mwat.created_at')
                 ->FROM('monitor_website_tbl as mwt')
                 ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
                 ->WHERE('mwt.name', $site)
                 ->WHERE('mwt.status', 'active')
+                ->WHERE('mwat.status_code !=', 0)
                 ->WHERE($date_range)
                 ->ORDER_BY('mwat.created_at','desc')
                 ->GET()->result_array();
         }
-        $latest_row = $this->getUptimeLatestRow($site);
         
         $result_arr = array();
         foreach($query_all as $q){
             $row_array = array(
                 'response_time' => $q['response_time'],
                 'status' => $q['status'],
+                'status_code' => $q['status_code'],
                 'date' => date('M d, Y', strtotime($q['created_at']))
             );
             array_push($result_arr, $row_array);
@@ -426,6 +428,7 @@ class Tools_model extends CI_Model {
         foreach($result_arr as $entry){
             $date = $entry['date'];
             $status = $entry['status'];
+            $status_code = $entry['status_code'];
             if(!isset($grouped[$date])){
                 $grouped[$date] = array(
                     'date'=>$date,
@@ -434,17 +437,20 @@ class Tools_model extends CI_Model {
                 );
             }
             $grouped[$date]['status'][] = $status;
-            if ($status == 'down') {
+            if ($status == 'down' && $status_code >= 500) {
                 $grouped[$date]['down_count']++;
             }
+            
         }
         foreach ($grouped as &$entry) {
             $status = in_array('down', $entry['status']) ? 'down' : 'up';
             $entry['status'] = $status;
         }
+
+        $latest_row = $this->getUptimeLatestRow($site);
         $response['data'] = array_values($grouped);
-        $response['latest_query'] = $latest_row;
         $response['count'] = $vert_count;
+        $response['latest_row'] = $latest_row;
         return $response;
     }
     public function getUptimeLatestRow($site){
@@ -457,14 +463,17 @@ class Tools_model extends CI_Model {
             ->ORDER_BY('mwat.created_at','desc')
             ->GET()->row_array();
     }
-    public function getMonitorWebsiteActivity(){
+    public function getMonitorWebsiteActivity($timezone){
         $site = $this->input->get('site');
-        $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-15 days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+        $sort = $this->input->get('sort');
+        date_default_timezone_set($timezone);
+        $date_range = array('mwat.created_at >'=>date('Y-m-d H:i:s', strtotime('-'.$sort.' days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
         $query_all = $this->db->SELECT('mwat.response_time, mwat.status, mwat.status_code, mwat.created_at')
             ->FROM('monitor_website_tbl as mwt')
             ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
             ->WHERE('mwt.name', $site)
             ->WHERE('mwt.status', 'active')
+            ->WHERE('mwat.status_code >=', 500)
             ->WHERE('mwat.status', 'down')
             ->WHERE($date_range)
             ->ORDER_BY('mwat.created_at','desc')
@@ -472,11 +481,15 @@ class Tools_model extends CI_Model {
         
             $result_arr = array();
             foreach($query_all as $q){
+                $timestamp = strtotime($q['created_at']);
+                $final_date = date('M d, Y H:i:s', $timestamp);
+
                 $row_array = array(
                     'response_time' => $q['response_time'],
                     'status' => $q['status'],
                     'status_code' => $q['status_code'],
-                    'date' => date('M d, Y H:i:s', strtotime($q['created_at']))
+                    'date' => $final_date
+
                 );
                 array_push($result_arr, $row_array);
             }
@@ -502,7 +515,7 @@ class Tools_model extends CI_Model {
             foreach ($result_arr as $entry2) {
                 $date = date('M d, Y', strtotime($entry2['date']));
                 $details_arr = array(
-                    'datetime' =>date('h:i:s A', strtotime($entry2['date'])),
+                    'datetime' =>date('h:i:s A T', strtotime($entry2['date'])),
                     'status_code' =>$entry2['status_code'],
                     'response_time' =>$entry2['response_time'],
                 );
@@ -513,29 +526,128 @@ class Tools_model extends CI_Model {
             return $response;
         
     }
-    public function getResponseTimeActivity(){
+    public function getResponseTimeActivity($timezone){
         $site = $this->input->get('site');
-        $date_range = array('mwat.created_at >'=>date('Y-m-d 00:00:00', strtotime('-24 hours')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+        $sort = $this->input->get('sort');
+        $date_range = array('mwat.created_at >'=>date('Y-m-d H:i:s', strtotime('-'.$sort.' days')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
+        // $date_range = array('mwat.created_at >'=>date('Y-m-d H:i:s', strtotime('-24 hours')), 'mwat.created_at <'=> date('Y-m-d H:i:s'));
         $query_all = $this->db->SELECT('mwat.response_time, mwat.created_at as date')
             ->FROM('monitor_website_tbl as mwt')
             ->JOIN('monitor_website_activity_tbl as mwat', 'mwat.website_id=mwt.id', 'left')
             ->WHERE('mwt.name', $site)
             ->WHERE('mwt.status', 'active')
+            ->WHERE('mwat.status_code !=', 0)
             ->WHERE($date_range)
-            // ->LIMIT(360)
-            ->GROUP_BY('hour(mwat.created_at)')
-            ->GROUP_BY('hour(mwat.response_time)')
+            ->GROUP_BY('day(date)')
+            // ->GROUP_BY('hour(mwat.response_time)')
             ->ORDER_BY('mwat.created_at','desc')
             ->GET()->result_array();
+
         $result = array();
         foreach($query_all as $q){
+            $timestamp = strtotime($q['date']);
+            // date_default_timezone_set($timezone);
+            $final_date = date('m/d H:i:s', $timestamp);
             $row_data = array(
-                'date'=>date('M d h:i A', strtotime($q['date'])),
+                'date'=>$final_date,
                 'response_time'=>substr($q['response_time'], 0, -2)
             );
             array_push($result, $row_data);
         }
         return $result;
     }
+    public function getTimeZone($site){
+        $query = $this->db->SELECT('timezone')
+            ->WHERE('name', $site)
+            ->GET('monitor_website_tbl')->row_array();
     
+        $json_data = file_get_contents('https://raw.githubusercontent.com/pxzone/utc_offset_timezones/main/data.json');
+        $data = json_decode($json_data, true);
+
+        $response = $data[$query['timezone']];
+        return $response;
+
+        // if($query['timezone'] == 'UTC'){
+        //     return 'Africa/Accra';
+        // }
+        // else if ($query['timezone'] == 'UTC+1'){
+        //     return 'Europe/Amsterdam';
+        // }
+        // else if ($query['timezone'] == 'UTC+2'){
+        //     return 'Europe/Athens';
+        // }
+        // else if ($query['timezone'] == 'UTC+3'){
+        //     return 'Europe/Kaliningrad';
+        // }
+        // else if ($query['timezone'] == 'UTC+4'){
+        //     return 'Europe/Samara';
+        // }
+        // else if ($query['timezone'] == 'UTC+5'){
+        //     return 'Asia/Aqtau';
+        // }
+        // else if ($query['timezone'] == 'UTC+6'){
+        //     return 'Asia/Almaty';
+        // }
+        // else if ($query['timezone'] == 'UTC+7'){
+        //     return 'Asia/Bangkok';
+        // }
+        // else if ($query['timezone'] == 'UTC+8'){
+        //     return 'Asia/Hong_Kong';
+        // }
+        // else if ($query['timezone'] == 'UTC+9'){
+        //     return 'Asia/Tokyo';
+        // }
+        // else if ($query['timezone'] == 'UTC+10'){
+        //     return 'Australia/Brisbane';
+        // }
+        // else if ($query['timezone'] == 'UTC+11'){
+        //     return 'Pacific/Efate';
+        // }
+        // else if ($query['timezone'] == 'UTC+12'){
+        //     return 'Pacific/Auckland';
+        // }
+        // else if ($query['timezone'] == 'UTC+13'){
+        //     return 'Pacific/Apia';
+        // }
+        // else if ($query['timezone'] == 'UTC-1'){
+        //     return 'Atlantic/Cape_Verde';
+        // }
+        // else if ($query['timezone'] == 'UTC-2'){
+        //     return 'America/Noronha';
+        // }
+        // else if ($query['timezone'] == 'UTC-3'){
+        //     return 'America/Argentina/Buenos_Aires';
+        // }
+        // else if ($query['timezone'] == 'UTC-4'){
+        //     return 'America/Antigua';
+        // }
+        // else if ($query['timezone'] == 'UTC-5'){
+        //     return 'America/Bogota';
+        // }
+        // else if ($query['timezone'] == 'UTC-6'){
+        //     return 'America/Bahia_Banderas';
+        // }
+        // else if ($query['timezone'] == 'UTC-7'){
+        //     return 'America/Boise';
+        // }
+        // else if ($query['timezone'] == 'UTC-8'){
+        //     return 'America/Anchorage';
+        // }
+        // else if ($query['timezone'] == 'UTC-9'){
+        //     return 'America/Adak';
+        // }
+        // else if ($query['timezone'] == 'UTC-10'){
+        //     return 'Pacific/Honolulu';
+        // }
+        // else if ($query['timezone'] == 'UTC-11'){
+        //     return 'Pacific/Midway';
+        // }
+        // else if ($query['timezone'] == 'UTC-12'){
+        //     return 'Pacific/Funafuti';
+        // }
+        // else {
+        //     return 'Africa/Accra';
+        // }
+
+    }
 }
