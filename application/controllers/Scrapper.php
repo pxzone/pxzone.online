@@ -16,10 +16,8 @@ class Scrapper extends CI_Controller {
         // recent post page 2, start=10
         $ip_address = $this->input->ip_address();
         $ip_whitelisted = array(
-            '23.88.105.37',
-            '143.44.165.218',
-            '66.29.137.113',
-            '116.203.134.67'
+            '143.44.165.118',
+            '195.211.124.130'
         );
         $allowed = false;
         if (in_array($ip_address, $ip_whitelisted)) {
@@ -27,6 +25,46 @@ class Scrapper extends CI_Controller {
         } 
 
         if($allowed == true){
+            // $forum_url_page_4 = "https://www.altcoinstalks.com/index.php?action=recent;start=40"; 
+            // $scrape_data_page_4 = $this->scrapeForumRecentPosts($forum_url_page_4);
+            // foreach($scrape_data_page_4 as $scrape4){
+            //     $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape4['msg_id']);
+            //     if($check_msg_id <= 0){ // msg id if not yet exist
+            //         $this->Telegram_bot_model->notifyUser($scrape4);
+            //         date_default_timezone_set('Asia/Manila');
+            //         $topic_data = $this->scrapeTopicData($scrape4['topic_id']);
+            //         $this->Scrapper_model->insertNewBoardData($scrape4['board_id'], $scrape4['board_name']);
+            //         $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape4, $topic_data); // SAVED SCRAPED DATA
+                            
+            //         if($topic_inserted == true){
+            //             $this->Telegram_bot_model->notifyTrackedBoard($scrape4, $topic_data); // NOTIFY TRACKED BOARDS
+            //          }
+            //         $msg_id = $scrape4['msg_id'];
+            //         $message = "System: Scraped post. Msg ID [$msg_id]";
+            //         $this->Scrapper_model->insertSystemActivityLog($message);
+            //     }
+            // }
+
+            // $forum_url_page_3 = "https://www.altcoinstalks.com/index.php?action=recent;start=30"; 
+            // $scrape_data_page_3 = $this->scrapeForumRecentPosts($forum_url_page_3);
+            // foreach($scrape_data_page_3 as $scrape3){
+            //     $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape3['msg_id']);
+            //     if($check_msg_id <= 0){ // msg id if not yet exist
+            //         $this->Telegram_bot_model->notifyUser($scrape3);
+            //         date_default_timezone_set('Asia/Manila');
+            //             $topic_data = $this->scrapeTopicData($scrape3['topic_id']);
+            //         $this->Scrapper_model->insertNewBoardData($scrape3['board_id'], $scrape3['board_name']);
+            //         $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape3, $topic_data); // SAVED SCRAPED DATA
+                                
+            //         if($topic_inserted == true){
+            //             $this->Telegram_bot_model->notifyTrackedBoard($scrape3, $topic_data); // NOTIFY TRACKED BOARDS
+            //         }
+            //         $msg_id = $scrape3['msg_id'];
+            //         $message = "System: Scraped post. Msg ID [$msg_id]";
+            //         $this->Scrapper_model->insertSystemActivityLog($message);
+            //     }
+            // }
+
             $forum_url_page_2 = "https://www.altcoinstalks.com/index.php?action=recent;start=10"; 
             $scrape_data_page_2 = $this->scrapeForumRecentPosts($forum_url_page_2);
             foreach($scrape_data_page_2 as $scrape2){
@@ -54,14 +92,14 @@ class Scrapper extends CI_Controller {
                 foreach($scrape_data as $scrape){
                     $check_msg_id = $this->Telegram_bot_model->checkPostMsgID($scrape['msg_id']);
                     if($check_msg_id <= 0){
-                    $this->Telegram_bot_model->notifyUser($scrape);
-                    date_default_timezone_set('Asia/Manila');
-                    $topic_data = $this->scrapeTopicData($scrape['topic_id']);
-                    $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
-                    $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
-                    if($topic_inserted == true){
-                        $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
-                    }
+                        $this->Telegram_bot_model->notifyUser($scrape);
+                        date_default_timezone_set('Asia/Manila');
+                        $topic_data = $this->scrapeTopicData($scrape['topic_id']);
+                        $this->Scrapper_model->insertNewBoardData($scrape['board_id'], $scrape['board_name']);
+                        $topic_inserted = $this->Telegram_bot_model->saveScrapedData($scrape, $topic_data); // SAVED SCRAPED DATA
+                        if($topic_inserted == true){
+                            $this->Telegram_bot_model->notifyTrackedBoard($scrape, $topic_data); // NOTIFY TRACKED BOARDS
+                        }
         
                         $msg_id = $scrape['msg_id'];
                         date_default_timezone_set('Asia/Manila');
@@ -833,12 +871,6 @@ class Scrapper extends CI_Controller {
     public function scrapeForumActiveUsersKarmaCount(){
         $ip_address = $this->input->ip_address();
         $ip_whitelisted = array(
-            '23.88.105.37',
-            '143.44.165.160', // personal
-            '143.44.165.218', // personal
-            '66.29.137.113',
-            '116.203.134.67',
-            '66.29.137.107', // old cpanel cron
             '195.211.124.130' // new hosting vps
         );
         $allowed = false;

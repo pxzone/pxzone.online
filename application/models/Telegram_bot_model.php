@@ -185,11 +185,11 @@ class Telegram_bot_model extends CI_Model {
     public function checkPostMsgID($msg_id){
         $archive_pst = $this->db->WHERE('msg_id', $msg_id)
            ->GET('altt_scraped_archive_data_tbl ')->num_rows();
-        if($archive_pst <= 0){
-            return false;
+        if($archive_pst > 0){
+            return true;
         }
         else{
-            return true;
+            return false;
         }
     }
     public function notifyUserEditedPost($data) {
